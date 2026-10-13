@@ -42,7 +42,22 @@ export function ScrollFlow({ children, id, className }: ScrollFlowProps) {
   const firstGlowY = useTransform(progress, [0, 1], ["-12vh", "58vh"]);
   const secondGlowX = useTransform(progress, [0, 1], ["9vw", "-8vw"]);
   const secondGlowY = useTransform(progress, [0, 1], ["58vh", "-18vh"]);
-  const ambientOpacity = useTransform(progress, [0, 0.88, 1], [0.75, 0.55, 0]);
+  const thirdGlowX = useTransform(progress, [0, 1], ["-6vw", "7vw"]);
+  const thirdGlowY = useTransform(progress, [0, 1], ["46vh", "-24vh"]);
+  /* The travelling glows must not resolve to nothing: the tail of the page
+     (contact, footer) would otherwise land on a flat fill with no light at all. */
+  const ambientOpacity = useTransform(
+    progress,
+    [0, 0.88, 1],
+    [0.75, 0.62, 0.5],
+  );
+  /* A cold counterweight that only exists in the second half, so the descent
+     shifts in temperature instead of simply dimming. */
+  const thirdGlowOpacity = useTransform(
+    progress,
+    [0.32, 0.68, 1],
+    [0, 0.85, 1],
+  );
 
   return (
     <main
@@ -63,6 +78,14 @@ export function ScrollFlow({ children, id, className }: ScrollFlowProps) {
         <motion.div
           className="scroll-flow-glow-secondary absolute right-[-28vw] bottom-[-16vw] size-[72vw] min-h-96 min-w-96 rounded-full"
           style={reduced ? undefined : { x: secondGlowX, y: secondGlowY }}
+        />
+        <motion.div
+          className="scroll-flow-glow-tertiary absolute bottom-[-34vw] left-[8vw] size-[64vw] min-h-80 min-w-80 rounded-full"
+          style={
+            reduced
+              ? { opacity: 0.85 }
+              : { x: thirdGlowX, y: thirdGlowY, opacity: thirdGlowOpacity }
+          }
         />
       </motion.div>
 

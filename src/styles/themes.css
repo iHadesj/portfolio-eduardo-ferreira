@@ -26,6 +26,15 @@ html[data-theme="light"] {
   --glow-molten:
     0 0 0 1px color-mix(in oklab, var(--color-molten) 30%, transparent),
     0 8px 40px -12px color-mix(in oklab, var(--color-molten) 22%, transparent);
+
+  /* Paper, not glass: the grid tints instead of glowing, the vignette is a warm
+     shadow rather than black, and the grain darkens the cream instead of
+     lifting it. */
+  --ambient-grid-line: color-mix(in oklab, var(--color-ash) 78%, transparent);
+  --ambient-grid-opacity: 0.62;
+  --ambient-horizon: color-mix(in oklab, var(--color-molten) 6%, transparent);
+  --ambient-vignette: color-mix(in oklab, #6b6152 20%, transparent);
+  --ambient-grain-opacity: 0.035;
 }
 
 /* Underworld — secret theme (Fase 7 easter egg): ember becomes protagonist */
@@ -49,4 +58,11 @@ html[data-theme="underworld"] {
   --glow-molten:
     0 0 0 1px color-mix(in oklab, var(--color-molten) 35%, transparent),
     0 8px 48px -12px color-mix(in oklab, var(--color-ember) 30%, transparent);
+
+  /* The Underworld burns: hotter horizon, deeper vignette, heavier grain. */
+  --ambient-grid-line: color-mix(in oklab, var(--color-ash) 70%, transparent);
+  --ambient-grid-opacity: 0.42;
+  --ambient-horizon: color-mix(in oklab, var(--color-ember) 10%, transparent);
+  --ambient-vignette: color-mix(in oklab, #000 68%, transparent);
+  --ambient-grain-opacity: 0.09;
 }

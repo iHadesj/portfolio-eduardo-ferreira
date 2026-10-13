@@ -11,13 +11,14 @@ import { UnderworldParticles } from "@/components/underworld-particles";
 
 /**
  * The persistent shell around every page: toasts, skip link, navbar (+ mobile
- * nav and ⌘K palette via CommandMenuProvider), footer, overlay cursor, grain
- * overlay and the easter-egg controller (Konami → Underworld).
+ * nav and ⌘K palette via CommandMenuProvider), footer, overlay cursor, ambient
+ * backdrop, grain overlay and the easter-egg controller (Konami → Underworld).
  */
 export function SiteChrome({ children }: { children: React.ReactNode }) {
   return (
     <ToastProvider>
       <CommandMenuProvider>
+        <div aria-hidden className="ambient-backdrop" />
         <SkipLink />
         <Navbar />
         {children}

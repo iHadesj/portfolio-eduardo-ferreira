@@ -46,7 +46,7 @@ export const siteConfig = {
    * Portrait for the About section, duotoned to the active theme at render
    * time (see `.portrait-*` in globals.css) so it never fights the palette.
    */
-  portrait: "/minha-foto.png" as string | null,
+  portrait: "/minha-foto.webp" as string | null,
 
   links: {
     github: "https://github.com/iHadesj",

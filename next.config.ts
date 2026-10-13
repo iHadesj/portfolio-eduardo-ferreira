@@ -7,6 +7,13 @@ import { siteConfig } from "./src/lib/site-config";
  * resolve directly.
  */
 const nextConfig: NextConfig = {
+  images: {
+    // Next only negotiates WebP by default. AVIF lands first in the Accept
+    // chain and is typically 20-30% smaller again on these UI screenshots;
+    // browsers without it fall through to WebP and then to the source.
+    formats: ["image/avif", "image/webp"],
+  },
+
   async headers() {
     return [
       {

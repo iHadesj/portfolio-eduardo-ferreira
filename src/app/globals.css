@@ -79,6 +79,16 @@
   --z-palette: 60;
   --z-cursor: 70;
   --z-toast: 80;
+
+  /* Ambient backdrop — the fixed texture field painted behind every page.
+     Themes override these values rather than the rules that consume them. */
+  --ambient-grid-cell: 4.5rem;
+  --ambient-grid-line: color-mix(in oklab, var(--color-ash) 62%, transparent);
+  --ambient-grid-opacity: 0.5;
+  --ambient-horizon: color-mix(in oklab, var(--color-molten) 8%, transparent);
+  --ambient-vignette: color-mix(in oklab, #000 58%, transparent);
+  --ambient-grain-opacity: 0.05;
+
   color-scheme: dark;
 }
 
@@ -188,6 +198,15 @@
   );
 }
 
+.scroll-flow-glow-tertiary {
+  background: radial-gradient(
+    circle,
+    color-mix(in oklab, var(--color-styx) 15%, transparent) 0%,
+    color-mix(in oklab, var(--color-molten) 5%, transparent) 34%,
+    transparent 70%
+  );
+}
+
 .mobius-ambient-glow {
   background:
     radial-gradient(
@@ -217,6 +236,15 @@
       circle,
       color-mix(in oklab, var(--color-styx) 7%, transparent) 0%,
       transparent 68%
+    );
+  }
+
+  .scroll-flow-glow-tertiary {
+    background: radial-gradient(
+      circle,
+      color-mix(in oklab, var(--color-styx) 8%, transparent) 0%,
+      color-mix(in oklab, var(--color-molten) 3%, transparent) 33%,
+      transparent 69%
     );
   }
 
@@ -1434,17 +1462,77 @@ html[data-theme="light"] .portrait {
   }
 }
 
-/* Film grain — barely-there normally, intensifies in the Underworld (§F7) */
+/* Film grain. Composited normally rather than blended: `overlay` collapses to
+   nothing against a near-black backdrop (2·cb·cs with cb≈0.05 can never lift
+   the pixel), so the layer was invisible in every theme but the Underworld.
+   The turbulence is desaturated to grayscale so it reads as grain and not as
+   RGB confetti; plain compositing then lightens on Obsidian and darkens on
+   Elysium from the same source. */
 .grain-overlay {
   position: fixed;
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  opacity: 0;
-  mix-blend-mode: overlay;
+  opacity: var(--ambient-grain-opacity);
   transition: opacity 300ms var(--ease-out-expo);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
-html[data-theme="underworld"] .grain-overlay {
-  opacity: 0.07;
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Ambient backdrop. A single fixed layer below all content (z-index: -1, so it
+   sits above the propagated body background and below every stacking context
+   on the page). Two pseudo-elements keep it to one DOM node: ::before is the
+   blueprint grid, ::after the horizon light and the vignette that darkens the
+   edges so content reads as lit rather than floating on a flat fill.
+   It is entirely static — nothing here reacts to motion preferences.
+   ────────────────────────────────────────────────────────────────────────── */
+.ambient-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  contain: layout paint style;
+}
+
+.ambient-backdrop::before,
+.ambient-backdrop::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.ambient-backdrop::before {
+  opacity: var(--ambient-grid-opacity);
+  background-image:
+    linear-gradient(to right, var(--ambient-grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--ambient-grid-line) 1px, transparent 1px);
+  background-size: var(--ambient-grid-cell) var(--ambient-grid-cell);
+  /* Dissolve the grid before it reaches any edge — a full-bleed grid reads as
+     a template, a fading one reads as depth. */
+  mask-image: radial-gradient(
+    ellipse 78% 58% at 50% 34%,
+    #000 0%,
+    color-mix(in oklab, #000 45%, transparent) 52%,
+    transparent 82%
+  );
+}
+
+.ambient-backdrop::after {
+  background:
+    radial-gradient(
+      ellipse 130% 42% at 50% -8%,
+      var(--ambient-horizon),
+      transparent 68%
+    ),
+    radial-gradient(
+      ellipse 92% 78% at 50% 50%,
+      transparent 38%,
+      var(--ambient-vignette) 100%
+    );
+}
+
+@media (min-width: 40rem) {
+  .ambient-backdrop {
+    --ambient-grid-cell: 5.5rem;
+  }
 }
