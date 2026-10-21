@@ -1,0 +1,125 @@
+---
+title: DevTrack
+slug: devtrack
+summary: App offline-first pra organizar faculdade, estudo e estágio no mesmo lugar. Nasceu pra minha rotina e está ficando pronto pra outras pessoas no mesmo corre.
+problem: Quem estuda e estagia ao mesmo tempo espalha tudo entre caderno, print e lembrete no celular, e perde justamente o que aprendeu no trampo.
+date: 2026-10-11
+cover: /projects/devtrack.webp
+coverAlt: Tela Hoje do DevTrack com o título Organiza o corre e formas geométricas no estilo Bauhaus
+stack:
+  [React, TypeScript, Vite, styled-components, Framer Motion, IndexedDB, PWA]
+repo: https://github.com/iHadesj/DevTrack
+status: in-progress
+order: 8
+highlights:
+  - Tarefas por área (faculdade, estágio, pessoal), minutos de estudo e diário do estágio
+  - Funciona sem internet e sem login, tudo salvo no IndexedDB
+  - Cada alteração entra numa fila de sync, pronta pra uma API em Spring Boot
+  - Projeto onde estou aprendendo React na mão, entendendo cada parte
+metrics:
+  - label: Login
+    value: Nenhum
+  - label: Dados
+    value: IndexedDB
+  - label: Sync
+    value: Fila pronta, API a caminho
+decisions:
+  - choice: Salvar local primeiro, sincronizar depois
+    instead: Mandar cada alteração direto pra uma API
+    because: O app abre no ônibus, na faculdade, em qualquer lugar com sinal ruim. A tela nunca espera o servidor pra mostrar a mudança.
+    cost: Quando existir sync, vai ter que resolver conflito de quem editou a mesma coisa em dois aparelhos.
+  - choice: Só uma camada conversa com o banco
+    instead: Componentes chamando o IndexedDB direto
+    because: Nenhuma tela sabe que o IndexedDB existe. Quando a API chegar, mexo no offlineDatabase e no hook, não nas telas.
+  - choice: Gravar a fila de sync desde o primeiro dia
+    instead: Pensar em sincronização só quando o back existir
+    because: Cada criação ou atualização já vira uma SyncOperation. O SyncService só vai precisar ler a fila e apagar o que o servidor confirmar.
+    cost: Hoje a fila só cresce, porque ainda não tem ninguém do outro lado pra consumir.
+  - choice: Sem conta e sem cadastro
+    instead: Login antes de usar
+    because: Uma tarefa de cinco minutos não pode começar com formulário de cadastro.
+    cost: Os dados ficam presos no aparelho até a sync existir.
+  - choice: styled-components com identidade Bauhaus
+    instead: Kit de componentes pronto
+    because: Queria praticar CSS-in-JS na mão e fugir da cara de dashboard genérico.
+en:
+  title: DevTrack
+  summary: An offline-first app to organise college, study and internship in one place. Built for my own routine and getting ready for other people in the same grind.
+  problem: Students who also intern scatter everything across notebooks, screenshots and phone reminders, and lose exactly what they learned on the job.
+  coverAlt: DevTrack Today screen with the headline Organiza o corre and Bauhaus-style geometric shapes
+  highlights:
+    - Tasks by area (college, internship, personal), study minutes and an internship log
+    - Works offline with no login, everything stored in IndexedDB
+    - Every change goes into a sync queue, ready for a Spring Boot API
+    - A project where I am learning React by hand, understanding every part
+  metrics:
+    - label: Login
+      value: None
+    - label: Data
+      value: IndexedDB
+    - label: Sync
+      value: Queue ready, API next
+  decisions:
+    - choice: Save locally first, sync later
+      instead: Sending every change straight to an API
+      because: The app opens on the bus, at college, anywhere with a bad signal. The screen never waits for a server to show a change.
+      cost: Once sync exists it will have to resolve conflicts when the same thing is edited on two devices.
+    - choice: Only one layer talks to the database
+      instead: Components calling IndexedDB directly
+      because: No screen knows IndexedDB exists. When the API arrives I change offlineDatabase and the hook, not the screens.
+    - choice: Record the sync queue from day one
+      instead: Thinking about sync only once the backend exists
+      because: Every create or update already becomes a SyncOperation. The SyncService will only need to read the queue and delete what the server confirms.
+      cost: Today the queue only grows, since nothing on the other side consumes it yet.
+    - choice: No account, no sign-up
+      instead: Login before first use
+      because: A five-minute task cannot start with a sign-up form.
+      cost: Data stays on the device until sync exists.
+    - choice: styled-components with a Bauhaus identity
+      instead: An off-the-shelf component kit
+      because: I wanted to practise CSS-in-JS by hand and stay away from the generic dashboard look.
+---
+
+## O problema
+
+Durante o estágio eu fazia faculdade, estudava por fora e ainda tentava lembrar
+o que tinha aprendido no trampo. Tudo isso ficava espalhado: tarefa no
+caderno, horas de estudo em lugar nenhum e o aprendizado do dia só na cabeça,
+até eu esquecer.
+
+O DevTrack junta as três coisas numa tela só. Ele começou pra minha rotina,
+mas eu montei a base pensando em quem está nessa mesma fase, entre estudar e
+entrar no mercado.
+
+## Como funciona
+
+- **Tarefas** por área: faculdade, estágio ou pessoal.
+- **Estudos**: registro de minutos e o foco do dia.
+- **Estágio**: um diário com aprendizados e bloqueios.
+
+Tudo é salvo no IndexedDB na hora, sem login e sem internet. Depois da primeira
+visita o service worker deixa o app abrir sem rede.
+
+## Arquitetura
+
+```text
+clique no formulário
+  → useDevTrack cria o objeto com UUID e data
+  → offlineDatabase salva no IndexedDB
+  → offlineDatabase enfileira uma SyncOperation
+  → React atualiza a tela
+  → (futuro) SyncService manda a fila pro Spring Boot quando tiver conexão
+```
+
+O ponto é a ordem: a pessoa nunca espera o servidor pra ver a mudança. E nenhum
+componente acessa o banco direto, só o `offlineDatabase`.
+
+## O que vem agora
+
+O próximo passo é o `SyncService`: ler a fila, mandar cada operação pra uma API
+em Spring Boot e apagar da fila **só** depois que o servidor responder que deu
+certo. Se apagar antes e a rede cair no meio, perde a alteração, que é
+exatamente o erro que offline-first existe pra evitar.
+
+Também é o projeto onde eu estou aprendendo React de verdade, escrevendo cada
+parte e entendendo o porquê, em vez de só colar código que funciona.

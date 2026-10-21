@@ -14,6 +14,7 @@ export function Contact({
 }) {
   return (
     <ScrollSection
+      lean={-1}
       id="contato"
       className="container-hades section-pad scroll-mt-24"
       flowStrength={18}

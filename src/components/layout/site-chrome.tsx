@@ -8,17 +8,18 @@ import { CustomCursor } from "@/components/ui/custom-cursor";
 import { ToastProvider } from "@/components/ui/toast";
 import { EasterEggs } from "@/components/easter-eggs";
 import { UnderworldParticles } from "@/components/underworld-particles";
+import { AmbientBackdrop } from "@/components/layout/ambient-backdrop";
 
 /**
  * The persistent shell around every page: toasts, skip link, navbar (+ mobile
- * nav and ⌘K palette via CommandMenuProvider), footer, overlay cursor, ambient
+ * nav and ⌘K palette via CommandMenuProvider), footer, overlay cursor, contour
  * backdrop, grain overlay and the easter-egg controller (Konami → Underworld).
  */
 export function SiteChrome({ children }: { children: React.ReactNode }) {
   return (
     <ToastProvider>
       <CommandMenuProvider>
-        <div aria-hidden className="ambient-backdrop" />
+        <AmbientBackdrop />
         <SkipLink />
         <Navbar />
         {children}

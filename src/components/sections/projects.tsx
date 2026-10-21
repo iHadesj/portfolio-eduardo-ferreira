@@ -18,6 +18,7 @@ export function Projects({
 
   return (
     <ScrollSection
+      lean={1}
       id="projetos"
       className="container-hades section-pad scroll-mt-24"
       flowStrength={18}
@@ -28,12 +29,30 @@ export function Projects({
         description={dict.projects.description}
       />
 
-      <div className="mt-10 flex flex-col gap-6">
-        {projects.map((project, index) => (
-          <Reveal key={project.slug} delay={index * 0.06}>
-            <ProjectCard project={project} locale={locale} dict={dict} />
-          </Reveal>
-        ))}
+      {/* A zigzag instead of a column: on large screens each card leans to
+          one side and swaps its cover to the outer edge, so the eye travels
+          left-right down the list like the thread does. */}
+      <div className="mt-10 flex flex-col gap-6 lg:gap-10">
+        {projects.map((project, index) => {
+          const flip = index % 2 === 1;
+          return (
+            <Reveal
+              key={project.slug}
+              from={flip ? "right" : "left"}
+              delay={0.04}
+              className={
+                flip ? "lg:ml-auto lg:w-[88%]" : "lg:mr-auto lg:w-[88%]"
+              }
+            >
+              <ProjectCard
+                project={project}
+                locale={locale}
+                dict={dict}
+                flip={flip}
+              />
+            </Reveal>
+          );
+        })}
       </div>
 
       <div className="mt-8">

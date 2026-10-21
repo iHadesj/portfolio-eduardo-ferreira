@@ -1,0 +1,146 @@
+---
+title: LIFE/MAINTENANCE
+slug: life-maintenance
+summary: Manutenção preventiva da vida. Cada coisa que se desgasta vira um sistema com ciclo, e o app mostra o que está começando a precisar de atenção.
+problem: Lista de tarefas trata trocar o filtro da água e renovar o documento como se fossem a mesma coisa. Eu queria algo que entendesse desgaste.
+date: 2026-10-07
+cover: /projects/life-maintenance.webp
+coverAlt: Tela inicial do LIFE/MAINTENANCE com o título grande e o núcleo orbital à direita
+stack:
+  [
+    React,
+    TypeScript,
+    Vite,
+    Dexie/IndexedDB,
+    Three.js,
+    Framer Motion,
+    Vitest,
+    Playwright,
+  ]
+repo: https://github.com/iHadesj/life-maintenance
+status: in-progress
+order: 3
+highlights:
+  - Seis estados de ciclo calculados por regra pura e testada, de STABLE a CRITICAL
+  - Estado mostrado por forma, não só por cor (o anel vai se rompendo)
+  - PWA offline-first instalável no iPhone, com backup em JSON
+  - 53 testes unitários e um smoke e2e que emula iPhone 11 e testa até sem rede
+metrics:
+  - label: Testes
+    value: "53 + smoke e2e"
+  - label: Estados
+    value: "6"
+  - label: Servidor
+    value: Nenhum
+decisions:
+  - choice: Cada item é um sistema com ciclo
+    instead: Tarefa com data de vencimento
+    because: Desgaste é contínuo. O app calcula o quanto do ciclo já passou e avisa antes de vencer, em vez de só gritar no dia.
+    cost: Cadastrar algo pede um intervalo, não só uma data, e isso é mais um campo pra pessoa entender.
+  - choice: Regras do ciclo em funções puras
+    instead: Calcular estado dentro dos componentes
+    because: cycle.ts e health.ts não sabem que React existe, então dá pra testar estado, saúde e vencimento sem montar tela nenhuma.
+  - choice: A UI nunca toca o Dexie direto
+    instead: useLiveQuery espalhado pelos componentes
+    because: Leitura passa por um provider e escrita por repositórios. Trocar o banco ou adicionar sync mexe em uma camada só.
+  - choice: Forma carrega a informação, cor só reforça
+    instead: Semáforo de cores
+    because: O anel fechado vai abrindo, partindo e estilhaçando conforme o estado piora. Funciona pra quem não distingue as cores e em tela com brilho baixo.
+    cost: Cada estado novo exige desenhar um glifo, não só escolher uma cor.
+  - choice: Smoke e2e no build final, emulando iPhone 11
+    instead: Testar só no navegador do desktop
+    because: O alvo é o app instalado no celular. O smoke percorre os fluxos, recarrega sem rede pelo service worker e falha com qualquer erro de console.
+    cost: No WebKit do Windows o Playwright não emula toque nem offline, então essa parte só roda no Chromium.
+en:
+  title: LIFE/MAINTENANCE
+  summary: Preventive maintenance for life. Everything that wears out becomes a system with a cycle, and the app shows what is starting to need attention.
+  problem: A to-do list treats changing the water filter and renewing a document as the same kind of thing. I wanted something that understood wear.
+  coverAlt: LIFE/MAINTENANCE home screen with the large title and the orbital core on the right
+  highlights:
+    - Six cycle states from pure, tested rules, from STABLE to CRITICAL
+    - State shown by shape, not only colour (the ring gradually breaks)
+    - Offline-first PWA installable on iPhone, with JSON backup
+    - 53 unit tests plus an e2e smoke run that emulates an iPhone 11, offline included
+  metrics:
+    - label: Tests
+      value: "53 + e2e smoke"
+    - label: States
+      value: "6"
+    - label: Server
+      value: None
+  decisions:
+    - choice: Every item is a system with a cycle
+      instead: A task with a due date
+      because: Wear is continuous. The app works out how much of the cycle has passed and warns before it is due, instead of only shouting on the day.
+      cost: Adding something asks for an interval, not just a date, which is one more concept to grasp.
+    - choice: Cycle rules as pure functions
+      instead: Computing state inside components
+      because: cycle.ts and health.ts do not know React exists, so state, health and due dates are tested without mounting a single screen.
+    - choice: The UI never touches Dexie directly
+      instead: useLiveQuery scattered across components
+      because: Reads go through one provider and writes through repositories. Swapping the database or adding sync touches one layer.
+    - choice: Shape carries the information, colour only reinforces it
+      instead: A traffic-light palette
+      because: The closed ring opens, splits and shatters as the state worsens. It works for colour-blind users and on a dim screen.
+      cost: Every new state means drawing a glyph, not just picking a colour.
+    - choice: An e2e smoke run on the production build, emulating an iPhone 11
+      instead: Testing only in a desktop browser
+      because: The target is the installed phone app. The smoke run walks the flows, reloads offline through the service worker and fails on any console error.
+      cost: Playwright's WebKit on Windows emulates neither touch nor offline, so that part only runs on Chromium.
+---
+
+## O problema
+
+Tem coisa na vida que não é tarefa, é desgaste. O filtro da água, a escova de
+dente, o backup do celular, a consulta de rotina. Ninguém esquece porque é
+difícil, esquece porque não tem data marcada, só um "faz tempo que eu não...".
+
+Lista de tarefas não resolve isso. Ela só sabe dizer "venceu" ou "não venceu".
+Eu queria um app que respondesse outra pergunta: **o que está começando a
+precisar da minha atenção?**
+
+## Como funciona
+
+Cada coisa cadastrada é um _sistema_ com um _ciclo_ recomendado. O app calcula
+quantos dias passaram desde a última manutenção e quanto isso representa do
+ciclo. Daí sai o estado:
+
+- **STABLE** abaixo de 50% do ciclo, **WATCH** até 75%, **ATTENTION** até 90%;
+- **DUE** perto do vencimento, **OVERDUE** depois dele;
+- **CRITICAL** quando passou bastante do prazo, levando em conta o quanto
+  aquele sistema é crítico.
+
+A saúde geral é uma média ponderada pela criticidade. Um item atrasado puxa o
+número pra baixo sem dominar tudo, porque a ideia é manutenção preventiva e
+não ansiedade.
+
+Registrar uma manutenção é um gesto: arrastar o item pra direita empurra a
+linha de desgaste de volta pro começo. Pra esquerda, abre a edição. Tem também
+um terminal (`⌘K`) com comandos tipo `complete`, `show overdue` e
+`export data`, porque eu queria que o app tivesse cara de sistema e não de
+formulário.
+
+## Arquitetura
+
+React 19 com TypeScript e Vite. Os dados ficam no IndexedDB via Dexie, separados
+em repositórios. As regras (ciclo, saúde, diagnóstico, backup) vivem em
+`services/` como funções puras, e é lá que estão os testes.
+
+O núcleo 3D da tela inicial é Three.js com fallback em SVG, e para quando sai da
+tela. Com reduced motion ele vira um quadro estático e nenhuma informação
+depende de animação.
+
+## Resultados
+
+- 53 testes unitários cobrindo ciclos, saúde, backup, busca e repositórios.
+- `npm run smoke` roda o build de produção emulando iPhone 11: onboarding,
+  editor, gestos, terminal, reload sem rede e reduced motion.
+- Instala no iPhone pelo Safari e funciona sem internet depois da primeira
+  visita.
+
+## O que eu faria diferente
+
+Hoje tudo vive no aparelho e o backup é manual: exportar e importar um JSON.
+Funciona, mas depende da pessoa lembrar, o que é meio irônico num app sobre
+não esquecer manutenção. Quero sincronizar entre aparelhos sem obrigar ninguém a
+criar conta, que é o mesmo dilema que apareceu no DevTrack.

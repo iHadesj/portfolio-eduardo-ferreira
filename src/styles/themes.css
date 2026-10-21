@@ -27,11 +27,12 @@ html[data-theme="light"] {
     0 0 0 1px color-mix(in oklab, var(--color-molten) 30%, transparent),
     0 8px 40px -12px color-mix(in oklab, var(--color-molten) 22%, transparent);
 
-  /* Paper, not glass: the grid tints instead of glowing, the vignette is a warm
-     shadow rather than black, and the grain darkens the cream instead of
+  /* Paper, not glass: the contours read as pencil lines, the vignette is a
+     warm shadow rather than black, and the grain darkens the cream instead of
      lifting it. */
-  --ambient-grid-line: color-mix(in oklab, var(--color-ash) 78%, transparent);
-  --ambient-grid-opacity: 0.62;
+  --ambient-line: color-mix(in oklab, var(--color-smoke) 34%, transparent);
+  --ambient-line-opacity: 0.7;
+  --ambient-trace: color-mix(in oklab, var(--color-molten) 40%, transparent);
   --ambient-horizon: color-mix(in oklab, var(--color-molten) 6%, transparent);
   --ambient-vignette: color-mix(in oklab, #6b6152 20%, transparent);
   --ambient-grain-opacity: 0.035;
@@ -59,9 +60,12 @@ html[data-theme="underworld"] {
     0 0 0 1px color-mix(in oklab, var(--color-molten) 35%, transparent),
     0 8px 48px -12px color-mix(in oklab, var(--color-ember) 30%, transparent);
 
-  /* The Underworld burns: hotter horizon, deeper vignette, heavier grain. */
-  --ambient-grid-line: color-mix(in oklab, var(--color-ash) 70%, transparent);
-  --ambient-grid-opacity: 0.42;
+  /* The Underworld burns: hotter horizon, deeper vignette, heavier grain,
+     and the infinity in the contours glows like a fuse. */
+  --ambient-line: color-mix(in oklab, var(--color-ember) 22%, transparent);
+  --ambient-line-opacity: 0.5;
+  --ambient-trace: color-mix(in oklab, var(--color-ember) 46%, transparent);
+  --ambient-glint: var(--color-ember);
   --ambient-horizon: color-mix(in oklab, var(--color-ember) 10%, transparent);
   --ambient-vignette: color-mix(in oklab, #000 68%, transparent);
   --ambient-grain-opacity: 0.09;

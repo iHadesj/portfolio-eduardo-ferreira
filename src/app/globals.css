@@ -82,9 +82,10 @@
 
   /* Ambient backdrop — the fixed texture field painted behind every page.
      Themes override these values rather than the rules that consume them. */
-  --ambient-grid-cell: 4.5rem;
-  --ambient-grid-line: color-mix(in oklab, var(--color-ash) 62%, transparent);
-  --ambient-grid-opacity: 0.5;
+  --ambient-line: color-mix(in oklab, var(--color-smoke) 30%, transparent);
+  --ambient-line-opacity: 0.55;
+  --ambient-trace: color-mix(in oklab, var(--color-molten) 22%, transparent);
+  --ambient-glint: var(--color-molten);
   --ambient-horizon: color-mix(in oklab, var(--color-molten) 8%, transparent);
   --ambient-vignette: color-mix(in oklab, #000 58%, transparent);
   --ambient-grain-opacity: 0.05;
@@ -360,23 +361,102 @@
   }
 }
 
-.scroll-flow-section:not(#hero)::before {
-  content: "";
+/* Project cards drop the uniform rounded rectangle for uneven corners, the
+   same hand-cut feel as the stack cards; flipped rows mirror them. */
+.project-card {
+  border-radius: 1.75rem 1.1rem 2.35rem 1.25rem;
+}
+
+.project-card--flip {
+  border-radius: 1.1rem 1.75rem 1.25rem 2.35rem;
+}
+
+/* Experience: a wandering path instead of a ruled border. Each stop carries
+   its indent and the offset to the next one as custom properties; the curve
+   is an SVG stretched from this dot to the next (non-scaling stroke keeps it
+   a hairline whatever the stretch). */
+.experience-stop {
+  --stop-indent: 0rem;
+  --stop-span: 0rem;
+  --stop-lead: 0rem;
+}
+
+.experience-stop__curve {
   position: absolute;
-  z-index: -1;
-  top: 0;
-  left: 50%;
-  width: min(calc(100% - 2.5rem), 67rem);
-  height: 1px;
-  transform: translateX(-50%);
-  background: linear-gradient(
-    90deg,
-    transparent,
-    color-mix(in oklab, var(--color-ash) 72%, transparent) 18%,
-    color-mix(in oklab, var(--color-molten) 22%, var(--color-ash)) 50%,
-    color-mix(in oklab, var(--color-ash) 72%, transparent) 82%,
-    transparent
-  );
+  /* From this dot's centre (top-1.5 + 5px) to the next one's. */
+  top: calc(0.375rem + 5px);
+  /* Dot centre: -37px + half of the 10px dot. */
+  left: calc(-32px - 1px);
+  width: 2px;
+  height: calc(100% + 2.5rem);
+  overflow: visible;
+  fill: none;
+}
+
+.experience-stop__line,
+.experience-stop__bend {
+  stroke: color-mix(in oklab, var(--color-ash) 62%, var(--color-molten));
+  stroke-width: 1.25;
+  vector-effect: non-scaling-stroke;
+}
+
+.experience-stop__bend {
+  display: none;
+}
+
+@media (min-width: 48rem) {
+  .experience-stop {
+    margin-left: var(--stop-indent);
+  }
+
+  .experience-stop__curve {
+    width: max(2px, var(--stop-span));
+    left: calc(-32px - 1px + var(--stop-lead));
+  }
+
+  .experience-stop__line {
+    display: none;
+  }
+
+  .experience-stop__bend {
+    display: inline;
+  }
+}
+
+/* The thread that weaves between sections (components/layout/scroll-thread).
+   It replaced the ruled separators that used to sit on top of each section:
+   the boundary is now where the thread crosses, not a hairline. */
+.scroll-thread {
+  overflow: visible;
+  fill: none;
+}
+
+.scroll-thread__ghost {
+  stroke: color-mix(in oklab, var(--color-ash) 70%, transparent);
+  stroke-width: 1;
+  stroke-dasharray: 2 7;
+  stroke-linecap: round;
+}
+
+.scroll-thread__drawn {
+  stroke: color-mix(in oklab, var(--color-molten) 72%, transparent);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.scroll-thread__head {
+  opacity: 0;
+  transition: opacity 240ms var(--ease-out-expo);
+}
+
+.scroll-thread__halo {
+  fill: color-mix(in oklab, var(--color-molten) 22%, transparent);
+}
+
+.scroll-thread__tip {
+  fill: var(--color-molten);
+  filter: drop-shadow(0 0 6px var(--color-molten));
 }
 
 .scroll-flow-section:not(#hero)::after {
@@ -1056,6 +1136,28 @@
   .tech-stack__scroll-track {
     left: -1.5rem;
   }
+
+  /* Staggered, not shelved: cards settle at different heights so the grid
+     reads as a scattered set rather than two ruled rows. */
+  .tech-stack__grid {
+    align-items: start;
+  }
+
+  .tech-stack-card:nth-of-type(2) {
+    margin-top: 2.75rem;
+  }
+
+  .tech-stack-card:nth-of-type(3) {
+    margin-top: -1.25rem;
+  }
+
+  .tech-stack-card:nth-of-type(4) {
+    margin-top: 1.5rem;
+  }
+
+  .tech-stack-card:nth-of-type(5) {
+    margin-top: -0.25rem;
+  }
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -1481,43 +1583,77 @@ html[data-theme="light"] .portrait {
 /* ──────────────────────────────────────────────────────────────────────────
    Ambient backdrop. A single fixed layer below all content (z-index: -1, so it
    sits above the propagated body background and below every stacking context
-   on the page). Two pseudo-elements keep it to one DOM node: ::before is the
-   blueprint grid, ::after the horizon light and the vignette that darkens the
-   edges so content reads as lit rather than floating on a flat fill.
-   It is entirely static — nothing here reacts to motion preferences.
+   on the page). `.ambient-field` holds the Cassini contour lines (an SVG used
+   as a mask, tinted by a token) plus the lemniscate trace; it is oversized so
+   the scroll-driven drift never exposes an edge. ::after is the horizon light
+   and the vignette that darkens the edges, painted above the lines.
    ────────────────────────────────────────────────────────────────────────── */
 .ambient-backdrop {
   position: fixed;
   inset: 0;
   z-index: -1;
   pointer-events: none;
+  overflow: hidden;
   contain: layout paint style;
 }
 
-.ambient-backdrop::before,
+.ambient-field {
+  position: absolute;
+  /* Centred a little right of and above the viewport centre: on the home
+     page the lemniscate sits behind the hero ribbon. */
+  inset: -34% -50% -34% -18%;
+  transform-origin: 50% 50%;
+  /* Lines dissolve before any edge: a full-bleed pattern reads as wallpaper,
+     a fading one reads as depth. */
+  mask-image: radial-gradient(
+    ellipse 46% 44% at 50% 48%,
+    #000 0%,
+    color-mix(in oklab, #000 55%, transparent) 55%,
+    transparent 100%
+  );
+}
+
+.ambient-field__lines,
+.ambient-field__trace {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.ambient-field__lines {
+  opacity: var(--ambient-line-opacity);
+  background: var(--ambient-line);
+  mask: url("/textures/cassini-field.svg") center / cover no-repeat;
+}
+
+.ambient-field__trace {
+  overflow: visible;
+  fill: none;
+}
+
+.ambient-field__lemniscate {
+  stroke: var(--ambient-trace);
+  stroke-width: 1.6;
+  vector-effect: non-scaling-stroke;
+}
+
+/* Hidden until motion is allowed: a still glint would read as a smudge. */
+/* No non-scaling-stroke here: it would measure the dashes in screen pixels
+   and ignore pathLength, splitting the single glint into several. */
+.ambient-field__glint {
+  display: none;
+  stroke: var(--ambient-glint);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-dasharray: 3.5 96.5;
+  filter: drop-shadow(0 0 4px var(--ambient-glint));
+}
+
 .ambient-backdrop::after {
   content: "";
   position: absolute;
   inset: 0;
-}
-
-.ambient-backdrop::before {
-  opacity: var(--ambient-grid-opacity);
-  background-image:
-    linear-gradient(to right, var(--ambient-grid-line) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--ambient-grid-line) 1px, transparent 1px);
-  background-size: var(--ambient-grid-cell) var(--ambient-grid-cell);
-  /* Dissolve the grid before it reaches any edge — a full-bleed grid reads as
-     a template, a fading one reads as depth. */
-  mask-image: radial-gradient(
-    ellipse 78% 58% at 50% 34%,
-    #000 0%,
-    color-mix(in oklab, #000 45%, transparent) 52%,
-    transparent 82%
-  );
-}
-
-.ambient-backdrop::after {
   background:
     radial-gradient(
       ellipse 130% 42% at 50% -8%,
@@ -1531,8 +1667,45 @@ html[data-theme="light"] .portrait {
     );
 }
 
-@media (min-width: 40rem) {
-  .ambient-backdrop {
-    --ambient-grid-cell: 5.5rem;
+@keyframes ambient-drift {
+  from {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+  }
+  45% {
+    transform: translate3d(-9%, 5%, 0) rotate(-7deg) scale(1.08);
+  }
+  to {
+    transform: translate3d(-3%, 12%, 0) rotate(5deg) scale(1.16);
+  }
+}
+
+@keyframes ambient-glint {
+  to {
+    stroke-dashoffset: -100;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Wander across the contour map as the page scrolls. Browsers without
+     scroll-driven animations keep the static field, which is fine. */
+  @supports (animation-timeline: scroll()) {
+    .ambient-field {
+      animation: ambient-drift linear both;
+      animation-timeline: scroll(root block);
+    }
+  }
+}
+
+/* The glint repaints the trace every frame, so only roomy screens get it. */
+@media (prefers-reduced-motion: no-preference) and (min-width: 64rem) {
+  .ambient-field__glint {
+    display: inline;
+    animation: ambient-glint 26s linear infinite;
+  }
+}
+
+@media (max-width: 39.999rem) {
+  .ambient-field {
+    inset: -18% -90% -18% -90%;
   }
 }
