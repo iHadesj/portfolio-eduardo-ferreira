@@ -171,7 +171,7 @@ export const pt = {
         stack: ["React", "TypeScript", "Three.js", "Java", "SVN"],
       },
       {
-        period: "fev 2025 — dez 2026 (previsão)",
+        period: "fev 2025 — jul 2027 (previsão)",
         role: "Análise e Desenvolvimento de Sistemas",
         org: "Estácio",
         bullets: [

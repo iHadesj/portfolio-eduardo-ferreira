@@ -157,7 +157,7 @@ export const en = {
         stack: ["React", "TypeScript", "Three.js", "Java", "SVN"],
       },
       {
-        period: "Feb 2025 — Dec 2026 (expected)",
+        period: "Feb 2025 — Jul 2027 (expected)",
         role: "Systems Analysis and Development",
         org: "Estácio",
         bullets: [

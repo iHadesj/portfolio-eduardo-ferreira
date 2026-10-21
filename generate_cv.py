@@ -217,7 +217,7 @@ y -= 4
 y = section_title("FORMA\u00c7\u00c3O", y)
 
 education = [
-    ("An\u00e1lise e Desenvolvimento de Sistemas \u2014 Est\u00e1cio", "fev 2025 \u2014 previs\u00e3o dez 2026"),
+    ("An\u00e1lise e Desenvolvimento de Sistemas \u2014 Est\u00e1cio", "fev 2025 \u2014 previs\u00e3o jul 2027"),
     ("Curso Livre Profissionalizante, Back-End Java \u2014 EBAC", "set 2023 \u2014 out 2024"),
     ("Ensino M\u00e9dio \u2014 E. E. Mariazinha Conr\u00f3lio", "fev 2022 \u2014 dez 2024")
 ]
