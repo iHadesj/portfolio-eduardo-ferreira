@@ -12,6 +12,7 @@ export function About({ dict }: { dict: Dictionary }) {
 
   return (
     <ScrollSection
+      lean={1}
       id="sobre"
       className="about-section container-hades section-pad scroll-mt-24"
     >

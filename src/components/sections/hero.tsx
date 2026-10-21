@@ -86,7 +86,7 @@ export function Hero({ dict }: { dict: Dictionary }) {
             </span>
           </h1>
 
-          <p className="text-smoke relative z-[30] max-w-[34ch] font-body text-[0.975rem] leading-[1.65] sm:max-w-[65ch] sm:text-lead">
+          <p className="text-smoke relative z-[30] max-w-[34ch] font-body text-[0.975rem] leading-[1.65] sm:max-w-[65ch] sm:text-lead lg:max-w-[38ch]">
             {dict.hero.description}
           </p>
 

@@ -8,7 +8,7 @@ export const en = {
   meta: {
     title: "Edu Ferreira — Fullstack Developer, Java & React/TypeScript",
     description:
-      "Java/Spring on the back end, React and TypeScript on the front. Currently sharpening architecture, testing and performance.",
+      "Fullstack dev: React and TypeScript on the front, Java on the back. Helped build the VTT Portal from scratch and keeps testing ideas in personal projects.",
     ogEyebrow: "portfolio",
   },
 
@@ -39,7 +39,7 @@ export const en = {
     taglineLead: "Full stack,",
     taglineAccent: "fully",
     description:
-      "Java/Spring on the back end, React and TypeScript on the front. Currently focused on architecture, testing and performance.",
+      "React and TypeScript on the front, Java on the back. I spent almost two years helping build a portal from scratch at VTT, and now I'm sharpening testing and architecture in my own projects.",
     ctaProjects: "See projects",
     ctaCv: "Download CV",
     ctaCvAria: "Download résumé as PDF",
@@ -59,15 +59,15 @@ export const en = {
         ". Modelling the data, separating the layers, writing a test and watching it catch the bug before I did: that's when it clicked.",
       ],
       [
-        "Then I moved to the front with React and TypeScript and found out I like both stacks. This site is my ",
+        "Then I moved to the front with React and TypeScript, which is where I spent most of my internship at VTT, helping build a portal from scratch. Today I enjoy both sides. This site is my ",
         { em: "playground" },
-        " — it's all on GitHub, with what's finished and what I still want to improve.",
+        ": it's all on GitHub, what's finished and what I still want to improve.",
       ],
     ] as readonly Rich[],
     facts: [
       { key: "based in", value: "São Paulo, BR" },
       { key: "day to day", value: "Java · Spring · React · TS" },
-      { key: "learning", value: "JUnit · Machine Learning · Zustand" },
+      { key: "learning", value: "Angular · JUnit · Machine Learning" },
     ],
     statusLabel: "status",
     portraitAlt: "Portrait of Edu Ferreira",
@@ -78,7 +78,7 @@ export const en = {
     eyebrow: "stack in practice",
     title: "Tools that turned into products.",
     description:
-      "Grouped by the problem they solve — and linked to the projects they were used in.",
+      "Grouped by the problem they solve and linked to the projects where I used each one.",
     proofTitle: "Stack proven in code",
     proofLink: "browse the repositories on GitHub ↗",
     proofAria: "Browse Edu Ferreira's repositories on GitHub",
@@ -90,35 +90,35 @@ export const en = {
         title: "Frontend & product",
         description:
           "Typed, responsive interfaces designed as product — from architecture down to the last interaction state.",
-        projects: "Levva · RotaDev · Portfolio",
+        projects: "Levva · DevTrack · Portfolio",
       },
       {
         label: "server & realtime",
         title: "Backend & APIs",
         description:
           "REST APIs, authentication, contract validation and event-driven multiplayer experiences.",
-        projects: "StudyQuest · Java API",
+        projects: "VTT Portal · StudyQuest · Java API",
       },
       {
         label: "state & persistence",
         title: "Data",
         description:
           "Predictable client state and persistence picked to fit the product's domain.",
-        projects: "Levva · StudyQuest · Java API",
+        projects: "Levva · LIFE/MAINTENANCE · Friction Radar",
       },
       {
         label: "advanced interface",
         title: "Motion & experience",
         description:
           "Movement, audio and 3D used to explain actions and build experiences that stick.",
-        projects: "Portfolio · RotaDev · Change",
+        projects: "Portfolio · Friction Radar · Change",
       },
       {
         label: "confidence & delivery",
         title: "Quality",
         description:
           "Tests and delivery tooling applied where a regression actually costs trust.",
-        projects: "Levva · Java · web projects",
+        projects: "Levva · LIFE/MAINTENANCE · Java API",
       },
     ],
   },
@@ -145,20 +145,23 @@ export const en = {
     title: "How I got here.",
     items: [
       {
-        period: "2025 — now",
+        period: "Feb 2025 — Oct 2026",
         role: "Web Development Intern",
         org: "VTT",
         bullets: [
-          "My first taste of a real project: deadlines, actual users, and code that isn't only mine — nothing like studying on your own",
+          "Helped build the VTT Portal from scratch: point-of-sale management, records, internal tools and a ticketing module",
+          "The part I'm proudest of is the game editor for event kiosks (memory, quiz, wheel, lead form): people set everything up in the browser and download a .zip ready for the kiosk",
+          "Mostly front end, but I also wrote Java servlets and endpoints to feed dashboards with real data",
+          "My first time with deadlines, real users and code that isn't only mine. Nothing like studying on your own",
         ],
-        stack: ["React", "TypeScript", "Java"],
+        stack: ["React", "TypeScript", "Three.js", "Java", "SVN"],
       },
       {
-        period: "Feb 2025 — now",
-        role: "BSc in Systems Analysis and Development",
+        period: "Feb 2025 — Dec 2026 (expected)",
+        role: "Systems Analysis and Development",
         org: "Estácio",
         bullets: [
-          "University and an internship at the same time: what I see in class usually shows up at work the week after",
+          "Studied and interned at the same time for almost two years: what I saw in class usually showed up at work the week after",
           "It's where I pick up the foundation you can't get from tutorials alone: data structures, databases and architecture",
         ],
         stack: ["Data structures", "OOP", "SQL"],
@@ -168,18 +171,19 @@ export const en = {
         role: "Fullstack Developer",
         org: "personal projects",
         bullets: [
-          "Where I test ideas without fear of breaking anything: React, TypeScript and Next.js in things like StudyQuest and this site",
-          "Databases outside the slides, learned by trial and error: PostgreSQL and MySQL",
+          "Where I test ideas without fear of breaking anything: StudyQuest, LIFE/MAINTENANCE, Friction Radar, DevTrack and this site",
+          "Offline-first has become almost a habit: IndexedDB, service workers and apps that open without internet",
+          "Databases outside the slides, learned by trial and error with PostgreSQL and MySQL",
         ],
-        stack: ["React", "TypeScript", "Next.js", "PostgreSQL"],
+        stack: ["React", "TypeScript", "Next.js", "IndexedDB", "PostgreSQL"],
       },
       {
-        period: "2023 — 2024",
-        role: "Java Back-End Specialisation",
+        period: "Sep 2023 — Oct 2024",
+        role: "Java Back-End course",
         org: "EBAC",
         bullets: [
           "This is where Java became my foundation: OOP, JPA/Hibernate and persistence with PostgreSQL",
-          "A lot of MVC CRUD with JUnit — that's what became the Java API + PostgreSQL project above",
+          "A lot of MVC CRUD with JUnit, which turned into the Java API + PostgreSQL project above",
         ],
         stack: ["Java", "JPA/Hibernate", "PostgreSQL", "JUnit"],
       },

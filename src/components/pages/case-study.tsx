@@ -59,7 +59,10 @@ export function CaseStudyPage({
       </Link>
 
       <header className="border-ash flex flex-col gap-5 border-b pb-10">
-        <Badge variant={project.status === "in-progress" ? "ember" : "default"}>
+        <Badge
+          variant={project.status === "in-progress" ? "ember" : "default"}
+          className="self-start"
+        >
           {dict.projects.statuses[project.status]}
         </Badge>
         {/* Paired with the card that was clicked — the browser morphs one into

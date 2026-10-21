@@ -17,7 +17,7 @@
     ],
     "repo": "https://github.com/iHadesj/JPA_PostgreSQL",
     "featured": true,
-    "order": 4,
+    "order": 7,
     "highlights": [
       "Mapeamento JPA com entidades e relações explícitas",
       "Camadas separadas no padrão MVC (controller → service → repository)",
@@ -101,7 +101,7 @@
         }
       ]
     },
-    "content": "const{Fragment:e,jsx:r,jsxs:a}=arguments[0];function _createMdxContent(o){const n={code:\"code\",h2:\"h2\",li:\"li\",p:\"p\",strong:\"strong\",ul:\"ul\",...o.components};return a(e,{children:[r(n.h2,{children:\"O problema\"}),\"\\n\",r(n.p,{children:\"Dois exercícios complementares — um focado em mapeamento JPA com PostgreSQL,\\r\\noutro num CRUD organizado em MVC — tratam da mesma questão de fundo: como\\r\\nmodelar dados e expor operações de forma que o domínio fique legível, as\\r\\ncamadas não vazem responsabilidade umas nas outras, e o comportamento seja\\r\\ntestável sem subir a aplicação inteira.\"}),\"\\n\",r(n.h2,{children:\"Decisões técnicas\"}),\"\\n\",a(n.ul,{children:[\"\\n\",a(n.li,{children:[r(n.strong,{children:\"JPA/Hibernate em vez de JDBC cru.\"}),\" O ganho é mapear o domínio em objetos e\\r\\nrelações declarativas em vez de espalhar SQL por toda a base. O trade-off\\r\\nconsciente: abrir mão de controle fino sobre cada query — por isso as\\r\\nconsultas que importam ficam explícitas em \",r(n.code,{children:\"exemplos.sql\"}),\", à vista.\"]}),\"\\n\",a(n.li,{children:[r(n.strong,{children:\"PostgreSQL.\"}),\" Banco relacional sério, gratuito, com tipos e constraints que\\r\\nempurram a integridade para o banco, não só para o código.\"]}),\"\\n\",a(n.li,{children:[r(n.strong,{children:\"MVC (controller → service → repository).\"}),\" Cada camada com um trabalho:\\r\\ncontroller traduz HTTP, service guarda a regra de negócio, repository fala com\\r\\no banco. Facilita testar a regra isolada do transporte e da persistência.\"]}),\"\\n\"]}),\"\\n\",r(n.h2,{children:\"Arquitetura\"}),\"\\n\",a(n.p,{children:[\"Requisição entra pelo controller, que delega ao service (onde mora a regra) e\\r\\nrecorre ao repository para ler/gravar via JPA. As entidades carregam o mapeamento\\r\\nobjeto-relacional; o \",r(n.code,{children:\"exemplos.sql\"}),\" documenta o schema e as consultas de\\r\\nreferência.\"]}),\"\\n\",r(n.h2,{children:\"Resultados\"}),\"\\n\",a(n.ul,{children:[\"\\n\",r(n.li,{children:\"Domínio modelado com entidades e relações explícitas.\"}),\"\\n\",r(n.li,{children:\"Regras isoladas em serviços, exercitadas por testes JUnit.\"}),\"\\n\",a(n.li,{children:[r(n.strong,{children:\"Métrica a coletar:\"}),\" cobertura de testes e número de entidades/endpoints.\"]}),\"\\n\"]}),\"\\n\",r(n.h2,{children:\"O que eu faria diferente\"}),\"\\n\",r(n.p,{children:\"Adicionaria migrations versionadas (Flyway/Liquibase) em vez de SQL solto,\\r\\nDTOs para não vazar entidades JPA na borda HTTP, e testes de integração com um\\r\\nPostgreSQL efêmero (Testcontainers) cobrindo o caminho completo.\"})]})}return{default:function(e={}){const{wrapper:a}=e.components||{};return a?r(a,{...e,children:r(_createMdxContent,{...e})}):_createMdxContent(e)}};",
+    "content": "const{Fragment:e,jsx:a,jsxs:o}=arguments[0];function _createMdxContent(r){const n={code:\"code\",h2:\"h2\",li:\"li\",p:\"p\",strong:\"strong\",ul:\"ul\",...r.components};return o(e,{children:[a(n.h2,{children:\"O problema\"}),\"\\n\",a(n.p,{children:\"Dois exercícios complementares — um focado em mapeamento JPA com PostgreSQL,\\noutro num CRUD organizado em MVC — tratam da mesma questão de fundo: como\\nmodelar dados e expor operações de forma que o domínio fique legível, as\\ncamadas não vazem responsabilidade umas nas outras, e o comportamento seja\\ntestável sem subir a aplicação inteira.\"}),\"\\n\",a(n.h2,{children:\"Decisões técnicas\"}),\"\\n\",o(n.ul,{children:[\"\\n\",o(n.li,{children:[a(n.strong,{children:\"JPA/Hibernate em vez de JDBC cru.\"}),\" O ganho é mapear o domínio em objetos e\\nrelações declarativas em vez de espalhar SQL por toda a base. O trade-off\\nconsciente: abrir mão de controle fino sobre cada query — por isso as\\nconsultas que importam ficam explícitas em \",a(n.code,{children:\"exemplos.sql\"}),\", à vista.\"]}),\"\\n\",o(n.li,{children:[a(n.strong,{children:\"PostgreSQL.\"}),\" Banco relacional sério, gratuito, com tipos e constraints que\\nempurram a integridade para o banco, não só para o código.\"]}),\"\\n\",o(n.li,{children:[a(n.strong,{children:\"MVC (controller → service → repository).\"}),\" Cada camada com um trabalho:\\ncontroller traduz HTTP, service guarda a regra de negócio, repository fala com\\no banco. Facilita testar a regra isolada do transporte e da persistência.\"]}),\"\\n\"]}),\"\\n\",a(n.h2,{children:\"Arquitetura\"}),\"\\n\",o(n.p,{children:[\"Requisição entra pelo controller, que delega ao service (onde mora a regra) e\\nrecorre ao repository para ler/gravar via JPA. As entidades carregam o mapeamento\\nobjeto-relacional; o \",a(n.code,{children:\"exemplos.sql\"}),\" documenta o schema e as consultas de\\nreferência.\"]}),\"\\n\",a(n.h2,{children:\"Resultados\"}),\"\\n\",o(n.ul,{children:[\"\\n\",a(n.li,{children:\"Domínio modelado com entidades e relações explícitas.\"}),\"\\n\",a(n.li,{children:\"Regras isoladas em serviços, exercitadas por testes JUnit.\"}),\"\\n\",o(n.li,{children:[a(n.strong,{children:\"Métrica a coletar:\"}),\" cobertura de testes e número de entidades/endpoints.\"]}),\"\\n\"]}),\"\\n\",a(n.h2,{children:\"O que eu faria diferente\"}),\"\\n\",a(n.p,{children:\"Adicionaria migrations versionadas (Flyway/Liquibase) em vez de SQL solto,\\nDTOs para não vazar entidades JPA na borda HTTP, e testes de integração com um\\nPostgreSQL efêmero (Testcontainers) cobrindo o caminho completo.\"})]})}return{default:function(e={}){const{wrapper:o}=e.components||{};return o?a(o,{...e,children:a(_createMdxContent,{...e})}):_createMdxContent(e)}};",
     "url": "/projetos/api-java-postgresql"
   },
   {
@@ -119,7 +119,7 @@
     "repo": "https://github.com/iHadesj/change_in_the_house_of_flies",
     "demo": "https://change-in-the-house-of-flies.vercel.app",
     "featured": true,
-    "order": 7,
+    "order": 10,
     "highlights": [
       "Espectro em tempo real com Web Audio API, reagindo ao áudio local",
       "Letra sincronizada com sincronizador embutido e export em .lrc",
@@ -228,6 +228,268 @@
     },
     "content": "const{Fragment:e,jsx:a,jsxs:o}=arguments[0];function _createMdxContent(r){const n={code:\"code\",em:\"em\",h2:\"h2\",li:\"li\",p:\"p\",strong:\"strong\",ul:\"ul\",...r.components};return o(e,{children:[a(n.h2,{children:\"O problema\"}),\"\\n\",o(n.p,{children:['Este é o projeto sem cliente e sem métrica — o que eu queria era ver até onde\\ndá para levar uma interface quando o conteúdo é uma faixa só. \"Change (In The\\nHouse Of Flies)\", do ',a(n.em,{children:\"White Pony\"}),\", é uma música de colapso lento: começa\\ncontida e desaba no refrão. A pergunta era se a página conseguia fazer a mesma\\ncurva.\"]}),\"\\n\",o(n.p,{children:[\"Duas restrições apareceram de imediato. A primeira é legal: \",a(n.strong,{children:\"não hospedar o\\náudio.\"}),\" O repositório não contém MP3 nem letra — material protegido não entra.\\nA segunda é de acessibilidade: uma página construída sobre pulsação e movimento\\nprecisa continuar utilizável para quem pediu para reduzir animação.\"]}),\"\\n\",a(n.h2,{children:\"Decisões técnicas\"}),\"\\n\",o(n.ul,{children:[\"\\n\",o(n.li,{children:[a(n.strong,{children:\"O áudio é do usuário, não do site.\"}),\" O player lê um arquivo local — colocado\\nem \",a(n.code,{children:\"public/music/change.mp3\"}),\" ou arrastado direto para a página. Isso resolve\\na questão de direitos sem meio-termo e, de quebra, faz o site inteiro\\nfuncionar offline: nada é transmitido, nada depende de rede.\"]}),\"\\n\",o(n.li,{children:[a(n.strong,{children:\"Espectro real, não decorativo.\"}),\" A visualização sai da Web Audio API\\nanalisando o áudio que está tocando de verdade. Em iOS/iPadOS, onde a\\nanálise em segundo plano é restrita, o site cai para um espectro simulado em\\nvez de simplesmente congelar.\"]}),\"\\n\",o(n.li,{children:[a(n.strong,{children:\"Intensidade atrelada ao refrão.\"}),\" Quando a música entra no refrão, a\\ninterface responde em conjunto — halo violeta pulsando, brilho no título,\\nzoom no fundo, tremor no player, espectro expandido, ticker acelerado e as\\nmoscas atravessando a tela mais rápido. A pulsação segue os 92 BPM da faixa.\"]}),\"\\n\",o(n.li,{children:[o(n.strong,{children:[a(n.code,{children:\"prefers-reduced-motion\"}),\" como caminho de primeira classe.\"]}),\" Quem pede menos\\nmovimento recebe a experiência sem tremor, zoom ou moscas animadas — e ainda\\ncom player, letra e espectro funcionando. Efeito é tempero, não estrutura.\"]}),\"\\n\",o(n.li,{children:[a(n.strong,{children:\"Letra como dado, com ferramenta junto.\"}),\" O site aceita \",a(n.code,{children:\".txt\"}),\" e \",a(n.code,{children:\".lrc\"}),\" em\\n\",a(n.code,{children:\"public/lyrics/\"}),\" e traz um sincronizador embutido: marcar a linha com Enter,\\najustar em passos de ±0,25 s e exportar o \",a(n.code,{children:\".lrc\"}),\" pronto. Sincronizar letra na\\nmão é tedioso o bastante para valer construir a ferramenta.\"]}),\"\\n\"]}),\"\\n\",a(n.h2,{children:\"Arquitetura\"}),\"\\n\",o(n.p,{children:[\"Front estático servido pela Vercel, com build Node/Vite. \",a(n.code,{children:\"public/music/\"}),\" e\\n\",a(n.code,{children:\"public/lyrics/\"}),\" são pontos de extensão vazios no repositório — o deploy\\npúblico sobe sem áudio, e quem clona coloca o próprio arquivo. Todo o\\nprocessamento (decodificação, análise de espectro, sincronia de letra) acontece\\nno navegador; não existe backend nem estado de servidor.\"]}),\"\\n\",o(n.p,{children:[\"A identidade visual vem do próprio disco: paleta \",a(n.em,{children:\"White Pony\"}),\" — osso, violeta\\ndessaturado e um preto puxado para o azul — com tipografia serifada em corpo\\ngrande e um fundo procedural de moscas atravessando a tela. Os atalhos de\\nteclado seguem a convenção de player (espaço para tocar e pausar, \",a(n.code,{children:\"M\"}),\" para\\nmudo, \",a(n.code,{children:\"Enter\"}),\" para marcar a linha no modo SYNC), e a Media Session API entrega\\no controle para a tela de bloqueio e a central de notificações, como qualquer\\napp de música nativo.\"]}),\"\\n\",a(n.h2,{children:\"Resultados\"}),\"\\n\",o(n.ul,{children:[\"\\n\",a(n.li,{children:\"Experiência de faixa única no ar, com player, espectro reativo, letra\\nsincronizada e a curva de intensidade acompanhando o refrão.\"}),\"\\n\",a(n.li,{children:\"Zero material protegido no repositório — o áudio é sempre do usuário.\"}),\"\\n\",a(n.li,{children:\"Utilizável com movimento reduzido e controlável pela tela de bloqueio.\"}),\"\\n\"]}),\"\\n\",a(n.h2,{children:\"O que eu faria diferente\"}),\"\\n\",a(n.p,{children:'A detecção de refrão hoje é marcada à mão, casada com esta faixa específica.\\nExtrairia isso para um arquivo de configuração por música — seções, BPM e\\nintensidade como dados — o que transformaria o projeto de \"um microsite para\\numa faixa\" em \"um formato para qualquer faixa\" sem reescrever a interface.'}),\"\\n\",a(n.p,{children:\"Também guardaria a letra sincronizada e a última posição no armazenamento local\\npara a página retomar de onde parou, e trocaria o fallback de espectro do iOS\\npor algo derivado da forma de onda decodificada, em vez de simulado — mais\\nhonesto com o que está tocando.\"})]})}return{default:function(e={}){const{wrapper:o}=e.components||{};return o?a(o,{...e,children:a(_createMdxContent,{...e})}):_createMdxContent(e)}};",
     "url": "/projetos/change-in-the-house-of-flies"
+  },
+  {
+    "title": "DevTrack",
+    "slug": "devtrack",
+    "summary": "App offline-first pra organizar faculdade, estudo e estágio no mesmo lugar. Nasceu pra minha rotina e está ficando pronto pra outras pessoas no mesmo corre.",
+    "problem": "Quem estuda e estagia ao mesmo tempo espalha tudo entre caderno, print e lembrete no celular, e perde justamente o que aprendeu no trampo.",
+    "date": "2026-10-11T00:00:00.000Z",
+    "cover": "/projects/devtrack.webp",
+    "coverAlt": "Tela Hoje do DevTrack com o título Organiza o corre e formas geométricas no estilo Bauhaus",
+    "stack": [
+      "React",
+      "TypeScript",
+      "Vite",
+      "styled-components",
+      "Framer Motion",
+      "IndexedDB",
+      "PWA"
+    ],
+    "repo": "https://github.com/iHadesj/DevTrack",
+    "featured": false,
+    "order": 8,
+    "highlights": [
+      "Tarefas por área (faculdade, estágio, pessoal), minutos de estudo e diário do estágio",
+      "Funciona sem internet e sem login, tudo salvo no IndexedDB",
+      "Cada alteração entra numa fila de sync, pronta pra uma API em Spring Boot",
+      "Projeto onde estou aprendendo React na mão, entendendo cada parte"
+    ],
+    "metrics": [
+      {
+        "label": "Login",
+        "value": "Nenhum"
+      },
+      {
+        "label": "Dados",
+        "value": "IndexedDB"
+      },
+      {
+        "label": "Sync",
+        "value": "Fila pronta, API a caminho"
+      }
+    ],
+    "decisions": [
+      {
+        "choice": "Salvar local primeiro, sincronizar depois",
+        "instead": "Mandar cada alteração direto pra uma API",
+        "because": "O app abre no ônibus, na faculdade, em qualquer lugar com sinal ruim. A tela nunca espera o servidor pra mostrar a mudança.",
+        "cost": "Quando existir sync, vai ter que resolver conflito de quem editou a mesma coisa em dois aparelhos."
+      },
+      {
+        "choice": "Só uma camada conversa com o banco",
+        "instead": "Componentes chamando o IndexedDB direto",
+        "because": "Nenhuma tela sabe que o IndexedDB existe. Quando a API chegar, mexo no offlineDatabase e no hook, não nas telas."
+      },
+      {
+        "choice": "Gravar a fila de sync desde o primeiro dia",
+        "instead": "Pensar em sincronização só quando o back existir",
+        "because": "Cada criação ou atualização já vira uma SyncOperation. O SyncService só vai precisar ler a fila e apagar o que o servidor confirmar.",
+        "cost": "Hoje a fila só cresce, porque ainda não tem ninguém do outro lado pra consumir."
+      },
+      {
+        "choice": "Sem conta e sem cadastro",
+        "instead": "Login antes de usar",
+        "because": "Uma tarefa de cinco minutos não pode começar com formulário de cadastro.",
+        "cost": "Os dados ficam presos no aparelho até a sync existir."
+      },
+      {
+        "choice": "styled-components com identidade Bauhaus",
+        "instead": "Kit de componentes pronto",
+        "because": "Queria praticar CSS-in-JS na mão e fugir da cara de dashboard genérico."
+      }
+    ],
+    "status": "in-progress",
+    "en": {
+      "title": "DevTrack",
+      "summary": "An offline-first app to organise college, study and internship in one place. Built for my own routine and getting ready for other people in the same grind.",
+      "problem": "Students who also intern scatter everything across notebooks, screenshots and phone reminders, and lose exactly what they learned on the job.",
+      "coverAlt": "DevTrack Today screen with the headline Organiza o corre and Bauhaus-style geometric shapes",
+      "highlights": [
+        "Tasks by area (college, internship, personal), study minutes and an internship log",
+        "Works offline with no login, everything stored in IndexedDB",
+        "Every change goes into a sync queue, ready for a Spring Boot API",
+        "A project where I am learning React by hand, understanding every part"
+      ],
+      "metrics": [
+        {
+          "label": "Login",
+          "value": "None"
+        },
+        {
+          "label": "Data",
+          "value": "IndexedDB"
+        },
+        {
+          "label": "Sync",
+          "value": "Queue ready, API next"
+        }
+      ],
+      "decisions": [
+        {
+          "choice": "Save locally first, sync later",
+          "instead": "Sending every change straight to an API",
+          "because": "The app opens on the bus, at college, anywhere with a bad signal. The screen never waits for a server to show a change.",
+          "cost": "Once sync exists it will have to resolve conflicts when the same thing is edited on two devices."
+        },
+        {
+          "choice": "Only one layer talks to the database",
+          "instead": "Components calling IndexedDB directly",
+          "because": "No screen knows IndexedDB exists. When the API arrives I change offlineDatabase and the hook, not the screens."
+        },
+        {
+          "choice": "Record the sync queue from day one",
+          "instead": "Thinking about sync only once the backend exists",
+          "because": "Every create or update already becomes a SyncOperation. The SyncService will only need to read the queue and delete what the server confirms.",
+          "cost": "Today the queue only grows, since nothing on the other side consumes it yet."
+        },
+        {
+          "choice": "No account, no sign-up",
+          "instead": "Login before first use",
+          "because": "A five-minute task cannot start with a sign-up form.",
+          "cost": "Data stays on the device until sync exists."
+        },
+        {
+          "choice": "styled-components with a Bauhaus identity",
+          "instead": "An off-the-shelf component kit",
+          "because": "I wanted to practise CSS-in-JS by hand and stay away from the generic dashboard look."
+        }
+      ]
+    },
+    "content": "const{Fragment:e,jsx:a,jsxs:n}=arguments[0];function _createMdxContent(o){const r={code:\"code\",h2:\"h2\",li:\"li\",p:\"p\",pre:\"pre\",strong:\"strong\",ul:\"ul\",...o.components};return n(e,{children:[a(r.h2,{children:\"O problema\"}),\"\\n\",a(r.p,{children:\"Durante o estágio eu fazia faculdade, estudava por fora e ainda tentava lembrar\\no que tinha aprendido no trampo. Tudo isso ficava espalhado: tarefa no\\ncaderno, horas de estudo em lugar nenhum e o aprendizado do dia só na cabeça,\\naté eu esquecer.\"}),\"\\n\",a(r.p,{children:\"O DevTrack junta as três coisas numa tela só. Ele começou pra minha rotina,\\nmas eu montei a base pensando em quem está nessa mesma fase, entre estudar e\\nentrar no mercado.\"}),\"\\n\",a(r.h2,{children:\"Como funciona\"}),\"\\n\",n(r.ul,{children:[\"\\n\",n(r.li,{children:[a(r.strong,{children:\"Tarefas\"}),\" por área: faculdade, estágio ou pessoal.\"]}),\"\\n\",n(r.li,{children:[a(r.strong,{children:\"Estudos\"}),\": registro de minutos e o foco do dia.\"]}),\"\\n\",n(r.li,{children:[a(r.strong,{children:\"Estágio\"}),\": um diário com aprendizados e bloqueios.\"]}),\"\\n\"]}),\"\\n\",a(r.p,{children:\"Tudo é salvo no IndexedDB na hora, sem login e sem internet. Depois da primeira\\nvisita o service worker deixa o app abrir sem rede.\"}),\"\\n\",a(r.h2,{children:\"Arquitetura\"}),\"\\n\",a(r.pre,{children:a(r.code,{className:\"language-text\",children:\"clique no formulário\\n  → useDevTrack cria o objeto com UUID e data\\n  → offlineDatabase salva no IndexedDB\\n  → offlineDatabase enfileira uma SyncOperation\\n  → React atualiza a tela\\n  → (futuro) SyncService manda a fila pro Spring Boot quando tiver conexão\\n\"})}),\"\\n\",n(r.p,{children:[\"O ponto é a ordem: a pessoa nunca espera o servidor pra ver a mudança. E nenhum\\ncomponente acessa o banco direto, só o \",a(r.code,{children:\"offlineDatabase\"}),\".\"]}),\"\\n\",a(r.h2,{children:\"O que vem agora\"}),\"\\n\",n(r.p,{children:[\"O próximo passo é o \",a(r.code,{children:\"SyncService\"}),\": ler a fila, mandar cada operação pra uma API\\nem Spring Boot e apagar da fila \",a(r.strong,{children:\"só\"}),\" depois que o servidor responder que deu\\ncerto. Se apagar antes e a rede cair no meio, perde a alteração, que é\\nexatamente o erro que offline-first existe pra evitar.\"]}),\"\\n\",a(r.p,{children:\"Também é o projeto onde eu estou aprendendo React de verdade, escrevendo cada\\nparte e entendendo o porquê, em vez de só colar código que funciona.\"})]})}return{default:function(e={}){const{wrapper:n}=e.components||{};return n?a(n,{...e,children:a(_createMdxContent,{...e})}):_createMdxContent(e)}};",
+    "url": "/projetos/devtrack"
+  },
+  {
+    "title": "Friction Radar",
+    "slug": "friction-radar",
+    "summary": "Um radar pros atritos do dia a dia. Você registra o que te travou em segundos, e ele mostra quais se repetem e quanto tempo já te custaram.",
+    "problem": "O que mais rouba tempo quase nunca é um problemão, é a mesma coisinha chata repetida toda semana. Sem registro, ela nunca parece grande o bastante pra resolver.",
+    "date": "2026-10-07T00:00:00.000Z",
+    "cover": "/projects/friction-radar.webp",
+    "coverAlt": "Tela inicial do Friction Radar com o título Encontre o atrito e o núcleo do radar em 3D",
+    "stack": [
+      "React",
+      "TypeScript",
+      "Vite",
+      "Dexie/IndexedDB",
+      "Three.js",
+      "Framer Motion",
+      "PWA"
+    ],
+    "repo": "https://github.com/iHadesj/FrictionRadar",
+    "featured": false,
+    "order": 4,
+    "highlights": [
+      "Captura em poucos toques direto do núcleo do radar (toca ou segura)",
+      "Atritos parecidos se juntam mesmo escritos diferente (acento, caixa, pontuação)",
+      "Carga = minutos × intensidade, pra separar o chato do caro",
+      "Feito pro iPhone 11 instalado como app, funcionando offline"
+    ],
+    "metrics": [
+      {
+        "label": "Carga",
+        "value": "min × intensidade"
+      },
+      {
+        "label": "Dados",
+        "value": "no aparelho"
+      },
+      {
+        "label": "3D",
+        "value": "sob demanda"
+      }
+    ],
+    "decisions": [
+      {
+        "choice": "Um campo de radar que nunca desmonta",
+        "instead": "Páginas separadas com bottom navigation",
+        "because": "Cada seção é um estado do mesmo campo. O núcleo muda de pose por aba e a navegação percorre um trilho curvo, então trocar de tela parece mover o instrumento e não carregar outro site.",
+        "cost": "Tudo depende do mesmo componente persistente, e um bug nele aparece em todas as telas."
+      },
+      {
+        "choice": "Agrupar atritos por assinatura normalizada",
+        "instead": "Comparar o título exato",
+        "because": "Quem escreve \"Wi-Fi caiu\" numa semana e \"wifi caiu!!\" na outra está falando do mesmo problema. Tirar acento, caixa e pontuação antes de comparar faz o padrão aparecer sem a pessoa ter que escolher de uma lista.",
+        "cost": "Frases bem diferentes pro mesmo problema ainda contam como atritos separados."
+      },
+      {
+        "choice": "Peso = minutos × intensidade",
+        "instead": "Contar só quantas vezes aconteceu",
+        "because": "Uma coisa que acontece duas vezes e custa uma hora pesa mais que uma irritação de dez segundos todo dia. O ranking e as sugestões usam essa carga."
+      },
+      {
+        "choice": "Three.js carregado sob demanda e com freio",
+        "instead": "Cena 3D sempre ligada",
+        "because": "No iPhone 11 a tela limita o devicePixelRatio, corta FPS, pausa quando a página some e pode ser desligada nos ajustes. Com reduced motion o app continua inteiro.",
+        "cost": "Dois caminhos de renderização pra manter."
+      },
+      {
+        "choice": "Tudo local, com backup em JSON",
+        "instead": "Conta e servidor desde o começo",
+        "because": "Registro de atrito é pessoal e precisa ser instantâneo. Sem login o app abre e já está pronto pra capturar.",
+        "cost": "Notificação push com o app fechado ainda precisa de um servidor Web Push. Por enquanto o app só mostra notificação local."
+      }
+    ],
+    "status": "in-progress",
+    "en": {
+      "title": "Friction Radar",
+      "summary": "A radar for everyday friction. Log what slowed you down in seconds, and it shows which ones keep coming back and how much time they have cost.",
+      "problem": "What steals the most time is rarely a big problem, it is the same small annoyance every week. Without a record it never looks big enough to fix.",
+      "coverAlt": "Friction Radar home screen with the headline Find the friction and the 3D radar core",
+      "highlights": [
+        "Capture in a few taps straight from the radar core (tap or hold)",
+        "Similar frictions group together even when typed differently",
+        "Load = minutes × intensity, to tell the annoying from the expensive",
+        "Built for an iPhone 11 installed as an app, working offline"
+      ],
+      "metrics": [
+        {
+          "label": "Load",
+          "value": "min × intensity"
+        },
+        {
+          "label": "Data",
+          "value": "on device"
+        },
+        {
+          "label": "3D",
+          "value": "on demand"
+        }
+      ],
+      "decisions": [
+        {
+          "choice": "One radar field that never unmounts",
+          "instead": "Separate pages with a bottom navigation bar",
+          "because": "Every section is a state of the same field. The core changes pose per tab and the navigation runs along a curved track, so switching screens feels like moving the instrument rather than loading another site.",
+          "cost": "Everything hangs on one persistent component, and a bug there shows up on every screen."
+        },
+        {
+          "choice": "Group frictions by a normalised signature",
+          "instead": "Matching the exact title",
+          "because": "Stripping accents, case and punctuation before comparing lets the pattern surface without making the user pick from a list.",
+          "cost": "Very different phrasings of the same problem still count separately."
+        },
+        {
+          "choice": "Weight = minutes × intensity",
+          "instead": "Counting occurrences only",
+          "because": "Something that happens twice and costs an hour weighs more than a ten-second irritation every day. The ranking and the suggestions use that load."
+        },
+        {
+          "choice": "Three.js loaded on demand, with brakes",
+          "instead": "An always-on 3D scene",
+          "because": "On an iPhone 11 the scene caps devicePixelRatio, limits FPS, pauses when the page is hidden and can be turned off in settings. With reduced motion the app is still complete.",
+          "cost": "Two rendering paths to maintain."
+        },
+        {
+          "choice": "Everything local, with JSON backup",
+          "instead": "Accounts and a server from day one",
+          "because": "Logging friction is personal and has to be instant. With no login the app opens ready to capture.",
+          "cost": "Push notifications with the app closed still need a Web Push server. For now it only shows local notifications."
+        }
+      ]
+    },
+    "content": "const{Fragment:e,jsx:a,jsxs:o}=arguments[0];function _createMdxContent(n){const r={code:\"code\",h2:\"h2\",li:\"li\",p:\"p\",strong:\"strong\",ul:\"ul\",...n.components};return o(e,{children:[a(r.h2,{children:\"O problema\"}),\"\\n\",a(r.p,{children:\"O que mais rouba tempo no dia quase nunca é um problemão. É o login que expira,\\no arquivo que some sempre no mesmo lugar, a configuração que precisa ser refeita\\ntoda vez. Cada uma parece pequena demais pra merecer solução, então a gente só\\naguenta e segue.\"}),\"\\n\",a(r.p,{children:\"Fiz o Friction Radar pra ser o caderninho dessas coisas, só que fazendo a conta.\\nDepois de algumas semanas fica claro qual atrito aparece toda hora e quanto\\ntempo já foi embora com ele.\"}),\"\\n\",a(r.h2,{children:\"Como funciona\"}),\"\\n\",a(r.p,{children:\"Registrar é rápido de propósito: tocar no núcleo do radar abre a captura,\\ncom título, categoria, contexto, intensidade de 1 a 5 e quantos minutos\\ncustou. Tudo vai pro IndexedDB do próprio aparelho.\"}),\"\\n\",a(r.p,{children:\"Com os registros, o app monta três leituras:\"}),\"\\n\",o(r.ul,{children:[\"\\n\",o(r.li,{children:[a(r.strong,{children:\"Zonas de pressão\"}),\" na tela inicial, por categoria, pesadas pela carga\\n(minutos × intensidade).\"]}),\"\\n\",o(r.li,{children:[a(r.strong,{children:\"Sinais\"}),\", o histórico do que foi capturado.\"]}),\"\\n\",o(r.li,{children:[a(r.strong,{children:\"Padrões\"}),\", onde atritos com a mesma assinatura viram um ponto quente,\\ncom sugestões diretas: se repetiu três vezes, documenta ou automatiza; se já\\ncustou mais de meia hora, vale bloquear um tempo pra eliminar.\"]}),\"\\n\"]}),\"\\n\",a(r.h2,{children:\"Arquitetura\"}),\"\\n\",o(r.p,{children:[\"React 19, TypeScript e Vite, com Dexie por cima do IndexedDB. A interface é um\\núnico \",a(r.code,{children:\"RadarField\"}),\" que nunca é desmontado: as seções são estados dele. O\\nnúcleo em Three.js carrega sob demanda, e o resto do movimento é Framer Motion.\"]}),\"\\n\",o(r.p,{children:[\"O service worker é escrito na mão. Ele guarda o app e os assets pra abrir sem\\nrede e já trata eventos de \",a(r.code,{children:\"push\"}),\" e \",a(r.code,{children:\"notificationclick\"}),\", pra quando existir\\num servidor mandando notificação.\"]}),\"\\n\",a(r.h2,{children:\"O que eu faria diferente\"}),\"\\n\",a(r.p,{children:'Agrupar por texto normalizado foi o jeito mais simples de começar, mas tem\\nlimite: \"wifi caiu\" e \"internet parou\" ainda são dois atritos diferentes. Queria testar\\num agrupamento por similaridade, sem mandar os dados pra lugar nenhum.'})]})}return{default:function(e={}){const{wrapper:o}=e.components||{};return o?a(o,{...e,children:a(_createMdxContent,{...e})}):_createMdxContent(e)}};",
+    "url": "/projetos/friction-radar"
   },
   {
     "title": "Levva — Loja & Sorte",
@@ -354,8 +616,139 @@
         }
       ]
     },
-    "content": "const{Fragment:e,jsx:a,jsxs:o}=arguments[0];function _createMdxContent(r){const n={code:\"code\",h2:\"h2\",li:\"li\",p:\"p\",pre:\"pre\",strong:\"strong\",ul:\"ul\",...r.components};return o(e,{children:[a(n.h2,{children:\"O problema\"}),\"\\n\",a(n.p,{children:\"Uma vitrine de portfólio costuma parar na tela: catálogo bonito, carrinho que\\r\\nsoma e nada atrás. Eu queria o contrário — uma jornada de compra inteira, do\\r\\ndesejo à entrega, com as regras que realmente machucam em ecommerce: saldo,\\r\\nestoque, transação, falha no meio do caminho. E queria fazer isso sem backend,\\r\\npara o projeto continuar de pé anos depois sem servidor para pagar.\"}),\"\\n\",o(n.p,{children:[\"A pergunta de produto por trás veio junto: \",a(n.strong,{children:\"como desejo, escassez e risco\\r\\ninfluenciam uma decisão de compra?\"}),\" Por isso cassino e gacha não entraram como\\r\\nfuncionalidade solta. Eles são o contraponto deliberado da loja — o usuário vê\\r\\nalgo que quer, compara com o saldo e escolhe entre esperar a renda diária,\\r\\ncomprar algo mais barato ou aceitar uma expectativa matemática negativa.\"]}),\"\\n\",a(n.h2,{children:\"Decisões técnicas\"}),\"\\n\",o(n.ul,{children:[\"\\n\",o(n.li,{children:[a(n.strong,{children:\"Dinheiro é inteiro, sempre.\"}),\" Todo valor vive em centavos\\r\\n(\",a(n.code,{children:\"saldoCentavos: 5_000\"}),\" = R$ 50,00). Nenhuma regra financeira toca ponto\\r\\nflutuante, e entradas e saídas passam por uma única operação de carteira que\\r\\nvalida o valor, impede saldo negativo e registra o extrato.\"]}),\"\\n\",o(n.li,{children:[a(n.strong,{children:\"Checkout defensivo.\"}),\" O saldo é debitado, estoque e pedido são gravados na\\r\\nmesma transação do IndexedDB e qualquer falha dispara estorno automático na\\r\\ncarteira. O carrinho só é limpo depois da confirmação. É o mesmo desenho que\\r\\nem produção viraria idempotência, reserva de estoque e conciliação.\"]}),\"\\n\",o(n.li,{children:[a(n.strong,{children:\"Catálogo determinístico.\"}),\" \",a(n.code,{children:\"faker.seed(42)\"}),\", datas-base fixas e IDs\\r\\nestáveis geram exatamente os mesmos 400 produtos a cada execução. Isso torna\\r\\nos testes previsíveis e mantém favoritos, carrinho e pedidos válidos entre\\r\\nrecargas — sem nenhuma chamada externa durante a demonstração.\"]}),\"\\n\",o(n.li,{children:[o(n.strong,{children:[\"Sorteio com \",a(n.code,{children:\"crypto.getRandomValues\"}),\".\"]}),\" A mecânica principal não usa\\r\\n\",a(n.code,{children:\"Math.random()\"}),\". E o RTP teórico aparece na interface: 92,13% no caça-níquel,\\r\\n91,67% na roleta. A vantagem da casa é informada, não escondida.\"]}),\"\\n\",o(n.li,{children:[a(n.strong,{children:\"Local de verdade.\"}),\" IndexedDB (Dexie) para catálogo e pedidos; Zustand\\r\\nPersist para carteira, carrinho, favoritos e coleção. Nada sai do navegador.\"]}),\"\\n\"]}),\"\\n\",a(n.h2,{children:\"Arquitetura\"}),\"\\n\",a(n.p,{children:\"Organização por domínio, não por tipo de arquivo:\"}),\"\\n\",a(n.pre,{children:a(n.code,{className:\"language-text\",children:\"src/\\r\\n├── app/                 # shell, rotas, providers e transições\\r\\n├── features/\\r\\n│   ├── cart/            # carrinho e checkout\\r\\n│   ├── casino/          # caça-níquel, roleta, áudio e celebrações\\r\\n│   ├── catalog/         # home, busca, grade virtual e produto\\r\\n│   ├── gacha/           # Máquina de Desejos, coleção e economia\\r\\n│   ├── orders/          # pedidos e evolução da entrega\\r\\n│   └── wallet/          # saldo, extrato, bônus e transações\\r\\n└── shared/\\r\\n    ├── db/              # Dexie, seed e geração do catálogo\\r\\n    ├── lib/             # dinheiro, hash, RNG e utilitários\\r\\n    ├── types/           # contratos compartilhados\\r\\n    └── ui/              # componentes reutilizáveis e visuais\\n\"})}),\"\\n\",o(n.p,{children:[\"Regras específicas ficam perto das telas que as consomem; só o que é\\r\\ngenuinamente genérico sobe para \",a(n.code,{children:\"shared/ui\"}),\". A busca é fuzzy com Fuse.js, a\\r\\ngrade do catálogo é virtualizada com TanStack Virtual e as rotas secundárias\\r\\ncarregam sob demanda. O \",a(n.code,{children:\"vite-plugin-pwa\"}),\" mantém aplicação, fontes, ícones e\\r\\nimagens disponíveis offline, com precache em torno de 4 MB.\"]}),\"\\n\",o(n.p,{children:[\"O visual é Bauhaus — formas primárias, cores chapadas, tipografia pesada, em\\r\\nCSS Modules sem framework. O componente \",a(n.code,{children:\"ProductVisual\"}),\" usa fotografia quando\\r\\nexiste asset para o produto e cai para uma ilustração procedural determinística\\r\\nquando não existe, o que permitiu melhorar o catálogo aos poucos sem quebrar\\r\\nnada.\"]}),\"\\n\",a(n.h2,{children:\"Resultados\"}),\"\\n\",o(n.ul,{children:[\"\\n\",a(n.li,{children:\"Jornada completa no ar: catálogo, busca, carrinho, checkout, pedidos com\\r\\nlinha do tempo de entrega e coleção pós-compra.\"}),\"\\n\",a(n.li,{children:\"29 testes automatizados cobrindo o que de fato quebra confiança — transações\\r\\nda carteira, proteção contra saldo negativo, intervalo da renda diária, RTP\\r\\ndo caça-níquel e da roleta, raridade e pity do gacha, e a sincronização\\r\\nidempotente que garante que um pedido entregue entra na coleção uma vez só.\"}),\"\\n\",a(n.li,{children:\"Funciona offline e é instalável, com todo o progresso vivendo no navegador.\"}),\"\\n\"]}),\"\\n\",a(n.h2,{children:\"O que eu faria diferente\"}),\"\\n\",a(n.p,{children:\"O projeto é intencionalmente local e não deve ser confundido com algo pronto\\r\\npara vender. Em produção, a lista é longa e conhecida: backend autenticado com\\r\\nbanco transacional, catálogo administrável, busca e recomendação no servidor,\\r\\ngateway com tokenização e webhooks, reserva concorrente de estoque, frete e\\r\\nimpostos reais, observabilidade e testes de ponta a ponta.\"}),\"\\n\",a(n.p,{children:\"E há uma decisão que eu manteria com ainda mais cuidado: o cassino fictício\\r\\nnunca seria ligado a dinheiro real. Técnicas de retenção precisam respeitar\\r\\nautonomia, transparência e a legislação aplicável — o objetivo aqui foi tornar\\r\\nessas escolhas observáveis e questionáveis, não normalizá-las.\"})]})}return{default:function(e={}){const{wrapper:o}=e.components||{};return o?a(o,{...e,children:a(_createMdxContent,{...e})}):_createMdxContent(e)}};",
+    "content": "const{Fragment:e,jsx:a,jsxs:o}=arguments[0];function _createMdxContent(n){const r={code:\"code\",h2:\"h2\",li:\"li\",p:\"p\",pre:\"pre\",strong:\"strong\",ul:\"ul\",...n.components};return o(e,{children:[a(r.h2,{children:\"O problema\"}),\"\\n\",a(r.p,{children:\"Uma vitrine de portfólio costuma parar na tela: catálogo bonito, carrinho que\\nsoma e nada atrás. Eu queria o contrário — uma jornada de compra inteira, do\\ndesejo à entrega, com as regras que realmente machucam em ecommerce: saldo,\\nestoque, transação, falha no meio do caminho. E queria fazer isso sem backend,\\npara o projeto continuar de pé anos depois sem servidor para pagar.\"}),\"\\n\",o(r.p,{children:[\"A pergunta de produto por trás veio junto: \",a(r.strong,{children:\"como desejo, escassez e risco\\ninfluenciam uma decisão de compra?\"}),\" Por isso cassino e gacha não entraram como\\nfuncionalidade solta. Eles são o contraponto deliberado da loja — o usuário vê\\nalgo que quer, compara com o saldo e escolhe entre esperar a renda diária,\\ncomprar algo mais barato ou aceitar uma expectativa matemática negativa.\"]}),\"\\n\",a(r.h2,{children:\"Decisões técnicas\"}),\"\\n\",o(r.ul,{children:[\"\\n\",o(r.li,{children:[a(r.strong,{children:\"Dinheiro é inteiro, sempre.\"}),\" Todo valor vive em centavos\\n(\",a(r.code,{children:\"saldoCentavos: 5_000\"}),\" = R$ 50,00). Nenhuma regra financeira toca ponto\\nflutuante, e entradas e saídas passam por uma única operação de carteira que\\nvalida o valor, impede saldo negativo e registra o extrato.\"]}),\"\\n\",o(r.li,{children:[a(r.strong,{children:\"Checkout defensivo.\"}),\" O saldo é debitado, estoque e pedido são gravados na\\nmesma transação do IndexedDB e qualquer falha dispara estorno automático na\\ncarteira. O carrinho só é limpo depois da confirmação. É o mesmo desenho que\\nem produção viraria idempotência, reserva de estoque e conciliação.\"]}),\"\\n\",o(r.li,{children:[a(r.strong,{children:\"Catálogo determinístico.\"}),\" \",a(r.code,{children:\"faker.seed(42)\"}),\", datas-base fixas e IDs\\nestáveis geram exatamente os mesmos 400 produtos a cada execução. Isso torna\\nos testes previsíveis e mantém favoritos, carrinho e pedidos válidos entre\\nrecargas — sem nenhuma chamada externa durante a demonstração.\"]}),\"\\n\",o(r.li,{children:[o(r.strong,{children:[\"Sorteio com \",a(r.code,{children:\"crypto.getRandomValues\"}),\".\"]}),\" A mecânica principal não usa\\n\",a(r.code,{children:\"Math.random()\"}),\". E o RTP teórico aparece na interface: 92,13% no caça-níquel,\\n91,67% na roleta. A vantagem da casa é informada, não escondida.\"]}),\"\\n\",o(r.li,{children:[a(r.strong,{children:\"Local de verdade.\"}),\" IndexedDB (Dexie) para catálogo e pedidos; Zustand\\nPersist para carteira, carrinho, favoritos e coleção. Nada sai do navegador.\"]}),\"\\n\"]}),\"\\n\",a(r.h2,{children:\"Arquitetura\"}),\"\\n\",a(r.p,{children:\"Organização por domínio, não por tipo de arquivo:\"}),\"\\n\",a(r.pre,{children:a(r.code,{className:\"language-text\",children:\"src/\\n├── app/                 # shell, rotas, providers e transições\\n├── features/\\n│   ├── cart/            # carrinho e checkout\\n│   ├── casino/          # caça-níquel, roleta, áudio e celebrações\\n│   ├── catalog/         # home, busca, grade virtual e produto\\n│   ├── gacha/           # Máquina de Desejos, coleção e economia\\n│   ├── orders/          # pedidos e evolução da entrega\\n│   └── wallet/          # saldo, extrato, bônus e transações\\n└── shared/\\n    ├── db/              # Dexie, seed e geração do catálogo\\n    ├── lib/             # dinheiro, hash, RNG e utilitários\\n    ├── types/           # contratos compartilhados\\n    └── ui/              # componentes reutilizáveis e visuais\\n\"})}),\"\\n\",o(r.p,{children:[\"Regras específicas ficam perto das telas que as consomem; só o que é\\ngenuinamente genérico sobe para \",a(r.code,{children:\"shared/ui\"}),\". A busca é fuzzy com Fuse.js, a\\ngrade do catálogo é virtualizada com TanStack Virtual e as rotas secundárias\\ncarregam sob demanda. O \",a(r.code,{children:\"vite-plugin-pwa\"}),\" mantém aplicação, fontes, ícones e\\nimagens disponíveis offline, com precache em torno de 4 MB.\"]}),\"\\n\",o(r.p,{children:[\"O visual é Bauhaus — formas primárias, cores chapadas, tipografia pesada, em\\nCSS Modules sem framework. O componente \",a(r.code,{children:\"ProductVisual\"}),\" usa fotografia quando\\nexiste asset para o produto e cai para uma ilustração procedural determinística\\nquando não existe, o que permitiu melhorar o catálogo aos poucos sem quebrar\\nnada.\"]}),\"\\n\",a(r.h2,{children:\"Resultados\"}),\"\\n\",o(r.ul,{children:[\"\\n\",a(r.li,{children:\"Jornada completa no ar: catálogo, busca, carrinho, checkout, pedidos com\\nlinha do tempo de entrega e coleção pós-compra.\"}),\"\\n\",a(r.li,{children:\"29 testes automatizados cobrindo o que de fato quebra confiança — transações\\nda carteira, proteção contra saldo negativo, intervalo da renda diária, RTP\\ndo caça-níquel e da roleta, raridade e pity do gacha, e a sincronização\\nidempotente que garante que um pedido entregue entra na coleção uma vez só.\"}),\"\\n\",a(r.li,{children:\"Funciona offline e é instalável, com todo o progresso vivendo no navegador.\"}),\"\\n\"]}),\"\\n\",a(r.h2,{children:\"O que eu faria diferente\"}),\"\\n\",a(r.p,{children:\"O projeto é intencionalmente local e não deve ser confundido com algo pronto\\npara vender. Em produção, a lista é longa e conhecida: backend autenticado com\\nbanco transacional, catálogo administrável, busca e recomendação no servidor,\\ngateway com tokenização e webhooks, reserva concorrente de estoque, frete e\\nimpostos reais, observabilidade e testes de ponta a ponta.\"}),\"\\n\",a(r.p,{children:\"E há uma decisão que eu manteria com ainda mais cuidado: o cassino fictício\\nnunca seria ligado a dinheiro real. Técnicas de retenção precisam respeitar\\nautonomia, transparência e a legislação aplicável — o objetivo aqui foi tornar\\nessas escolhas observáveis e questionáveis, não normalizá-las.\"})]})}return{default:function(e={}){const{wrapper:o}=e.components||{};return o?a(o,{...e,children:a(_createMdxContent,{...e})}):_createMdxContent(e)}};",
     "url": "/projetos/levva-loja-e-sorte"
+  },
+  {
+    "title": "LIFE/MAINTENANCE",
+    "slug": "life-maintenance",
+    "summary": "Manutenção preventiva da vida. Cada coisa que se desgasta vira um sistema com ciclo, e o app mostra o que está começando a precisar de atenção.",
+    "problem": "Lista de tarefas trata trocar o filtro da água e renovar o documento como se fossem a mesma coisa. Eu queria algo que entendesse desgaste.",
+    "date": "2026-10-07T00:00:00.000Z",
+    "cover": "/projects/life-maintenance.webp",
+    "coverAlt": "Tela inicial do LIFE/MAINTENANCE com o título grande e o núcleo orbital à direita",
+    "stack": [
+      "React",
+      "TypeScript",
+      "Vite",
+      "Dexie/IndexedDB",
+      "Three.js",
+      "Framer Motion",
+      "Vitest",
+      "Playwright"
+    ],
+    "repo": "https://github.com/iHadesj/life-maintenance",
+    "featured": false,
+    "order": 3,
+    "highlights": [
+      "Seis estados de ciclo calculados por regra pura e testada, de STABLE a CRITICAL",
+      "Estado mostrado por forma, não só por cor (o anel vai se rompendo)",
+      "PWA offline-first instalável no iPhone, com backup em JSON",
+      "53 testes unitários e um smoke e2e que emula iPhone 11 e testa até sem rede"
+    ],
+    "metrics": [
+      {
+        "label": "Testes",
+        "value": "53 + smoke e2e"
+      },
+      {
+        "label": "Estados",
+        "value": "6"
+      },
+      {
+        "label": "Servidor",
+        "value": "Nenhum"
+      }
+    ],
+    "decisions": [
+      {
+        "choice": "Cada item é um sistema com ciclo",
+        "instead": "Tarefa com data de vencimento",
+        "because": "Desgaste é contínuo. O app calcula o quanto do ciclo já passou e avisa antes de vencer, em vez de só gritar no dia.",
+        "cost": "Cadastrar algo pede um intervalo, não só uma data, e isso é mais um campo pra pessoa entender."
+      },
+      {
+        "choice": "Regras do ciclo em funções puras",
+        "instead": "Calcular estado dentro dos componentes",
+        "because": "cycle.ts e health.ts não sabem que React existe, então dá pra testar estado, saúde e vencimento sem montar tela nenhuma."
+      },
+      {
+        "choice": "A UI nunca toca o Dexie direto",
+        "instead": "useLiveQuery espalhado pelos componentes",
+        "because": "Leitura passa por um provider e escrita por repositórios. Trocar o banco ou adicionar sync mexe em uma camada só."
+      },
+      {
+        "choice": "Forma carrega a informação, cor só reforça",
+        "instead": "Semáforo de cores",
+        "because": "O anel fechado vai abrindo, partindo e estilhaçando conforme o estado piora. Funciona pra quem não distingue as cores e em tela com brilho baixo.",
+        "cost": "Cada estado novo exige desenhar um glifo, não só escolher uma cor."
+      },
+      {
+        "choice": "Smoke e2e no build final, emulando iPhone 11",
+        "instead": "Testar só no navegador do desktop",
+        "because": "O alvo é o app instalado no celular. O smoke percorre os fluxos, recarrega sem rede pelo service worker e falha com qualquer erro de console.",
+        "cost": "No WebKit do Windows o Playwright não emula toque nem offline, então essa parte só roda no Chromium."
+      }
+    ],
+    "status": "in-progress",
+    "en": {
+      "title": "LIFE/MAINTENANCE",
+      "summary": "Preventive maintenance for life. Everything that wears out becomes a system with a cycle, and the app shows what is starting to need attention.",
+      "problem": "A to-do list treats changing the water filter and renewing a document as the same kind of thing. I wanted something that understood wear.",
+      "coverAlt": "LIFE/MAINTENANCE home screen with the large title and the orbital core on the right",
+      "highlights": [
+        "Six cycle states from pure, tested rules, from STABLE to CRITICAL",
+        "State shown by shape, not only colour (the ring gradually breaks)",
+        "Offline-first PWA installable on iPhone, with JSON backup",
+        "53 unit tests plus an e2e smoke run that emulates an iPhone 11, offline included"
+      ],
+      "metrics": [
+        {
+          "label": "Tests",
+          "value": "53 + e2e smoke"
+        },
+        {
+          "label": "States",
+          "value": "6"
+        },
+        {
+          "label": "Server",
+          "value": "None"
+        }
+      ],
+      "decisions": [
+        {
+          "choice": "Every item is a system with a cycle",
+          "instead": "A task with a due date",
+          "because": "Wear is continuous. The app works out how much of the cycle has passed and warns before it is due, instead of only shouting on the day.",
+          "cost": "Adding something asks for an interval, not just a date, which is one more concept to grasp."
+        },
+        {
+          "choice": "Cycle rules as pure functions",
+          "instead": "Computing state inside components",
+          "because": "cycle.ts and health.ts do not know React exists, so state, health and due dates are tested without mounting a single screen."
+        },
+        {
+          "choice": "The UI never touches Dexie directly",
+          "instead": "useLiveQuery scattered across components",
+          "because": "Reads go through one provider and writes through repositories. Swapping the database or adding sync touches one layer."
+        },
+        {
+          "choice": "Shape carries the information, colour only reinforces it",
+          "instead": "A traffic-light palette",
+          "because": "The closed ring opens, splits and shatters as the state worsens. It works for colour-blind users and on a dim screen.",
+          "cost": "Every new state means drawing a glyph, not just picking a colour."
+        },
+        {
+          "choice": "An e2e smoke run on the production build, emulating an iPhone 11",
+          "instead": "Testing only in a desktop browser",
+          "because": "The target is the installed phone app. The smoke run walks the flows, reloads offline through the service worker and fails on any console error.",
+          "cost": "Playwright's WebKit on Windows emulates neither touch nor offline, so that part only runs on Chromium."
+        }
+      ]
+    },
+    "content": "const{Fragment:e,jsx:n,jsxs:a}=arguments[0];function _createMdxContent(o){const r={code:\"code\",em:\"em\",h2:\"h2\",li:\"li\",p:\"p\",strong:\"strong\",ul:\"ul\",...o.components};return a(e,{children:[n(r.h2,{children:\"O problema\"}),\"\\n\",n(r.p,{children:'Tem coisa na vida que não é tarefa, é desgaste. O filtro da água, a escova de\\ndente, o backup do celular, a consulta de rotina. Ninguém esquece porque é\\ndifícil, esquece porque não tem data marcada, só um \"faz tempo que eu não...\".'}),\"\\n\",a(r.p,{children:['Lista de tarefas não resolve isso. Ela só sabe dizer \"venceu\" ou \"não venceu\".\\nEu queria um app que respondesse outra pergunta: ',n(r.strong,{children:\"o que está começando a\\nprecisar da minha atenção?\"})]}),\"\\n\",n(r.h2,{children:\"Como funciona\"}),\"\\n\",a(r.p,{children:[\"Cada coisa cadastrada é um \",n(r.em,{children:\"sistema\"}),\" com um \",n(r.em,{children:\"ciclo\"}),\" recomendado. O app calcula\\nquantos dias passaram desde a última manutenção e quanto isso representa do\\nciclo. Daí sai o estado:\"]}),\"\\n\",a(r.ul,{children:[\"\\n\",a(r.li,{children:[n(r.strong,{children:\"STABLE\"}),\" abaixo de 50% do ciclo, \",n(r.strong,{children:\"WATCH\"}),\" até 75%, \",n(r.strong,{children:\"ATTENTION\"}),\" até 90%;\"]}),\"\\n\",a(r.li,{children:[n(r.strong,{children:\"DUE\"}),\" perto do vencimento, \",n(r.strong,{children:\"OVERDUE\"}),\" depois dele;\"]}),\"\\n\",a(r.li,{children:[n(r.strong,{children:\"CRITICAL\"}),\" quando passou bastante do prazo, levando em conta o quanto\\naquele sistema é crítico.\"]}),\"\\n\"]}),\"\\n\",n(r.p,{children:\"A saúde geral é uma média ponderada pela criticidade. Um item atrasado puxa o\\nnúmero pra baixo sem dominar tudo, porque a ideia é manutenção preventiva e\\nnão ansiedade.\"}),\"\\n\",a(r.p,{children:[\"Registrar uma manutenção é um gesto: arrastar o item pra direita empurra a\\nlinha de desgaste de volta pro começo. Pra esquerda, abre a edição. Tem também\\num terminal (\",n(r.code,{children:\"⌘K\"}),\") com comandos tipo \",n(r.code,{children:\"complete\"}),\", \",n(r.code,{children:\"show overdue\"}),\" e\\n\",n(r.code,{children:\"export data\"}),\", porque eu queria que o app tivesse cara de sistema e não de\\nformulário.\"]}),\"\\n\",n(r.h2,{children:\"Arquitetura\"}),\"\\n\",a(r.p,{children:[\"React 19 com TypeScript e Vite. Os dados ficam no IndexedDB via Dexie, separados\\nem repositórios. As regras (ciclo, saúde, diagnóstico, backup) vivem em\\n\",n(r.code,{children:\"services/\"}),\" como funções puras, e é lá que estão os testes.\"]}),\"\\n\",n(r.p,{children:\"O núcleo 3D da tela inicial é Three.js com fallback em SVG, e para quando sai da\\ntela. Com reduced motion ele vira um quadro estático e nenhuma informação\\ndepende de animação.\"}),\"\\n\",n(r.h2,{children:\"Resultados\"}),\"\\n\",a(r.ul,{children:[\"\\n\",n(r.li,{children:\"53 testes unitários cobrindo ciclos, saúde, backup, busca e repositórios.\"}),\"\\n\",a(r.li,{children:[n(r.code,{children:\"npm run smoke\"}),\" roda o build de produção emulando iPhone 11: onboarding,\\neditor, gestos, terminal, reload sem rede e reduced motion.\"]}),\"\\n\",n(r.li,{children:\"Instala no iPhone pelo Safari e funciona sem internet depois da primeira\\nvisita.\"}),\"\\n\"]}),\"\\n\",n(r.h2,{children:\"O que eu faria diferente\"}),\"\\n\",n(r.p,{children:\"Hoje tudo vive no aparelho e o backup é manual: exportar e importar um JSON.\\nFunciona, mas depende da pessoa lembrar, o que é meio irônico num app sobre\\nnão esquecer manutenção. Quero sincronizar entre aparelhos sem obrigar ninguém a\\ncriar conta, que é o mesmo dilema que apareceu no DevTrack.\"})]})}return{default:function(e={}){const{wrapper:a}=e.components||{};return a?n(a,{...e,children:n(_createMdxContent,{...e})}):_createMdxContent(e)}};",
+    "url": "/projetos/life-maintenance"
   },
   {
     "title": "Portfolio Pessoal",
@@ -374,7 +767,7 @@
     "repo": "https://github.com/iHadesj/EduardoFerreira",
     "demo": "https://eduardo-ferreira-zeta.vercel.app",
     "featured": true,
-    "order": 6,
+    "order": 9,
     "highlights": [
       "Chunk 3D isolado em 230 KB gz (orçamento < 300 KB)",
       "three.js fora do payload inicial (lazy + gates de capacidade)",
@@ -399,7 +792,7 @@
         "choice": "O 3D nunca é o LCP",
         "instead": "Renderizar a cena WebGL junto com o hero",
         "because": "O hero entrega texto e um pôster SVG da fita de Möbius no servidor; a cena carrega pós-idle e faz crossfade por cima. Em mobile, reduced-motion ou GPU fraca o pôster fica e nenhum byte de three.js é baixado.",
-        "cost": "Existem dois hero para manter em sincronia — o pôster estático e a escultura procedural."
+        "cost": "Existem dois hero para manter em sincronia. Hoje o pôster é gerado por script a partir da mesma curva da escultura, então a forma não diverge."
       },
       {
         "choice": "Orçamento de bundle como gate, não meta",
@@ -453,7 +846,7 @@
           "choice": "The 3D is never the LCP",
           "instead": "Rendering the WebGL scene together with the hero",
           "because": "The hero ships text and an SVG poster of the Möbius strip from the server; the scene loads post-idle and crossfades over it. On mobile, reduced motion or a weak GPU the poster stays and not one byte of three.js is downloaded.",
-          "cost": "There are two heroes to keep in sync — the static poster and the procedural sculpture."
+          "cost": "There are two heroes to keep in sync. The poster is now generated by a script from the same curve as the sculpture, so the shape cannot drift."
         },
         {
           "choice": "The bundle budget is a gate, not a target",
@@ -479,7 +872,7 @@
         }
       ]
     },
-    "content": "const{Fragment:e,jsx:r,jsxs:o}=arguments[0];function _createMdxContent(n){const i={code:\"code\",em:\"em\",h2:\"h2\",li:\"li\",p:\"p\",strong:\"strong\",ul:\"ul\",...n.components};return o(e,{children:[r(i.h2,{children:\"O problema\"}),\"\\n\",o(i.p,{children:['Um portfolio que diz \"sou bom de frontend\" precisa ',r(i.em,{children:\"provar\"}),\" isso ao carregar.\\r\\nA meta foi explícita desde o início: carregar como texto puro e surpreender como\\r\\num jogo. Os dois objetivos brigam — 3D vende, mas pesa. O trabalho é fazer o\\r\\npeso desaparecer.\"]}),\"\\n\",r(i.h2,{children:\"Decisões técnicas\"}),\"\\n\",o(i.ul,{children:[\"\\n\",o(i.li,{children:[r(i.strong,{children:\"O 3D nunca é o LCP.\"}),\" O hero renderiza no servidor texto + um pôster SVG da\\r\\nfita de Möbius; a cena WebGL carrega depois (pós-idle, \",r(i.code,{children:\"next/dynamic\"}),\" com\\r\\n\",r(i.code,{children:\"ssr:false\"}),\") e faz crossfade por cima. Em mobile, reduced-motion ou GPU fraca,\\r\\no pôster fica — e nenhum byte de three.js é baixado.\"]}),\"\\n\",o(i.li,{children:[r(i.strong,{children:\"Orçamento de bundle como gate, não meta.\"}),\" O chunk 3D ficou em 230 KB gz\\r\\n(limite de 300). Para chegar lá, troquei o bloom de pós-processamento por um\\r\\nglow em CSS — o ganho visual não pagava os ~85 KB.\"]}),\"\\n\",o(i.li,{children:[r(i.strong,{children:\"Tokens de design na interface.\"}),\" A paleta estrutural vem do \",r(i.code,{children:\"@theme\"}),' do\\r\\nTailwind v4; a escultura procedural reaproveita os mesmos tons frios, âmbar e\\r\\nobsidiana. Trocar tema (escuro → claro → \"underworld\") continua concentrado\\r\\nnas custom properties da interface.']}),\"\\n\",o(i.li,{children:[o(i.strong,{children:[\"Acessibilidade e \",r(i.code,{children:\"prefers-reduced-motion\"}),\" como cidadãos de primeira\\r\\nclasse\"]}),\", não um checklist no fim.\"]}),\"\\n\"]}),\"\\n\",r(i.h2,{children:\"Arquitetura\"}),\"\\n\",o(i.p,{children:[\"App Router (Next 16, Turbopack), React 19, Server Components por padrão —\\r\\n\",r(i.code,{children:'\"use client\"'}),\" só onde há interação, 3D ou motion. Conteúdo dos case studies em\\r\\nMDX tipado por zod (velite): frontmatter inválido quebra o build. Os dados do\\r\\nGitHub vêm de route handlers que escondem o token e cacheiam a resposta.\"]}),\"\\n\",r(i.h2,{children:\"Resultados\"}),\"\\n\",o(i.ul,{children:[\"\\n\",r(i.li,{children:\"3D isolado e preguiçoso: 230 KB gz, zero no caminho crítico.\"}),\"\\n\",o(i.li,{children:[\"Build verde a cada fase: \",r(i.code,{children:\"lint\"}),\", \",r(i.code,{children:\"typecheck\"}),\" e \",r(i.code,{children:\"build\"}),\" como portão.\"]}),\"\\n\",o(i.li,{children:[r(i.strong,{children:\"A medir (Fase 11):\"}),\" relatório Lighthouse de produção e CI verde — os\\r\\nnúmeros reais entram aqui quando o deploy estiver no ar.\"]}),\"\\n\"]}),\"\\n\",r(i.h2,{children:\"O que eu faria diferente\"}),\"\\n\",r(i.p,{children:\"Mediria o orçamento de performance desde o primeiro commit (com o analyzer no\\r\\nCI), em vez de verificar ao fim de cada fase. E escreveria os testes de\\r\\nacessibilidade junto das features, não numa fase dedicada.\"})]})}return{default:function(e={}){const{wrapper:o}=e.components||{};return o?r(o,{...e,children:r(_createMdxContent,{...e})}):_createMdxContent(e)}};",
+    "content": "const{Fragment:e,jsx:o,jsxs:n}=arguments[0];function _createMdxContent(r){const a={code:\"code\",em:\"em\",h2:\"h2\",li:\"li\",p:\"p\",strong:\"strong\",ul:\"ul\",...r.components};return n(e,{children:[o(a.h2,{children:\"O problema\"}),\"\\n\",n(a.p,{children:['Um portfolio que diz \"sou bom de frontend\" precisa ',o(a.em,{children:\"provar\"}),\" isso ao carregar.\\nA meta foi explícita desde o início: carregar como texto puro e surpreender como\\num jogo. Os dois objetivos brigam — 3D vende, mas pesa. O trabalho é fazer o\\npeso desaparecer.\"]}),\"\\n\",o(a.h2,{children:\"Decisões técnicas\"}),\"\\n\",n(a.ul,{children:[\"\\n\",n(a.li,{children:[o(a.strong,{children:\"O 3D nunca é o LCP.\"}),\" O hero renderiza no servidor texto + um pôster SVG da\\nfita de Möbius; a cena WebGL carrega depois (pós-idle, \",o(a.code,{children:\"next/dynamic\"}),\" com\\n\",o(a.code,{children:\"ssr:false\"}),\") e faz crossfade por cima. Em mobile, reduced-motion ou GPU fraca,\\no pôster fica — e nenhum byte de three.js é baixado.\"]}),\"\\n\",n(a.li,{children:[o(a.strong,{children:\"Orçamento de bundle como gate, não meta.\"}),\" O chunk 3D ficou em 230 KB gz\\n(limite de 300). Para chegar lá, troquei o bloom de pós-processamento por um\\nglow em CSS — o ganho visual não pagava os ~85 KB.\"]}),\"\\n\",n(a.li,{children:[o(a.strong,{children:\"Tokens de design na interface.\"}),\" A paleta estrutural vem do \",o(a.code,{children:\"@theme\"}),' do\\nTailwind v4; a escultura procedural reaproveita os mesmos tons frios, âmbar e\\nobsidiana. Trocar tema (escuro → claro → \"underworld\") continua concentrado\\nnas custom properties da interface.']}),\"\\n\",n(a.li,{children:[n(a.strong,{children:[\"Acessibilidade e \",o(a.code,{children:\"prefers-reduced-motion\"}),\" como cidadãos de primeira\\nclasse\"]}),\", não um checklist no fim.\"]}),\"\\n\"]}),\"\\n\",o(a.h2,{children:\"Arquitetura\"}),\"\\n\",n(a.p,{children:[\"App Router (Next 16, Turbopack), React 19, Server Components por padrão —\\n\",o(a.code,{children:'\"use client\"'}),\" só onde há interação, 3D ou motion. Conteúdo dos case studies em\\nMDX tipado por zod (velite): frontmatter inválido quebra o build. Os dados do\\nGitHub vêm de route handlers que escondem o token e cacheiam a resposta.\"]}),\"\\n\",o(a.h2,{children:\"Segunda volta da fita\"}),\"\\n\",o(a.p,{children:\"Na última rodada a fita deixou de ser um anel: agora ela percorre um oito em 3D\\ncujo cruzamento nunca se toca, porque os dois trechos passam em profundidades\\ndiferentes. Dependendo do ângulo parece um laço torcido, em outros lembra o\\ninfinito. A meia-torção do Möbius continua lá, distribuída por um frame que não\\ngira de repente.\"}),\"\\n\",o(a.p,{children:\"O fundo trocou a grade quadriculada por curvas de Cassini, o lugar geométrico\\ndos pontos cujo produto das distâncias a dois focos é constante. Uma dessas\\ncurvas é a lemniscata de Bernoulli, e é a única que recebe luz. E as seções\\ndeixaram de subir em fila: um fio sai do hero e costura a página de um lado pro\\noutro, sendo desenhado conforme a leitura.\"}),\"\\n\",o(a.h2,{children:\"Resultados\"}),\"\\n\",n(a.ul,{children:[\"\\n\",o(a.li,{children:\"3D isolado e preguiçoso: 230 KB gz, zero no caminho crítico.\"}),\"\\n\",n(a.li,{children:[\"Build verde a cada fase: \",o(a.code,{children:\"lint\"}),\", \",o(a.code,{children:\"typecheck\"}),\" e \",o(a.code,{children:\"build\"}),\" como portão.\"]}),\"\\n\",n(a.li,{children:[o(a.strong,{children:\"A medir (Fase 11):\"}),\" relatório Lighthouse de produção e CI verde — os\\nnúmeros reais entram aqui quando o deploy estiver no ar.\"]}),\"\\n\"]}),\"\\n\",o(a.h2,{children:\"O que eu faria diferente\"}),\"\\n\",o(a.p,{children:\"Mediria o orçamento de performance desde o primeiro commit (com o analyzer no\\nCI), em vez de verificar ao fim de cada fase. E escreveria os testes de\\nacessibilidade junto das features, não numa fase dedicada.\"})]})}return{default:function(e={}){const{wrapper:n}=e.components||{};return n?o(n,{...e,children:o(_createMdxContent,{...e})}):_createMdxContent(e)}};",
     "url": "/projetos/portfolio-pessoal"
   },
   {
@@ -498,7 +891,7 @@
     "repo": "https://github.com/iHadesj/RaizPilates",
     "demo": "https://raiz-pilates.vercel.app",
     "featured": true,
-    "order": 3,
+    "order": 5,
     "highlights": [
       "Seis seções com um único objetivo — levar ao WhatsApp",
       "Aula experimental gratuita como porta de entrada (CTA repetido)",
@@ -589,7 +982,7 @@
         }
       ]
     },
-    "content": "const{Fragment:e,jsx:n,jsxs:r}=arguments[0];function _createMdxContent(a){const o={code:\"code\",h2:\"h2\",li:\"li\",p:\"p\",strong:\"strong\",ul:\"ul\",...a.components};return r(e,{children:[n(o.h2,{children:\"O problema\"}),\"\\n\",n(o.p,{children:\"Um estúdio de pilates não precisa de um sistema — precisa que quem chega à\\r\\npágina marque a primeira aula. O desafio de uma landing assim é editorial e\\r\\ntécnico ao mesmo tempo: contar o método em poucas seções, remover qualquer\\r\\natrito do agendamento e fazer tudo isso numa página que abre rápido em\\r\\nqualquer celular.\"}),\"\\n\",n(o.h2,{children:\"Decisões técnicas\"}),\"\\n\",r(o.ul,{children:[\"\\n\",r(o.li,{children:[n(o.strong,{children:\"Front estático puro (HTML + CSS + JS), sem framework.\"}),' Uma landing de\\r\\nseção única não justifica build pipeline. O custo de manutenção cai para\\r\\n\"editar um arquivo\", e o tempo de carregamento fica imbatível.']}),\"\\n\",r(o.li,{children:[n(o.strong,{children:\"WhatsApp como único funil de conversão.\"}),\" Nada de formulário com backend,\\r\\nvalidação e e-mail transacional: o CTA leva direto para a conversa, que é\\r\\nonde o público desse nicho já agenda. Menos código, menos atrito.\"]}),\"\\n\",r(o.li,{children:[n(o.strong,{children:\"Aula experimental gratuita como oferta central.\"}),\" A página inteira\\r\\nconverge para um único pedido, repetido no hero, no meio e no fim.\"]}),\"\\n\",r(o.li,{children:[n(o.strong,{children:\"Deploy na Vercel.\"}),\" Estático, gratuito e sempre no ar — sem servidor para\\r\\nmanter.\"]}),\"\\n\"]}),\"\\n\",n(o.h2,{children:\"Arquitetura\"}),\"\\n\",n(o.p,{children:'Página única servida como artefato estático pela Vercel: hero, método,\\r\\nonboarding em três passos (\"Descoberta Raiz\"), benefícios, estúdio,\\r\\ndepoimentos e FAQ — cada seção com CTA apontando para o WhatsApp. Sem banco,\\r\\nsem API, sem estado de servidor.'}),\"\\n\",n(o.h2,{children:\"Resultados\"}),\"\\n\",r(o.ul,{children:[\"\\n\",n(o.li,{children:\"Landing completa no ar, com seis seções e funil único de conversão.\"}),\"\\n\",n(o.li,{children:\"Custo de infraestrutura zero e manutenção trivial.\"}),\"\\n\",r(o.li,{children:[n(o.strong,{children:\"Métrica a coletar:\"}),\" taxa de clique nos CTAs de WhatsApp.\"]}),\"\\n\"]}),\"\\n\",n(o.h2,{children:\"O que eu faria diferente\"}),\"\\n\",r(o.p,{children:[\"Adicionaria medição desde o primeiro dia (eventos de clique nos CTAs) para\\r\\nsaber qual seção converte, e geraria as imagens em formatos modernos\\r\\n(AVIF/WebP com \",n(o.code,{children:\"srcset\"}),\") para baixar ainda mais o peso da página.\"]})]})}return{default:function(e={}){const{wrapper:r}=e.components||{};return r?n(r,{...e,children:n(_createMdxContent,{...e})}):_createMdxContent(e)}};",
+    "content": "const{Fragment:e,jsx:n,jsxs:a}=arguments[0];function _createMdxContent(o){const r={code:\"code\",h2:\"h2\",li:\"li\",p:\"p\",strong:\"strong\",ul:\"ul\",...o.components};return a(e,{children:[n(r.h2,{children:\"O problema\"}),\"\\n\",n(r.p,{children:\"Um estúdio de pilates não precisa de um sistema — precisa que quem chega à\\npágina marque a primeira aula. O desafio de uma landing assim é editorial e\\ntécnico ao mesmo tempo: contar o método em poucas seções, remover qualquer\\natrito do agendamento e fazer tudo isso numa página que abre rápido em\\nqualquer celular.\"}),\"\\n\",n(r.h2,{children:\"Decisões técnicas\"}),\"\\n\",a(r.ul,{children:[\"\\n\",a(r.li,{children:[n(r.strong,{children:\"Front estático puro (HTML + CSS + JS), sem framework.\"}),' Uma landing de\\nseção única não justifica build pipeline. O custo de manutenção cai para\\n\"editar um arquivo\", e o tempo de carregamento fica imbatível.']}),\"\\n\",a(r.li,{children:[n(r.strong,{children:\"WhatsApp como único funil de conversão.\"}),\" Nada de formulário com backend,\\nvalidação e e-mail transacional: o CTA leva direto para a conversa, que é\\nonde o público desse nicho já agenda. Menos código, menos atrito.\"]}),\"\\n\",a(r.li,{children:[n(r.strong,{children:\"Aula experimental gratuita como oferta central.\"}),\" A página inteira\\nconverge para um único pedido, repetido no hero, no meio e no fim.\"]}),\"\\n\",a(r.li,{children:[n(r.strong,{children:\"Deploy na Vercel.\"}),\" Estático, gratuito e sempre no ar — sem servidor para\\nmanter.\"]}),\"\\n\"]}),\"\\n\",n(r.h2,{children:\"Arquitetura\"}),\"\\n\",n(r.p,{children:'Página única servida como artefato estático pela Vercel: hero, método,\\nonboarding em três passos (\"Descoberta Raiz\"), benefícios, estúdio,\\ndepoimentos e FAQ — cada seção com CTA apontando para o WhatsApp. Sem banco,\\nsem API, sem estado de servidor.'}),\"\\n\",n(r.h2,{children:\"Resultados\"}),\"\\n\",a(r.ul,{children:[\"\\n\",n(r.li,{children:\"Landing completa no ar, com seis seções e funil único de conversão.\"}),\"\\n\",n(r.li,{children:\"Custo de infraestrutura zero e manutenção trivial.\"}),\"\\n\",a(r.li,{children:[n(r.strong,{children:\"Métrica a coletar:\"}),\" taxa de clique nos CTAs de WhatsApp.\"]}),\"\\n\"]}),\"\\n\",n(r.h2,{children:\"O que eu faria diferente\"}),\"\\n\",a(r.p,{children:[\"Adicionaria medição desde o primeiro dia (eventos de clique nos CTAs) para\\nsaber qual seção converte, e geraria as imagens em formatos modernos\\n(AVIF/WebP com \",n(r.code,{children:\"srcset\"}),\") para baixar ainda mais o peso da página.\"]})]})}return{default:function(e={}){const{wrapper:a}=e.components||{};return a?n(a,{...e,children:n(_createMdxContent,{...e})}):_createMdxContent(e)}};",
     "url": "/projetos/raiz-pilates"
   },
   {
@@ -608,7 +1001,7 @@
     "repo": "https://github.com/iHadesj/RotaDev",
     "demo": "https://rota-dev.vercel.app",
     "featured": true,
-    "order": 5,
+    "order": 6,
     "highlights": [
       "Duas linhas de estudo — Web + React e Fullstack React + Java",
       "Editor com bateria de testes e lint que explica o erro em bom português",
@@ -727,7 +1120,7 @@
         }
       ]
     },
-    "content": "const{Fragment:e,jsx:o,jsxs:r}=arguments[0];function _createMdxContent(a){const n={code:\"code\",h2:\"h2\",li:\"li\",p:\"p\",strong:\"strong\",ul:\"ul\",...a.components};return r(e,{children:[o(n.h2,{children:\"O problema\"}),\"\\n\",o(n.p,{children:\"O público é quem estuda no busão saindo do extremo sul de São Paulo — uma hora\\r\\ne meia de trajeto que é, na prática, a única janela de estudo do dia. Só que\\r\\nesse é o pior ambiente de rede possível: túnel, 3G ruim, sinal que cai no meio\\r\\nde um vídeo. Qualquer plataforma que dependa de requisição a cada passo perde o\\r\\naluno exatamente no momento em que ele tem tempo livre.\"}),\"\\n\",r(n.p,{children:[\"Daí a restrição que definiu o projeto inteiro: \",o(n.strong,{children:\"a aula não pode depender da\\r\\nrede.\"}),\" Não como degradação elegante, mas como modo normal de uso.\"]}),\"\\n\",o(n.h2,{children:\"Decisões técnicas\"}),\"\\n\",r(n.ul,{children:[\"\\n\",r(n.li,{children:[o(n.strong,{children:\"Currículo é dado, não tela.\"}),\" As oito fases vivem em\\r\\n\",o(n.code,{children:\"src/data/curriculum.js\"}),\" e \",o(n.code,{children:\"src/data/expandedCurriculum.js\"}),\" — conceitos,\\r\\ndesafios, critérios de aceite. As telas só renderizam esse dado, então uma\\r\\nparada nova é conteúdo, não componente.\"]}),\"\\n\",r(n.li,{children:[o(n.strong,{children:\"Conteúdo validado antes de subir.\"}),\" \",o(n.code,{children:\"npm test\"}),\" não roda teste de unidade:\\r\\nroda \",o(n.code,{children:\"validate-source.mjs\"}),\" e \",o(n.code,{children:\"validate-curriculum.mjs\"}),\" e só então o build.\\r\\nCurrículo quebrado — desafio sem resposta, critério faltando — derruba o\\r\\nbuild em vez de virar tela vazia no meio do túnel. É o mesmo papel de um\\r\\nschema, aplicado a conteúdo.\"]}),\"\\n\",r(n.li,{children:[o(n.strong,{children:\"Tudo embarcado no bundle.\"}),\" Não existe chamada de API para carregar a\\r\\npróxima parada, o que elimina a classe inteira de falhas que o túnel provoca.\\r\\nO trade-off é claro: publicar conteúdo novo exige novo deploy, em troca de\\r\\numa sessão que nunca trava no meio.\"]}),\"\\n\",r(n.li,{children:[o(n.strong,{children:\"Editor próprio, sem Monaco nem CodeMirror.\"}),\" Carregar um editor completo\\r\\npesaria mais que o app inteiro. O sandbox e o lint vivem em \",o(n.code,{children:\"src/utils\"}),\", e o\\r\\nlint explica o erro em português comum em vez de despejar a mensagem crua do\\r\\nruntime.\"]}),\"\\n\",r(n.li,{children:[o(n.strong,{children:\"Progresso local por linha.\"}),\" \",o(n.code,{children:\"src/services\"}),\" cuida de persistência, XP e\\r\\nstreak. Fechar o app e voltar dias depois cai exatamente onde parou, sem\\r\\nlogin e sem conta para criar — atrito que, nesse contexto, custaria o aluno.\"]}),\"\\n\"]}),\"\\n\",o(n.h2,{children:\"Arquitetura\"}),\"\\n\",r(n.p,{children:[\"Front em React com Vite e Framer Motion, publicado estático na Vercel. O\\r\\ndomínio é modelado como transporte público, e a metáfora organiza a navegação.\\r\\nDuas \",o(n.strong,{children:\"linhas\"}),\" partem do mesmo terminal:\"]}),\"\\n\",r(n.ul,{children:[\"\\n\",r(n.li,{children:[o(n.strong,{children:\"Linha 6X-Sul · sentido Web\"}),\" — fundamentos da web, aplicação JavaScript com\\r\\nCRUD e dashboard, migração para React e tipagem completa com TypeScript.\"]}),\"\\n\",r(n.li,{children:[o(n.strong,{children:\"Linha 5X-Sul · sentido Fullstack\"}),\" — continuação da anterior: React no\\r\\nfront, Java e Spring no back, banco real, autenticação, autorização e\\r\\npublicação do sistema completo.\"]}),\"\\n\"]}),\"\\n\",r(n.p,{children:[\"Cada \",o(n.strong,{children:\"parada\"}),\" entrega um conceito rápido e desafios de três tipos: quiz,\\r\\nquebra-cabeça de encaixar código e código de verdade — que o aluno digita, roda\\r\\ne vê acontecendo na tela. Acertar 3 de 5 libera o próximo ponto.\"]}),\"\\n\",r(n.p,{children:[\"Módulos do tipo \",o(n.code,{children:\"PROJETO\"}),\" e \",o(n.code,{children:\"BOSS FINAL\"}),\" funcionam diferente, e essa é a\\r\\ndecisão de que mais gosto: \",o(n.strong,{children:\"eles não abrem com quiz.\"}),\" Cada um declara\\r\\n\",o(n.code,{children:\"projeto.entrega\"}),\" e \",o(n.code,{children:\"projeto.criterios\"}),\", e o aluno passa pela tela de entrega\\r\\nconfirmando critério por critério. Exercício verifica fundamento; critério de\\r\\naceite verifica se a coisa foi de fato construída — misturar os dois é como se\\r\\nfinge que aprendeu.\"]}),\"\\n\",r(n.p,{children:[\"Fora das linhas existem dois modos avulsos: o \",o(n.strong,{children:\"Corre do Dia\"}),\", um conceito e\\r\\ndois desafios montados por dia, e o \",o(n.strong,{children:\"Modo Treino\"}),\", sem trilha e sem ordem,\\r\\ncom problemas no formato de entrevista técnica.\"]}),\"\\n\",r(n.p,{children:[\"Há ainda um alvo de build que não é web comum: \",o(n.code,{children:\"vite.switch.config.js\"}),\" mais\\r\\n\",o(n.code,{children:\"sync-romfs.mjs\"}),\" geram uma versão para o navegador do \",o(n.strong,{children:\"Nintendo Switch\"}),\", com\\r\\n\",o(n.code,{children:\"@vitejs/plugin-legacy\"}),\" e shims de animação para um motor de JS bem mais velho.\\r\\nEstudar no busão com o console na mão é um caso de uso real.\"]}),\"\\n\",o(n.h2,{children:\"Resultados\"}),\"\\n\",r(n.ul,{children:[\"\\n\",o(n.li,{children:\"Duas linhas completas no ar, do HTML ao deploy de um sistema fullstack, em\\r\\noito fases.\"}),\"\\n\",o(n.li,{children:\"Aula que sobrevive ao túnel: currículo, editor, testes e lint rodam todos no\\r\\ncliente, sem nenhuma dependência de rede durante a sessão.\"}),\"\\n\",o(n.li,{children:\"Progresso, XP e streak preservados por linha entre sessões.\"}),\"\\n\"]}),\"\\n\",o(n.h2,{children:\"O que eu faria diferente\"}),\"\\n\",r(n.p,{children:[\"O buraco que eu fecharia primeiro: \",o(n.strong,{children:\"o app é instalável mas não tem service\\r\\nworker.\"}),\" Existe \",o(n.code,{children:\"manifest.webmanifest\"}),\", ícone maskable e \",o(n.code,{children:\"display: standalone\"}),\"\\r\\n— só que nada registra um SW, então a promessa de offline vale para a sessão\\r\\njá aberta, não para abrir o app do zero sem sinal. Que é exatamente o cenário\\r\\ndo busão. Um Workbox com precache do bundle e dos dados de currículo fecharia\\r\\nisso sem mudar mais nada da arquitetura.\"]}),\"\\n\",o(n.p,{children:\"Depois, dar ao lint uma camada de sugestão de correção, não só de explicação:\\r\\nhoje ele diz o que está errado em português claro, mas ainda cabe mostrar o\\r\\ncaminho até o certo. E sincronizar progresso entre dispositivos — sem exigir\\r\\nconta na primeira sessão, que é justamente o atrito que o projeto evitou de\\r\\npropósito.\"})]})}return{default:function(e={}){const{wrapper:r}=e.components||{};return r?o(r,{...e,children:o(_createMdxContent,{...e})}):_createMdxContent(e)}};",
+    "content": "const{Fragment:e,jsx:o,jsxs:a}=arguments[0];function _createMdxContent(n){const r={code:\"code\",h2:\"h2\",li:\"li\",p:\"p\",strong:\"strong\",ul:\"ul\",...n.components};return a(e,{children:[o(r.h2,{children:\"O problema\"}),\"\\n\",o(r.p,{children:\"O público é quem estuda no busão saindo do extremo sul de São Paulo — uma hora\\ne meia de trajeto que é, na prática, a única janela de estudo do dia. Só que\\nesse é o pior ambiente de rede possível: túnel, 3G ruim, sinal que cai no meio\\nde um vídeo. Qualquer plataforma que dependa de requisição a cada passo perde o\\naluno exatamente no momento em que ele tem tempo livre.\"}),\"\\n\",a(r.p,{children:[\"Daí a restrição que definiu o projeto inteiro: \",o(r.strong,{children:\"a aula não pode depender da\\nrede.\"}),\" Não como degradação elegante, mas como modo normal de uso.\"]}),\"\\n\",o(r.h2,{children:\"Decisões técnicas\"}),\"\\n\",a(r.ul,{children:[\"\\n\",a(r.li,{children:[o(r.strong,{children:\"Currículo é dado, não tela.\"}),\" As oito fases vivem em\\n\",o(r.code,{children:\"src/data/curriculum.js\"}),\" e \",o(r.code,{children:\"src/data/expandedCurriculum.js\"}),\" — conceitos,\\ndesafios, critérios de aceite. As telas só renderizam esse dado, então uma\\nparada nova é conteúdo, não componente.\"]}),\"\\n\",a(r.li,{children:[o(r.strong,{children:\"Conteúdo validado antes de subir.\"}),\" \",o(r.code,{children:\"npm test\"}),\" não roda teste de unidade:\\nroda \",o(r.code,{children:\"validate-source.mjs\"}),\" e \",o(r.code,{children:\"validate-curriculum.mjs\"}),\" e só então o build.\\nCurrículo quebrado — desafio sem resposta, critério faltando — derruba o\\nbuild em vez de virar tela vazia no meio do túnel. É o mesmo papel de um\\nschema, aplicado a conteúdo.\"]}),\"\\n\",a(r.li,{children:[o(r.strong,{children:\"Tudo embarcado no bundle.\"}),\" Não existe chamada de API para carregar a\\npróxima parada, o que elimina a classe inteira de falhas que o túnel provoca.\\nO trade-off é claro: publicar conteúdo novo exige novo deploy, em troca de\\numa sessão que nunca trava no meio.\"]}),\"\\n\",a(r.li,{children:[o(r.strong,{children:\"Editor próprio, sem Monaco nem CodeMirror.\"}),\" Carregar um editor completo\\npesaria mais que o app inteiro. O sandbox e o lint vivem em \",o(r.code,{children:\"src/utils\"}),\", e o\\nlint explica o erro em português comum em vez de despejar a mensagem crua do\\nruntime.\"]}),\"\\n\",a(r.li,{children:[o(r.strong,{children:\"Progresso local por linha.\"}),\" \",o(r.code,{children:\"src/services\"}),\" cuida de persistência, XP e\\nstreak. Fechar o app e voltar dias depois cai exatamente onde parou, sem\\nlogin e sem conta para criar — atrito que, nesse contexto, custaria o aluno.\"]}),\"\\n\"]}),\"\\n\",o(r.h2,{children:\"Arquitetura\"}),\"\\n\",a(r.p,{children:[\"Front em React com Vite e Framer Motion, publicado estático na Vercel. O\\ndomínio é modelado como transporte público, e a metáfora organiza a navegação.\\nDuas \",o(r.strong,{children:\"linhas\"}),\" partem do mesmo terminal:\"]}),\"\\n\",a(r.ul,{children:[\"\\n\",a(r.li,{children:[o(r.strong,{children:\"Linha 6X-Sul · sentido Web\"}),\" — fundamentos da web, aplicação JavaScript com\\nCRUD e dashboard, migração para React e tipagem completa com TypeScript.\"]}),\"\\n\",a(r.li,{children:[o(r.strong,{children:\"Linha 5X-Sul · sentido Fullstack\"}),\" — continuação da anterior: React no\\nfront, Java e Spring no back, banco real, autenticação, autorização e\\npublicação do sistema completo.\"]}),\"\\n\"]}),\"\\n\",a(r.p,{children:[\"Cada \",o(r.strong,{children:\"parada\"}),\" entrega um conceito rápido e desafios de três tipos: quiz,\\nquebra-cabeça de encaixar código e código de verdade — que o aluno digita, roda\\ne vê acontecendo na tela. Acertar 3 de 5 libera o próximo ponto.\"]}),\"\\n\",a(r.p,{children:[\"Módulos do tipo \",o(r.code,{children:\"PROJETO\"}),\" e \",o(r.code,{children:\"BOSS FINAL\"}),\" funcionam diferente, e essa é a\\ndecisão de que mais gosto: \",o(r.strong,{children:\"eles não abrem com quiz.\"}),\" Cada um declara\\n\",o(r.code,{children:\"projeto.entrega\"}),\" e \",o(r.code,{children:\"projeto.criterios\"}),\", e o aluno passa pela tela de entrega\\nconfirmando critério por critério. Exercício verifica fundamento; critério de\\naceite verifica se a coisa foi de fato construída — misturar os dois é como se\\nfinge que aprendeu.\"]}),\"\\n\",a(r.p,{children:[\"Fora das linhas existem dois modos avulsos: o \",o(r.strong,{children:\"Corre do Dia\"}),\", um conceito e\\ndois desafios montados por dia, e o \",o(r.strong,{children:\"Modo Treino\"}),\", sem trilha e sem ordem,\\ncom problemas no formato de entrevista técnica.\"]}),\"\\n\",a(r.p,{children:[\"Há ainda um alvo de build que não é web comum: \",o(r.code,{children:\"vite.switch.config.js\"}),\" mais\\n\",o(r.code,{children:\"sync-romfs.mjs\"}),\" geram uma versão para o navegador do \",o(r.strong,{children:\"Nintendo Switch\"}),\", com\\n\",o(r.code,{children:\"@vitejs/plugin-legacy\"}),\" e shims de animação para um motor de JS bem mais velho.\\nEstudar no busão com o console na mão é um caso de uso real.\"]}),\"\\n\",o(r.h2,{children:\"Resultados\"}),\"\\n\",a(r.ul,{children:[\"\\n\",o(r.li,{children:\"Duas linhas completas no ar, do HTML ao deploy de um sistema fullstack, em\\noito fases.\"}),\"\\n\",o(r.li,{children:\"Aula que sobrevive ao túnel: currículo, editor, testes e lint rodam todos no\\ncliente, sem nenhuma dependência de rede durante a sessão.\"}),\"\\n\",o(r.li,{children:\"Progresso, XP e streak preservados por linha entre sessões.\"}),\"\\n\"]}),\"\\n\",o(r.h2,{children:\"O que eu faria diferente\"}),\"\\n\",a(r.p,{children:[\"O buraco que eu fecharia primeiro: \",o(r.strong,{children:\"o app é instalável mas não tem service\\nworker.\"}),\" Existe \",o(r.code,{children:\"manifest.webmanifest\"}),\", ícone maskable e \",o(r.code,{children:\"display: standalone\"}),\"\\n— só que nada registra um SW, então a promessa de offline vale para a sessão\\njá aberta, não para abrir o app do zero sem sinal. Que é exatamente o cenário\\ndo busão. Um Workbox com precache do bundle e dos dados de currículo fecharia\\nisso sem mudar mais nada da arquitetura.\"]}),\"\\n\",o(r.p,{children:\"Depois, dar ao lint uma camada de sugestão de correção, não só de explicação:\\nhoje ele diz o que está errado em português claro, mas ainda cabe mostrar o\\ncaminho até o certo. E sincronizar progresso entre dispositivos — sem exigir\\nconta na primeira sessão, que é justamente o atrito que o projeto evitou de\\npropósito.\"})]})}return{default:function(e={}){const{wrapper:a}=e.components||{};return a?o(a,{...e,children:o(_createMdxContent,{...e})}):_createMdxContent(e)}};",
     "url": "/projetos/rota-dev"
   },
   {
@@ -843,7 +1236,7 @@
         }
       ]
     },
-    "content": "const{Fragment:e,jsx:a,jsxs:r}=arguments[0];function _createMdxContent(n){const o={code:\"code\",h2:\"h2\",li:\"li\",p:\"p\",strong:\"strong\",ul:\"ul\",...n.components};return r(e,{children:[a(o.h2,{children:\"O problema\"}),\"\\n\",a(o.p,{children:\"Estudar com constância é menos um problema de acesso ao conteúdo e mais um\\r\\nproblema de motivação: a recompensa costuma ser distante e o progresso,\\r\\ninvisível. O StudyQuest aproxima esse retorno ao transformar cada sessão em\\r\\numa sequência curta de conteúdo, exercícios e recompensas visíveis.\"}),\"\\n\",a(o.h2,{children:\"Decisões técnicas\"}),\"\\n\",r(o.ul,{children:[\"\\n\",r(o.li,{children:[a(o.strong,{children:\"React, Vite e TypeScript no frontend.\"}),\" A interface é dividida em telas de\\r\\nmatéria, nível, conteúdo, exercícios, ranking, conquistas e multiplayer. O\\r\\nZustand concentra o estado de progresso já sincronizado com o usuário.\"]}),\"\\n\",r(o.li,{children:[a(o.strong,{children:\"Firebase para identidade e progresso.\"}),\" O Firebase Authentication cuida da\\r\\nsessão, enquanto o Firestore mantém XP, estrelas, tentativas, níveis\\r\\nconcluídos, perfil, amizades e conquistas. Um listener em tempo real hidrata\\r\\na aplicação quando esses dados mudam.\"]}),\"\\n\",r(o.li,{children:[a(o.strong,{children:\"Express e TypeScript no backend.\"}),\" Rotas e controllers expõem matérias,\\r\\nexercícios e usuários. O conteúdo fica separado em arquivos JSON por\\r\\ndisciplina, e o \",a(o.code,{children:\"GameManager\"}),\" reúne esse banco para sortear perguntas sem\\r\\nduplicar identificadores.\"]}),\"\\n\",r(o.li,{children:[a(o.strong,{children:\"Socket.IO no multiplayer.\"}),\" Convites, salas, estado de prontidão, respostas\\r\\ne placar trafegam por eventos. As partidas trabalham com tempo limitado e\\r\\npontuação proporcional à velocidade da resposta.\"]}),\"\\n\"]}),\"\\n\",a(o.h2,{children:\"Arquitetura\"}),\"\\n\",r(o.p,{children:[\"O repositório mantém duas aplicações no mesmo lugar: \",a(o.code,{children:\"frontend/\"}),\" e \",a(o.code,{children:\"backend/\"}),\".\\r\\nNo cliente, as telas consomem a API REST por um serviço Axios e os eventos de\\r\\njogo pelo cliente Socket.IO; autenticação e atualizações do perfil vêm\\r\\ndiretamente do Firebase. No servidor, o Express encaminha as requisições para\\r\\ncontrollers, enquanto o Socket.IO mantém o estado das salas e usa o Firebase\\r\\nAdmin para persistir as recompensas de XP.\"]}),\"\\n\",a(o.h2,{children:\"Resultados\"}),\"\\n\",r(o.ul,{children:[\"\\n\",a(o.li,{children:\"Jornada completa de autenticação, perfil, seleção de matéria, níveis,\\r\\nconteúdo e exercícios.\"}),\"\\n\",a(o.li,{children:\"Banco de perguntas cobrindo 11 matérias, de matemática e programação a\\r\\nhistória, inglês e música.\"}),\"\\n\",a(o.li,{children:\"Camada de gamificação com XP, estrelas, conquistas, ranking e modo\\r\\nBrainstorm.\"}),\"\\n\",a(o.li,{children:\"Experiência social com amizades, chat, convites e duelos multiplayer em tempo\\r\\nreal.\"}),\"\\n\"]}),\"\\n\",a(o.h2,{children:\"O que eu faria diferente\"}),\"\\n\",a(o.p,{children:\"Formalizaria o repositório como um workspace para compartilhar tipos e schemas\\r\\nde validação entre frontend e backend e centralizar os scripts de qualidade.\\r\\nTambém moveria o estado das salas para uma camada própria, com Redis para\\r\\npermitir múltiplas instâncias, e ampliaria a cobertura automatizada dos fluxos\\r\\nde progresso e multiplayer. Credenciais administrativas ficariam somente no\\r\\ngerenciador de secrets do ambiente de deploy, nunca em arquivos versionáveis.\"})]})}return{default:function(e={}){const{wrapper:r}=e.components||{};return r?a(r,{...e,children:a(_createMdxContent,{...e})}):_createMdxContent(e)}};",
+    "content": "const{Fragment:e,jsx:a,jsxs:n}=arguments[0];function _createMdxContent(o){const r={code:\"code\",h2:\"h2\",li:\"li\",p:\"p\",strong:\"strong\",ul:\"ul\",...o.components};return n(e,{children:[a(r.h2,{children:\"O problema\"}),\"\\n\",a(r.p,{children:\"Estudar com constância é menos um problema de acesso ao conteúdo e mais um\\nproblema de motivação: a recompensa costuma ser distante e o progresso,\\ninvisível. O StudyQuest aproxima esse retorno ao transformar cada sessão em\\numa sequência curta de conteúdo, exercícios e recompensas visíveis.\"}),\"\\n\",a(r.h2,{children:\"Decisões técnicas\"}),\"\\n\",n(r.ul,{children:[\"\\n\",n(r.li,{children:[a(r.strong,{children:\"React, Vite e TypeScript no frontend.\"}),\" A interface é dividida em telas de\\nmatéria, nível, conteúdo, exercícios, ranking, conquistas e multiplayer. O\\nZustand concentra o estado de progresso já sincronizado com o usuário.\"]}),\"\\n\",n(r.li,{children:[a(r.strong,{children:\"Firebase para identidade e progresso.\"}),\" O Firebase Authentication cuida da\\nsessão, enquanto o Firestore mantém XP, estrelas, tentativas, níveis\\nconcluídos, perfil, amizades e conquistas. Um listener em tempo real hidrata\\na aplicação quando esses dados mudam.\"]}),\"\\n\",n(r.li,{children:[a(r.strong,{children:\"Express e TypeScript no backend.\"}),\" Rotas e controllers expõem matérias,\\nexercícios e usuários. O conteúdo fica separado em arquivos JSON por\\ndisciplina, e o \",a(r.code,{children:\"GameManager\"}),\" reúne esse banco para sortear perguntas sem\\nduplicar identificadores.\"]}),\"\\n\",n(r.li,{children:[a(r.strong,{children:\"Socket.IO no multiplayer.\"}),\" Convites, salas, estado de prontidão, respostas\\ne placar trafegam por eventos. As partidas trabalham com tempo limitado e\\npontuação proporcional à velocidade da resposta.\"]}),\"\\n\"]}),\"\\n\",a(r.h2,{children:\"Arquitetura\"}),\"\\n\",n(r.p,{children:[\"O repositório mantém duas aplicações no mesmo lugar: \",a(r.code,{children:\"frontend/\"}),\" e \",a(r.code,{children:\"backend/\"}),\".\\nNo cliente, as telas consomem a API REST por um serviço Axios e os eventos de\\njogo pelo cliente Socket.IO; autenticação e atualizações do perfil vêm\\ndiretamente do Firebase. No servidor, o Express encaminha as requisições para\\ncontrollers, enquanto o Socket.IO mantém o estado das salas e usa o Firebase\\nAdmin para persistir as recompensas de XP.\"]}),\"\\n\",a(r.h2,{children:\"Resultados\"}),\"\\n\",n(r.ul,{children:[\"\\n\",a(r.li,{children:\"Jornada completa de autenticação, perfil, seleção de matéria, níveis,\\nconteúdo e exercícios.\"}),\"\\n\",a(r.li,{children:\"Banco de perguntas cobrindo 11 matérias, de matemática e programação a\\nhistória, inglês e música.\"}),\"\\n\",a(r.li,{children:\"Camada de gamificação com XP, estrelas, conquistas, ranking e modo\\nBrainstorm.\"}),\"\\n\",a(r.li,{children:\"Experiência social com amizades, chat, convites e duelos multiplayer em tempo\\nreal.\"}),\"\\n\"]}),\"\\n\",a(r.h2,{children:\"O que eu faria diferente\"}),\"\\n\",a(r.p,{children:\"Formalizaria o repositório como um workspace para compartilhar tipos e schemas\\nde validação entre frontend e backend e centralizar os scripts de qualidade.\\nTambém moveria o estado das salas para uma camada própria, com Redis para\\npermitir múltiplas instâncias, e ampliaria a cobertura automatizada dos fluxos\\nde progresso e multiplayer. Credenciais administrativas ficariam somente no\\ngerenciador de secrets do ambiente de deploy, nunca em arquivos versionáveis.\"})]})}return{default:function(e={}){const{wrapper:n}=e.components||{};return n?a(n,{...e,children:a(_createMdxContent,{...e})}):_createMdxContent(e)}};",
     "url": "/projetos/studyquest"
   }
 ]

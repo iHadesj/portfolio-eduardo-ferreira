@@ -16,7 +16,7 @@ export const pt = {
   meta: {
     title: "Edu Ferreira — Desenvolvedor Fullstack Java & React/TypeScript",
     description:
-      "Backend em Java/Spring, frontend em React e TypeScript. Atualmente afiando arquitetura, testes e performance.",
+      "Dev fullstack: React e TypeScript no front, Java no back. Ajudei a construir do zero o Portal VTT e sigo testando ideias em projetos próprios.",
     ogEyebrow: "portfólio",
   },
 
@@ -53,7 +53,7 @@ export const pt = {
     taglineLead: "Stack",
     taglineAccent: "completa",
     description:
-      "Backend em Java/Spring, frontend em React e TypeScript. Atualmente focando em arquitetura, testes e performance.",
+      "Front em React e TypeScript, back em Java. Passei quase dois anos ajudando a construir um portal do zero na VTT e agora sigo afiando testes e arquitetura nos meus projetos.",
     ctaProjects: "Ver projetos",
     ctaCv: "Baixar CV",
     ctaCvAria: "Baixar currículo em PDF",
@@ -68,20 +68,20 @@ export const pt = {
     title: "Interessado desde o primeiro CRUD.",
     paragraphs: [
       [
-        "Comecei pelo back-end — Java, Spring, banco de dados — porque queria entender o que acontece ",
+        "Comecei pelo back-end, com Java, Spring e banco de dados, porque queria entender o que acontece ",
         { em: "atrás da tela" },
         ". Modelar os dados, separar as camadas, escrever um teste e ver ele pegar o erro antes de mim: foi aí que caiu a ficha.",
       ],
       [
-        "Depois fui pro front com React e TypeScript e descobri que gosto dos dois stacks. Este site é minha área de ",
+        "Depois fui pro front com React e TypeScript, e foi nele que passei a maior parte do estágio na VTT, ajudando a construir um portal do zero. Hoje gosto dos dois lados. Este site é minha área de ",
         { em: "experimentos" },
-        " — está tudo no GitHub, com o que foi concluído e o que eu ainda quero melhorar.",
+        ": está tudo no GitHub, o que ficou pronto e o que eu ainda quero melhorar.",
       ],
     ] as readonly Rich[],
     facts: [
       { key: "onde", value: "São Paulo - Zona Sul" },
       { key: "no dia a dia", value: "Java · Spring · React · TS" },
-      { key: "aprendendo", value: "JUnit · Machine Learning · Zustand" },
+      { key: "aprendendo", value: "Angular · JUnit · Machine Learning" },
     ],
     statusLabel: "status",
     portraitAlt: "Retrato de Edu Ferreira",
@@ -92,7 +92,7 @@ export const pt = {
     eyebrow: "stack em prática",
     title: "Ferramentas que viraram produto.",
     description:
-      "Organizadas pelo problema que resolvem — e conectadas aos projetos em que foram usadas.",
+      "Organizadas pelo problema que resolvem e ligadas aos projetos em que eu usei cada uma.",
     proofTitle: "Stack validada no código",
     proofLink: "ver repositórios no GitHub ↗",
     proofAria: "Ver os repositórios de Edu Ferreira no GitHub",
@@ -104,35 +104,35 @@ export const pt = {
         title: "Frontend & produto",
         description:
           "Interfaces tipadas, responsivas e pensadas como produto — da arquitetura ao último estado de interação.",
-        projects: "Levva · RotaDev · Portfólio",
+        projects: "Levva · DevTrack · Portfólio",
       },
       {
         label: "servidor & realtime",
         title: "Backend & APIs",
         description:
           "APIs REST, autenticação, validação de contratos e experiências multiplayer orientadas a eventos.",
-        projects: "StudyQuest · API Java",
+        projects: "Portal VTT · StudyQuest · API Java",
       },
       {
         label: "estado & persistência",
         title: "Dados",
         description:
           "Estado previsível no cliente e persistência escolhida de acordo com o domínio do produto.",
-        projects: "Levva · StudyQuest · API Java",
+        projects: "Levva · LIFE/MAINTENANCE · Friction Radar",
       },
       {
         label: "interface avançada",
         title: "Motion & experiência",
         description:
           "Movimento, áudio e 3D usados para explicar ações e criar experiências que ficam na memória.",
-        projects: "Portfólio · RotaDev · Change",
+        projects: "Portfólio · Friction Radar · Change",
       },
       {
         label: "confiança & entrega",
         title: "Qualidade",
         description:
           "Testes e ferramentas de entrega aplicados onde uma regressão realmente custa confiança.",
-        projects: "Levva · Java · projetos web",
+        projects: "Levva · LIFE/MAINTENANCE · API Java",
       },
     ],
   },
@@ -159,20 +159,23 @@ export const pt = {
     title: "Como eu cheguei até aqui.",
     items: [
       {
-        period: "2025 — agora",
+        period: "fev 2025 — out 2026",
         role: "Estagiário de Desenvolvimento Web",
         org: "VTT",
         bullets: [
-          "Minha primeira experiência com projeto de verdade: prazo, gente usando e código que não é só meu — bem diferente de estudar sozinho",
+          "Ajudei a construir o Portal VTT do zero: painel de gestão de PDV, cadastros, ferramentas internas e um módulo de chamados",
+          "A parte de que mais me orgulho é o editor de jogos pra totens de evento (memória, quiz, roleta, formulário): a pessoa monta tudo no navegador e baixa um .zip pronto pro totem",
+          "Fiquei mais no front, mas também escrevi servlets e endpoints em Java pra alimentar dashboards com dados reais",
+          "Primeira vez com prazo, gente usando de verdade e código que não é só meu. Bem diferente de estudar sozinho",
         ],
-        stack: ["React", "TypeScript", "Java"],
+        stack: ["React", "TypeScript", "Three.js", "Java", "SVN"],
       },
       {
-        period: "fev 2025 — agora",
-        role: "Bacharelado em Análise e Desenvolvimento de Sistemas",
+        period: "fev 2025 — dez 2026 (previsão)",
+        role: "Análise e Desenvolvimento de Sistemas",
         org: "Estácio",
         bullets: [
-          "Faculdade e estágio ao mesmo tempo: o que vejo na aula costuma aparecer no trabalho na semana seguinte",
+          "Fiz faculdade e estágio juntos por quase dois anos: o que eu via na aula costumava aparecer no trabalho na semana seguinte",
           "É onde eu pego a base que não dá pra aprender só no tutorial: estruturas de dados, banco e arquitetura",
         ],
         stack: ["Estruturas de dados", "POO", "SQL"],
@@ -182,18 +185,19 @@ export const pt = {
         role: "Desenvolvedor Fullstack",
         org: "projetos próprios",
         bullets: [
-          "Onde eu testo ideias sem medo de quebrar nada: React, TypeScript e Next.js em coisas como o StudyQuest e este site",
-          "Banco de dados fora do slide, aprendendo na tentativa e erro: PostgreSQL e MySQL",
+          "Onde eu testo ideia sem medo de quebrar nada: StudyQuest, LIFE/MAINTENANCE, Friction Radar, DevTrack e este site",
+          "Offline-first virou quase um padrão meu: IndexedDB, service worker e app que abre sem internet",
+          "Banco de dados fora do slide, aprendendo na tentativa e erro com PostgreSQL e MySQL",
         ],
-        stack: ["React", "TypeScript", "Next.js", "PostgreSQL"],
+        stack: ["React", "TypeScript", "Next.js", "IndexedDB", "PostgreSQL"],
       },
       {
-        period: "2023 — 2024",
-        role: "Especialização Back-End Java",
+        period: "set 2023 — out 2024",
+        role: "Curso livre Back-End Java",
         org: "EBAC",
         bullets: [
           "Foi aqui que o Java virou minha base: POO, JPA/Hibernate e persistência com PostgreSQL",
-          "Muito CRUD em MVC com JUnit — foi o que virou o projeto API Java + PostgreSQL ali em cima",
+          "Muito CRUD em MVC com JUnit, que acabou virando o projeto API Java + PostgreSQL ali em cima",
         ],
         stack: ["Java", "JPA/Hibernate", "PostgreSQL", "JUnit"],
       },

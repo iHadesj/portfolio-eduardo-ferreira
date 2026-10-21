@@ -9,6 +9,7 @@ import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { fill } from "@/lib/i18n/format";
 import { projectPath } from "@/lib/i18n/routes";
 import { projectCoverName, projectTitleName } from "@/lib/view-transition";
+import { cn } from "@/lib/utils";
 
 /** Glyph for covers of projects without screenshot (rodam no console/IDE). */
 function coverGlyph(stack: string[]) {
@@ -32,19 +33,32 @@ export function ProjectCard({
   project,
   locale,
   dict,
+  flip = false,
 }: {
   project: LocalizedProject;
   locale: Locale;
   dict: Dictionary;
+  /** Puts the cover on the right from md up (alternating rows). */
+  flip?: boolean;
 }) {
   const href = projectPath(locale, project.slug);
   const coverAlt =
     project.coverAlt ?? fill(dict.projects.coverAlt, { title: project.title });
 
   return (
-    <article className="group border-ash bg-basalt hover:border-molten/40 hover:glow-molten relative grid gap-6 rounded-lg border p-5 transition-colors duration-200 md:grid-cols-[minmax(0,20rem)_1fr] md:p-6">
+    <article
+      className={cn(
+        "project-card group border-ash bg-basalt hover:border-molten/40 hover:glow-molten relative grid gap-6 border p-5 transition-colors duration-200 md:p-6",
+        flip
+          ? "project-card--flip md:grid-cols-[1fr_minmax(0,20rem)]"
+          : "md:grid-cols-[minmax(0,20rem)_1fr]",
+      )}
+    >
       <div
-        className="border-ash/70 relative aspect-[16/10] overflow-hidden rounded-md border"
+        className={cn(
+          "border-ash/70 relative aspect-[16/10] overflow-hidden rounded-md border",
+          flip && "md:order-2",
+        )}
         style={{ viewTransitionName: projectCoverName(project.slug) }}
       >
         {project.cover ? (
@@ -74,7 +88,10 @@ export function ProjectCard({
       </div>
 
       <div className="flex flex-col gap-3">
-        <Badge variant={project.status === "in-progress" ? "ember" : "default"}>
+        <Badge
+          variant={project.status === "in-progress" ? "ember" : "default"}
+          className="self-start"
+        >
           {dict.projects.statuses[project.status]}
         </Badge>
 

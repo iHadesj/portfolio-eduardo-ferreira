@@ -4,8 +4,17 @@ import { useEffect, useMemo, useRef } from "react";
 import { Float } from "@react-three/drei";
 import { useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
 import * as THREE from "three";
+import {
+  createRibbonFrames,
+  ribbonPoint,
+  ribbonThickness,
+  ribbonWidth,
+  type RibbonFrame,
+} from "./infinity-path";
 
 const VERTEX_SHADER = /* glsl */ `
+  attribute vec2 aOutward;
+
   uniform float uActivity;
   uniform float uImpact;
   uniform vec2 uPointer;
@@ -111,7 +120,9 @@ const VERTEX_SHADER = /* glsl */ `
       idleFlow + cursorFlow + pulseWave + spinWave + impactWave;
 
     vec3 transformed = position + normal * displacement;
-    vec2 radialDirection = normalize(position.xy);
+    // Precomputed per vertex: a figure-eight has no single centre to push
+    // away from, and the push fades out at the waist instead of tearing it.
+    vec2 radialDirection = aOutward;
     float livingStretch =
       sin(loopPhase * 2.0 + uTime * 1.65) * 0.025 +
       sin(loopPhase * 5.0 - uTime * 0.92) * 0.009;
@@ -411,25 +422,27 @@ function createDissolveField(count: number): DissolveField {
   const positions = new Float32Array(count * 3);
   const colors = new Float32Array(count * 3);
   const directions = new Float32Array(count * 3);
+  const frames = createRibbonFrames(count);
 
   for (let index = 0; index < count; index += 1) {
-    const angle = (index / count) * FULL_TURN;
-    const across = ((index % 7) / 6 - 0.5) * 0.62;
-    const halfTwist = angle * 0.5;
-    const radialOffset = across * Math.cos(halfTwist);
+    const frame = frames[index]!;
+    const across = ((index % 7) / 6 - 0.5) * 1.7 * ribbonWidth(frame.u);
+    const point = ribbonPoint(frame, across, 0);
     const offset = index * 3;
     const seed = seededValue(index);
     const secondSeed = seededValue(index + count);
 
-    base[offset] = (1 + radialOffset) * Math.cos(angle);
-    base[offset + 1] = (1 + radialOffset) * Math.sin(angle);
-    base[offset + 2] = across * Math.sin(halfTwist);
-    positions[offset] = base[offset];
-    positions[offset + 1] = base[offset + 1]!;
-    positions[offset + 2] = base[offset + 2]!;
+    base[offset] = point[0];
+    base[offset + 1] = point[1];
+    base[offset + 2] = point[2];
+    positions[offset] = point[0];
+    positions[offset + 1] = point[1];
+    positions[offset + 2] = point[2];
 
-    directions[offset] = Math.cos(angle) * (0.28 + seed * 0.38);
-    directions[offset + 1] = -0.5 - seed * 0.45 + Math.sin(angle) * 0.12;
+    // Embers peel away from the outer edge of each lobe and sink slowly.
+    directions[offset] =
+      frame.outward[0] * (0.28 + seed * 0.38) + point[0] * 0.08;
+    directions[offset + 1] = -0.5 - seed * 0.45 + frame.outward[1] * 0.18;
     directions[offset + 2] = (secondSeed - 0.5) * 0.72;
 
     const warm = index % 4 !== 0;
@@ -441,42 +454,37 @@ function createDissolveField(count: number): DissolveField {
   return { base, positions, colors, directions };
 }
 
-function createMobiusGeometry(uSegments: number, vSegments: number) {
+/**
+ * Möbius ribbon swept along the figure-eight in `infinity-path`. Rings are
+ * closed tubes (width × thin thickness); the last ring stitches to the first
+ * with a half-ring offset, which is exactly the half-twist the frames carry.
+ */
+function createInfinityRibbonGeometry(uSegments: number, vSegments: number) {
   const geometry = new THREE.BufferGeometry();
   const positions: number[] = [];
   const uvs: number[] = [];
+  const outward: number[] = [];
   const indices: number[] = [];
-  const radius = 1;
-  const halfWidth = 0.36;
-  const halfThickness = 0.035;
+  const frames = createRibbonFrames(uSegments);
 
   for (let uIndex = 0; uIndex < uSegments; uIndex += 1) {
+    const frame = frames[uIndex]!;
     const uRatio = uIndex / uSegments;
-    const u = uRatio * Math.PI * 2;
-    const halfTwist = u * 0.5;
-    const organicRadius =
-      radius + Math.sin(u * 3 + 0.4) * 0.038 + Math.sin(u * 7) * 0.017;
-    const organicWidth =
-      halfWidth * (1 + Math.sin(u * 5 - 0.6) * 0.11 + Math.sin(u * 9) * 0.045);
+    const halfWidth = ribbonWidth(frame.u);
+    const halfThickness = ribbonThickness(frame.u);
 
     for (let vIndex = 0; vIndex < vSegments; vIndex += 1) {
       const vRatio = vIndex / vSegments;
       const crossSection = vRatio * Math.PI * 2;
-      const across = organicWidth * Math.cos(crossSection);
-      const depth =
-        halfThickness *
-        (1 + Math.sin(u * 4 + 1.1) * 0.16) *
-        Math.sin(crossSection);
-      const radialOffset =
-        across * Math.cos(halfTwist) - depth * Math.sin(halfTwist);
-      const height = across * Math.sin(halfTwist) + depth * Math.cos(halfTwist);
-
-      positions.push(
-        (organicRadius + radialOffset) * Math.cos(u),
-        (organicRadius + radialOffset) * Math.sin(u),
-        height,
+      const point = ribbonPoint(
+        frame,
+        halfWidth * Math.cos(crossSection),
+        halfThickness * Math.sin(crossSection),
       );
+
+      positions.push(point[0], point[1], point[2]);
       uvs.push(uRatio, vRatio);
+      outward.push(frame.outward[0], frame.outward[1]);
     }
   }
 
@@ -504,11 +512,18 @@ function createMobiusGeometry(uSegments: number, vSegments: number) {
     new THREE.Float32BufferAttribute(positions, 3),
   );
   geometry.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
+  geometry.setAttribute(
+    "aOutward",
+    new THREE.Float32BufferAttribute(outward, 2),
+  );
   geometry.setIndex(indices);
   geometry.computeVertexNormals();
   geometry.computeBoundingSphere();
   return geometry;
 }
+
+/** Coarse centre-line samples used to place pointer trails on the ribbon. */
+const TRAIL_ANCHORS: RibbonFrame[] = createRibbonFrames(96);
 
 interface LiquidObsidianMobiusProps {
   /** Freeze ornamental motion after the final performance degradation step. */
@@ -557,6 +572,8 @@ export function LiquidObsidianMobius({
   const pulseHapticPending = useRef(false);
   const impact = useRef(0);
   const spinEnergy = useRef(0);
+  /** Extra turn from clicks and drags; settles back on a half turn. */
+  const spinOffset = useRef(0);
   const clickTimes = useRef<number[]>([]);
   const lastTap = useRef(0);
   const lastMaterialChange = useRef(Number.NEGATIVE_INFINITY);
@@ -587,8 +604,8 @@ export function LiquidObsidianMobius({
 
   const geometry = useMemo(
     () =>
-      createMobiusGeometry(
-        highDetail ? 180 : touch ? 96 : 120,
+      createInfinityRibbonGeometry(
+        highDetail ? 240 : touch ? 120 : 160,
         highDetail ? 34 : touch ? 18 : 24,
       ),
     [highDetail, touch],
@@ -737,8 +754,8 @@ export function LiquidObsidianMobius({
       touch && !dragState.active ? deviceTilt.current.x * 0.17 : 0;
     const pointerTiltX = touch ? gyroTiltX : pointer.y * 0.14;
     const pointerTiltY = touch ? gyroTiltY : pointer.x * 0.2;
-    const targetX = 0.7 + pointerTiltX + offset.current.x;
-    const targetY = -0.34 + pointerTiltY + offset.current.y;
+    const targetX = 0.58 + pointerTiltX + offset.current.x;
+    const targetY = -0.44 + pointerTiltY + offset.current.y;
     const rotationResponse =
       1 -
       Math.exp(
@@ -749,7 +766,9 @@ export function LiquidObsidianMobius({
       );
     group.rotation.x += (targetX - group.rotation.x) * rotationResponse;
     group.rotation.y += (targetY - group.rotation.y) * rotationResponse;
-    const targetPositionX = touch ? 0 : pointer.x * 0.12;
+    // A touch to the right on desktop keeps the wider loop clear of the
+    // headline column that overlaps the canvas.
+    const targetPositionX = touch ? 0 : 0.24 + pointer.x * 0.12;
     const targetPositionY = touch ? 0 : pointer.y * 0.09;
     const positionResponse = 1 - Math.exp(-delta * 2.15);
     group.position.x += (targetPositionX - group.position.x) * positionResponse;
@@ -772,16 +791,27 @@ export function LiquidObsidianMobius({
         predatorPulse * 0.032 * aggression +
         impact.current * 0.07 * aggression;
 
-      sculpture.rotation.z +=
-        delta *
-        (0.31 +
-          Math.sin(elapsed.current * 0.39) * 0.055 +
-          aggression * (0.2 + Math.sin(elapsed.current * 2.45) * 0.09) +
-          pulse.current * (0.2 + aggression * 0.16) +
-          spinEnergy.current * aggression * 1.2 +
-          impact.current * aggression * 1.65);
+      // The loop no longer spins freely: an infinity that keeps turning reads
+      // as an 8 half of the time. It sways around the horizontal instead, and
+      // any extra turn from clicks or drags settles on the nearest half turn
+      // (the figure-eight is symmetric under 180°).
+      const kick =
+        pulse.current * (0.85 + aggression * 0.45) +
+        spinEnergy.current * aggression * 1.6 +
+        impact.current * aggression * 2.1;
+      spinOffset.current += delta * kick;
+      const restingTurn = Math.round(spinOffset.current / Math.PI) * Math.PI;
+      spinOffset.current +=
+        (restingTurn - spinOffset.current) *
+        Math.min(1, delta * 1.1) *
+        (1 - Math.min(1, kick));
+      sculpture.rotation.z =
+        spinOffset.current +
+        Math.sin(elapsed.current * 0.33) * 0.19 +
+        Math.sin(elapsed.current * 0.71 + 1.3) * 0.055 +
+        Math.sin(elapsed.current * 1.9) * 0.07 * aggression;
       sculpture.rotation.x =
-        Math.sin(elapsed.current * 0.81) * 0.22 +
+        Math.sin(elapsed.current * 0.81) * 0.16 +
         Math.sin(elapsed.current * 1.93) * 0.052 +
         Math.sin(elapsed.current * 3.42) * 0.095 * aggression +
         Math.sin(elapsed.current * 13.0) * impact.current * aggression * 0.13;
@@ -956,13 +986,24 @@ export function LiquidObsidianMobius({
     const group = groupRef.current;
     if (!group || movement < 1.5) return;
 
-    const source = group.worldToLocal(worldPoint.clone());
-    const angle = Math.atan2(source.y, source.x);
-    const radius = 1.02 + Math.sin(angle * 3) * 0.035;
-    source.set(
-      Math.cos(angle) * radius,
-      Math.sin(angle) * radius,
-      clamp(source.z * 0.22, -0.18, 0.18),
+    const local = group.worldToLocal(worldPoint.clone());
+    // Snap the hit point to the nearest stretch of the ribbon's centre line,
+    // projected on the drawing plane (the hit sphere has no useful depth).
+    let anchor = TRAIL_ANCHORS[0]!;
+    let nearest = Number.POSITIVE_INFINITY;
+    for (const candidate of TRAIL_ANCHORS) {
+      const dx = candidate.center[0] - local.x;
+      const dy = candidate.center[1] - local.y;
+      const distance = dx * dx + dy * dy;
+      if (distance < nearest) {
+        nearest = distance;
+        anchor = candidate;
+      }
+    }
+    const source = new THREE.Vector3(
+      anchor.center[0] + anchor.outward[0] * 0.04,
+      anchor.center[1] + anchor.outward[1] * 0.04,
+      anchor.center[2],
     );
 
     const aggressiveMode = isAggressiveMode();
@@ -980,8 +1021,8 @@ export function LiquidObsidianMobius({
       trailField.cursor += 1;
       const offsetIndex = index * 3;
       const seed = seededValue(trailField.cursor + emission);
-      const radialX = Math.cos(angle);
-      const radialY = Math.sin(angle);
+      const radialX = anchor.outward[0] || anchor.center[0] * 0.5;
+      const radialY = anchor.outward[1] || 0.35;
 
       trailField.positions[offsetIndex] = source.x + (seed - 0.5) * 0.055;
       trailField.positions[offsetIndex + 1] =
@@ -1120,7 +1161,7 @@ export function LiquidObsidianMobius({
       lastTap.current = 0;
       lastMaterialChange.current = now;
       console.warn(
-        '%c🔥 A fita não tem começo nem fim. Digite "hades" (fora de um campo) para descer ao submundo.',
+        '%c🔥 A fita não tem começo nem fim — nem lado de dentro. Digite "hades" (fora de um campo) para descer ao submundo.',
         "color:#e8a33d",
       );
     }
@@ -1140,8 +1181,8 @@ export function LiquidObsidianMobius({
     >
       <group
         ref={groupRef}
-        rotation={[0.7, -0.34, -0.14]}
-        scale={touch ? 0.94 : 1}
+        rotation={[0.58, -0.44, -0.1]}
+        scale={touch ? 0.9 : 0.96}
       >
         <group ref={scrollGroupRef}>
           <group ref={sculptureRef}>
