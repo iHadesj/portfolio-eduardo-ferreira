@@ -1,0 +1,148 @@
+---
+title: Um abraço, Bernardo
+slug: um-abraco-bernardo
+summary: Loja mobile-first de ursos, balões e flores de um ateliê no Grajaú. Tem urso de pelúcia em 3D que reage ao toque, e o pedido chega pronto no WhatsApp da loja.
+problem: Loja pequena de presente vende pela conversa no WhatsApp, e o pedido costuma chegar aos pedaços. Faltava um lugar pra pessoa montar o presente sozinha e mandar tudo certo de uma vez.
+date: 2026-10-08
+cover: /projects/um-abraco-bernardo.webp
+coverAlt: Página inicial do Um abraço, Bernardo com o urso de pelúcia em 3D na frente da palavra abraço
+stack: [React, TypeScript, Vite, Three.js, Framer Motion, Zustand, Firebase]
+repo: https://github.com/iHadesj/UmAbracoBernardo
+demo: https://umabracobernardo.vercel.app
+status: in-progress
+order: 4
+highlights:
+  - Urso de pelúcia em 3D com pelos que balançam no giro e deitam onde o dedo passa
+  - Frete calculado pelo CEP, com entrega no mesmo dia no Grajaú
+  - Checkout em 3 etapas que abre o WhatsApp da loja com o pedido já formatado
+  - Roda sem backend configurado, com login e pedidos em modo demonstração
+metrics:
+  - label: Checkout
+    value: 3 etapas
+  - label: Pelagem
+    value: até 32 camadas
+  - label: 3D
+    value: sob demanda
+decisions:
+  - choice: Fechar o pedido no WhatsApp
+    instead: Gateway de pagamento no site
+    because: A loja já atende e cobra pela conversa. O site entrega o pedido inteiro numa mensagem padronizada, com itens, opções, entrega, bilhete do cartão e contato, e o pagamento é combinado ali. Dá pra vender sem abrir conta em gateway antes.
+    cost: O site não sabe se o pedido foi pago. A confirmação depende de alguém responder a mensagem.
+  - choice: Mensagem só com a formatação do WhatsApp
+    instead: Texto livre com emoji
+    because: O WhatsApp Web e o desktop trocam alguns emojis por "?" quando a mensagem vem de um link wa.me. Negrito, itálico e um separador de texto chegam iguais em qualquer aparelho.
+  - choice: Pelagem por shell texturing, modelada no código
+    instead: Um modelo 3D pronto com textura de pelo
+    because: O urso é montado com elipsoides a partir de uma pelúcia de referência, e o pelo é a mesma malha desenhada em camadas com um shader próprio. Assim os fios balançam com a inércia do giro, quicam no abraço e deitam onde o dedo passa, e a cor da pelúcia e do laço muda junto com as opções do produto.
+    cost: Desenhar 32 camadas pesa na GPU do celular. Em aparelho fraco caem pra 22, o 3D vem num chunk separado, pausa fora da tela e baixa a resolução quando o FPS cai.
+  - choice: Só arraste horizontal gira o modelo
+    instead: Girar com qualquer arraste
+    because: No celular o palco 3D ocupa boa parte da tela. Se todo toque girasse o urso, rolar a página entortava a cabeça dele. Com touch-action pan-y, um gesto que começa na vertical é rolagem e o modelo ignora.
+  - choice: Firebase opcional, com modo demonstração
+    instead: Exigir conta e backend configurados
+    because: Sem as chaves, login e pedidos são simulados no navegador, então o site roda inteiro em qualquer preview ou clone. Com Firebase, o pedido também vai pro Firestore e aparece em Minha conta, com regras que só deixam cada cliente ler os próprios pedidos. O login é opcional até no checkout.
+    cost: São dois caminhos, Firebase e local, que precisam continuar se comportando igual.
+  - choice: Frete por tabela de região em cima do ViaCEP
+    instead: API de transportadora
+    because: A entrega é da própria loja e é local. O CEP vira endereço pelo ViaCEP e cai numa faixa, do Grajaú (mesmo dia, grátis acima de R$ 199) até a Grande São Paulo.
+    cost: Os valores ainda são de exemplo, esperando a loja fechar a tabela de verdade.
+en:
+  title: Um abraço, Bernardo
+  summary: A mobile-first shop for bears, balloons and flowers from a gift atelier in São Paulo. A 3D plush bear reacts to touch, and orders land ready-made in the shop's WhatsApp.
+  problem: A small gift shop sells through WhatsApp chats, and orders tend to arrive in pieces. It needed a place where people could put the gift together on their own and send everything right in one go.
+  coverAlt: Um abraço, Bernardo home page with the 3D plush bear in front of the word abraço
+  highlights:
+    - A 3D plush bear whose fur sways as it spins and flattens where your finger passes
+    - Shipping quoted from the postcode, with same-day delivery in the shop's neighbourhood
+    - A 3-step checkout that opens the shop's WhatsApp with the order already formatted
+    - Runs without a configured backend, with login and orders in demo mode
+  metrics:
+    - label: Checkout
+      value: 3 steps
+    - label: Fur
+      value: up to 32 layers
+    - label: 3D
+      value: on demand
+  decisions:
+    - choice: Close the order on WhatsApp
+      instead: A payment gateway on the site
+      because: The shop already serves and charges customers in the chat. The site hands over the whole order in one standard message, with items, options, delivery, the card note and contact details, and payment is agreed there. The shop can sell without opening a gateway account first.
+      cost: The site does not know whether an order was paid. Confirmation depends on someone answering the message.
+    - choice: Only WhatsApp's own formatting in the message
+      instead: Free text with emoji
+      because: WhatsApp Web and desktop swap some emoji for "?" when the message comes from a wa.me link. Bold, italics and a plain-text divider look the same on every device.
+    - choice: Shell-textured fur, modelled in code
+      instead: A ready-made 3D model with a fur texture
+      because: The bear is built from ellipsoids after a reference plush, and the fur is the same mesh drawn in layers with a custom shader. That lets the strands sway with the spin's inertia, bounce on the hug and flatten where your finger passes, and the plush and ribbon colours follow the product options.
+      cost: Drawing 32 layers is heavy on a phone GPU. Weak devices drop to 22, the 3D ships in its own chunk, pauses off screen and lowers its resolution when the frame rate falls.
+    - choice: Only a horizontal drag spins the model
+      instead: Spinning on any drag
+      because: On a phone the 3D stage fills much of the screen. If every touch spun the bear, scrolling the page twisted its head. With touch-action pan-y, a gesture that starts vertically is a scroll and the model ignores it.
+    - choice: Optional Firebase, with a demo mode
+      instead: Requiring an account and a configured backend
+      because: Without the keys, login and orders are simulated in the browser, so the site runs end to end in any preview or clone. With Firebase the order also goes to Firestore and shows up under My account, with rules that only let each customer read their own orders. Login is optional even at checkout.
+      cost: Two paths, Firebase and local, that have to keep behaving the same.
+    - choice: Region-based shipping table on top of ViaCEP
+      instead: A courier API
+      because: The shop delivers locally with its own people. The postcode becomes an address through ViaCEP and falls into a band, from the shop's neighbourhood (same day, free above R$ 199) out to Greater São Paulo.
+      cost: The prices are still placeholders until the shop settles its real table.
+---
+
+## O problema
+
+Loja de presente feito à mão costuma vender pelo WhatsApp. O cliente chama e
+começa o vai e volta: qual urso, que cor de laço, se dá pra entregar amanhã,
+qual o endereço, o que escrever no cartão. No meio da conversa algum detalhe
+sempre se perde.
+
+O Um abraço, Bernardo é a loja online de um ateliê de presentes no Grajaú, em
+São Paulo, pensada pra quem compra pelo celular. A ideia era deixar a pessoa
+montar o presente sozinha e mandar tudo de uma vez, sem a loja ter que mudar o
+jeito que já atende.
+
+## Como funciona
+
+- Cada produto tem opções (cor da pelúcia e do laço, frase, nome e idade no
+  balão) e adicionais como cartão escrito à mão e caixa de bombons. O preço
+  recalcula a cada escolha. Quem prefere ser guiado usa o **Monte o seu**, em
+  quatro passos: presente, ocasião, personalização e fechamento.
+- Nos produtos com modelo 3D, o urso e o balão bubble mudam junto com as
+  opções. Arrastando de lado o urso gira, e um toque faz ele dar um abraço.
+- O CEP é consultado no ViaCEP e cai numa tabela por região: Grajaú e
+  vizinhança no mesmo dia pra pedidos até 14h, depois Zona Sul, capital e
+  Grande SP.
+- O checkout tem três etapas: entrega, dados e revisão. No fim o pedido é
+  salvo e o WhatsApp da loja abre com uma mensagem pronta, com número do
+  pedido, itens, valores, data e período de entrega, bilhete do cartão e
+  contato.
+- Pra pedido fora do catálogo, a página de orçamento junta tipo de evento,
+  faixa de preço e a ideia da pessoa, e também manda tudo pro WhatsApp.
+
+## Arquitetura
+
+React 19, TypeScript e Vite, com React Router e Zustand cuidando da sacola, do
+rascunho do checkout e das preferências da interface. As transições entre
+telas são Framer Motion.
+
+O 3D é React Three Fiber, num chunk que só carrega quando o produto tem
+modelo. A pelagem é _shell texturing_: a mesma malha desenhada como várias
+instâncias, cada uma um pouco mais pra fora, e um shader decide em quais
+pontos de cada camada existe fio. O palco pausa quando sai da tela, baixa a
+resolução se o FPS cai e, com economia de dados ou 2G, o 3D só entra se a
+pessoa tocar em "Ver em 3D". Sem WebGL fica a ilustração em SVG.
+
+Firebase cuida do login (Google e e-mail/senha) e grava os pedidos no
+Firestore. Sem as chaves, um `AuthProvider` alternativo simula as duas coisas
+no navegador.
+
+## O que eu faria diferente
+
+O pagamento ficou de fora de propósito, mas o módulo já existe com a mesma
+forma de um gateway de verdade (Pix e cartão), só que simulado e desligado.
+Quando a loja quiser cobrar no site, o caminho é um backend que cria a
+cobrança e só grava o pedido depois da confirmação por webhook, com o cartão
+tokenizado no navegador pelo SDK do provedor.
+
+No urso, ainda faltam transições suaves entre os gestos, que hoje trocam sem
+mistura, e cortar camadas de pelo quando o FPS cai em vez de só baixar a
+resolução.

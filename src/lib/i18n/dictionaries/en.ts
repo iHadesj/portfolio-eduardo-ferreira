@@ -104,14 +104,14 @@ export const en = {
         title: "Data",
         description:
           "Predictable client state and persistence picked to fit the product's domain.",
-        projects: "Levva · LIFE/MAINTENANCE · Friction Radar",
+        projects: "Levva · LIFE/MAINTENANCE · Um abraço, Bernardo",
       },
       {
         label: "advanced interface",
         title: "Motion & experience",
         description:
           "Movement, audio and 3D used to explain actions and build experiences that stick.",
-        projects: "Portfolio · Friction Radar · Change",
+        projects: "Portfolio · Um abraço, Bernardo · Change",
       },
       {
         label: "confidence & delivery",
@@ -171,7 +171,7 @@ export const en = {
         role: "Fullstack Developer",
         org: "personal projects",
         bullets: [
-          "Where I test ideas without fear of breaking anything: StudyQuest, LIFE/MAINTENANCE, Friction Radar, DevTrack and this site",
+          'Where I test ideas without fear of breaking anything: StudyQuest, LIFE/MAINTENANCE, DevTrack, "Um abraço, Bernardo" and this site',
           "Offline-first has become almost a habit: IndexedDB, service workers and apps that open without internet",
           "Databases outside the slides, learned by trial and error with PostgreSQL and MySQL",
         ],

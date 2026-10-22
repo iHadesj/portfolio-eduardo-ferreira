@@ -118,14 +118,14 @@ export const pt = {
         title: "Dados",
         description:
           "Estado previsível no cliente e persistência escolhida de acordo com o domínio do produto.",
-        projects: "Levva · LIFE/MAINTENANCE · Friction Radar",
+        projects: "Levva · LIFE/MAINTENANCE · Um abraço, Bernardo",
       },
       {
         label: "interface avançada",
         title: "Motion & experiência",
         description:
           "Movimento, áudio e 3D usados para explicar ações e criar experiências que ficam na memória.",
-        projects: "Portfólio · Friction Radar · Change",
+        projects: "Portfólio · Um abraço, Bernardo · Change",
       },
       {
         label: "confiança & entrega",
@@ -185,7 +185,7 @@ export const pt = {
         role: "Desenvolvedor Fullstack",
         org: "projetos próprios",
         bullets: [
-          "Onde eu testo ideia sem medo de quebrar nada: StudyQuest, LIFE/MAINTENANCE, Friction Radar, DevTrack e este site",
+          'Onde eu testo ideia sem medo de quebrar nada: StudyQuest, LIFE/MAINTENANCE, DevTrack, "Um abraço, Bernardo" e este site',
           "Offline-first virou quase um padrão meu: IndexedDB, service worker e app que abre sem internet",
           "Banco de dados fora do slide, aprendendo na tentativa e erro com PostgreSQL e MySQL",
         ],

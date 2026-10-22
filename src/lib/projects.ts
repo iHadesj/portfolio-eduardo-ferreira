@@ -7,7 +7,7 @@ export type Decision = Project["decisions"][number];
 export type Metric = Project["metrics"][number];
 export type ProjectStatus = Project["status"];
 
-/** Case studies sorted by `order` (Levva → StudyQuest → LIFE/MAINTENANCE → Friction Radar → Raiz Pilates → Rota Dev → API → DevTrack → Portfolio → Change). */
+/** Case studies sorted by `order` (Levva → StudyQuest → LIFE/MAINTENANCE → Um abraço, Bernardo → Raiz Pilates → Rota Dev → API → DevTrack → Portfolio → Change). */
 export const projects: Project[] = [...raw].sort((a, b) => a.order - b.order);
 
 export function getProject(slug: string): Project | undefined {
