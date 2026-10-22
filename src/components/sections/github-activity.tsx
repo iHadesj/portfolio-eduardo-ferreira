@@ -2,6 +2,7 @@ import { SectionHeading } from "@/components/ui/section-heading";
 import {
   fetchContributions,
   fetchRepos,
+  RECENT_WINDOW_MONTHS,
   recentWindowCutoff,
   type ReposPage,
 } from "@/lib/github";
@@ -61,6 +62,7 @@ export async function GithubActivity({
         <GithubFeed
           initialData={initial}
           cutoff={cutoff}
+          windowMonths={RECENT_WINDOW_MONTHS}
           intl={intlLocale[locale]}
         />
       </div>

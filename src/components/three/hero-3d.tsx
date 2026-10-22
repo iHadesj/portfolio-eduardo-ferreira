@@ -30,7 +30,8 @@ const BLOCKED: Gates = { ok: false, tier: "lite", highDpr: false };
 /**
  * Capability gates. Phones are no longer excluded outright — they clear a
  * lower bar and get the `lite` tier, which is budgeted for them. The hard
- * blockers (saveData, 2G, no WebGL2, very low memory) still drop to the poster.
+ * blockers (saveData, 2G, very low memory) still drop to the poster; WebGL2
+ * support is probed separately, once the page is idle (see `supportsWebGL2`).
  */
 function evaluateGates(): Gates {
   if (typeof window === "undefined") return BLOCKED;
@@ -43,14 +44,6 @@ function evaluateGates(): Gates {
   // Never spend the user's data or battery against their wishes.
   if (nav.connection?.saveData === true) return BLOCKED;
   if (/(^|-)2g$/.test(nav.connection?.effectiveType ?? "")) return BLOCKED;
-
-  let webgl2 = false;
-  try {
-    webgl2 = document.createElement("canvas").getContext("webgl2") !== null;
-  } catch {
-    webgl2 = false;
-  }
-  if (!webgl2) return BLOCKED;
 
   const finePointer = window.matchMedia("(pointer: fine)").matches;
   const mem = nav.deviceMemory;
@@ -74,6 +67,23 @@ function evaluateGates(): Gates {
 }
 
 /**
+ * Creating a GL context is synchronous and can block for a long while on a
+ * cold GPU process, so this runs from the idle callback rather than during
+ * hydration. The probe context is released straight away — three.js creates
+ * its own, and browsers cap how many can be alive at once.
+ */
+function supportsWebGL2(): boolean {
+  try {
+    const gl = document.createElement("canvas").getContext("webgl2");
+    if (!gl) return false;
+    gl.getExtension("WEBGL_lose_context")?.loseContext();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Gates → lazy (post-idle) load of the WebGL scene → crossfade over the poster.
  * On reduced motion, failed gates or a runtime error the static poster simply
  * stays — no three.js bytes downloaded.
@@ -84,7 +94,7 @@ export function Hero3D({ className }: { className?: string }) {
   const themeMounted = useMounted();
   const underworld = themeMounted && theme === "underworld";
   const containerRef = useRef<HTMLDivElement>(null);
-  const lightHostRef = useRef<HTMLElement | null>(null);
+  const lightTargetsRef = useRef<HTMLElement[] | null>(null);
   const [enabled, setEnabled] = useState(false);
   const [tier, setTier] = useState<SceneTier>("full");
   const [highDpr, setHighDpr] = useState(false);
@@ -133,6 +143,7 @@ export function Hero3D({ className }: { className?: string }) {
       if (started) return;
       started = true;
       window.removeEventListener("scroll", handleEarlyScroll);
+      if (!supportsWebGL2()) return;
       setTier(gates.tier);
       setHighDpr(gates.highDpr);
       setEnabled(true);
@@ -197,39 +208,34 @@ export function Hero3D({ className }: { className?: string }) {
   }
 
   function handleLightChange({ x, y, energy, angle }: MobiusLightState) {
-    const host =
-      lightHostRef.current ??
-      (containerRef.current?.closest("#hero") as HTMLElement | null);
-    if (!host) return;
-    lightHostRef.current = host;
-    host.style.setProperty("--mobius-light-x", `${x.toFixed(2)}%`);
-    host.style.setProperty("--mobius-light-y", `${y.toFixed(2)}%`);
-    host.style.setProperty("--mobius-light-energy", energy.toFixed(3));
-    host.style.setProperty("--mobius-light-angle", `${angle.toFixed(2)}deg`);
-    host.style.setProperty(
-      "--mobius-aura-opacity",
-      (0.62 + energy * 0.38).toFixed(3),
-    );
-    host.style.setProperty(
-      "--mobius-caustic-opacity",
-      (0.3 + energy * 0.42).toFixed(3),
-    );
-    host.style.setProperty(
-      "--mobius-title-opacity",
-      (0.16 + energy * 0.5).toFixed(3),
-    );
-    host.style.setProperty(
-      "--mobius-title-blur",
-      `${(5 + energy * 10).toFixed(2)}px`,
-    );
-    host.style.setProperty(
-      "--mobius-cta-blur",
-      `${(3 + energy * 10).toFixed(2)}px`,
-    );
-    host.style.setProperty(
-      "--mobius-social-blur",
-      `${(2 + energy * 8).toFixed(2)}px`,
-    );
+    // Custom properties inherit, so writing them on #hero restyled the whole
+    // hero subtree — the ~200 poster paths included — on every update, which
+    // dominated the frame on slower phones. Only the `[data-mobius-light]`
+    // nodes read them; #hero keeps the defaults.
+    let targets = lightTargetsRef.current;
+    if (!targets) {
+      const host = containerRef.current?.closest("#hero");
+      if (!host) return;
+      targets = Array.from(
+        host.querySelectorAll<HTMLElement>("[data-mobius-light]"),
+      );
+      lightTargetsRef.current = targets;
+    }
+    const values: [string, string][] = [
+      ["--mobius-light-x", `${x.toFixed(2)}%`],
+      ["--mobius-light-y", `${y.toFixed(2)}%`],
+      ["--mobius-light-energy", energy.toFixed(3)],
+      ["--mobius-light-angle", `${angle.toFixed(2)}deg`],
+      ["--mobius-aura-opacity", (0.62 + energy * 0.38).toFixed(3)],
+      ["--mobius-caustic-opacity", (0.3 + energy * 0.42).toFixed(3)],
+      ["--mobius-title-opacity", (0.16 + energy * 0.5).toFixed(3)],
+      ["--mobius-title-blur", `${(5 + energy * 10).toFixed(2)}px`],
+      ["--mobius-cta-blur", `${(3 + energy * 10).toFixed(2)}px`],
+      ["--mobius-social-blur", `${(2 + energy * 8).toFixed(2)}px`],
+    ];
+    for (const target of targets) {
+      for (const [name, value] of values) target.style.setProperty(name, value);
+    }
   }
 
   // `reduced` flips to true one tick after hydration. The effect above cancels

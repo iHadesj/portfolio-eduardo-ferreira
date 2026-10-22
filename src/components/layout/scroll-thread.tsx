@@ -19,11 +19,8 @@ import { useReducedMotionSafe } from "@/hooks/use-reduced-motion-safe";
 
 type Point = [number, number];
 
-interface Route {
-  d: string;
-  width: number;
-  height: number;
-}
+/** Start, two control points, end. */
+type Cubic = [Point, Point, Point, Point];
 
 interface Sampled {
   length: number;
@@ -33,27 +30,89 @@ interface Sampled {
   step: number;
 }
 
-/** Catmull-Rom through `points`, emitted as cubic Béziers. */
-function smoothPath(points: Point[]): string {
-  if (points.length < 2) return "";
-  const [first] = points;
-  let d = `M${first![0].toFixed(1)} ${first![1].toFixed(1)}`;
+interface Route {
+  d: string;
+  width: number;
+  height: number;
+  sampled: Sampled;
+}
+
+const SAMPLE_STEP = 6;
+/** Chords per Bézier when measuring: far finer than SAMPLE_STEP needs. */
+const FLATTEN = 16;
+
+/** Catmull-Rom through `points`, as cubic Béziers. */
+function catmullRom(points: Point[]): Cubic[] {
+  const cubics: Cubic[] = [];
   for (let index = 0; index < points.length - 1; index += 1) {
     const p0 = points[Math.max(0, index - 1)]!;
     const p1 = points[index]!;
     const p2 = points[index + 1]!;
     const p3 = points[Math.min(points.length - 1, index + 2)]!;
-    const c1: Point = [
-      p1[0] + (p2[0] - p0[0]) / 6,
-      p1[1] + (p2[1] - p0[1]) / 6,
-    ];
-    const c2: Point = [
-      p2[0] - (p3[0] - p1[0]) / 6,
-      p2[1] - (p3[1] - p1[1]) / 6,
-    ];
-    d += `C${c1[0].toFixed(1)} ${c1[1].toFixed(1)} ${c2[0].toFixed(1)} ${c2[1].toFixed(1)} ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}`;
+    cubics.push([
+      p1,
+      [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6],
+      [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6],
+      p2,
+    ]);
+  }
+  return cubics;
+}
+
+const fmt = ([x, y]: Point) => `${x.toFixed(1)} ${y.toFixed(1)}`;
+
+function pathData(cubics: Cubic[]): string {
+  const [first] = cubics;
+  if (!first) return "";
+  let d = `M${fmt(first[0])}`;
+  for (const [, c1, c2, end] of cubics) {
+    d += `C${fmt(c1)} ${fmt(c2)} ${fmt(end)}`;
   }
   return d;
+}
+
+/**
+ * Evenly spaced points along the route, measured from the same Béziers the
+ * path is drawn with. Not `getPointAtLength`: Chrome walks the path from its
+ * start on every call, so sampling a page-long route that way is quadratic —
+ * it cost seconds of main thread on every rebuild during load.
+ */
+function sampleRoute(cubics: Cubic[]): Sampled {
+  const points: Point[] = [];
+  const reach: number[] = [];
+  const start = cubics[0]?.[0];
+  if (!start) return { length: 0, points, reach, step: SAMPLE_STEP };
+
+  let highest = Number.NEGATIVE_INFINITY;
+  let length = 0;
+  let nextAt = 0;
+  let previous: Point = start;
+  for (const [p0, c1, c2, p3] of cubics) {
+    for (let index = 1; index <= FLATTEN; index += 1) {
+      const t = index / FLATTEN;
+      const u = 1 - t;
+      const w0 = u * u * u;
+      const w1 = 3 * u * u * t;
+      const w2 = 3 * u * t * t;
+      const w3 = t * t * t;
+      const point: Point = [
+        w0 * p0[0] + w1 * c1[0] + w2 * c2[0] + w3 * p3[0],
+        w0 * p0[1] + w1 * c1[1] + w2 * c2[1] + w3 * p3[1],
+      ];
+      const chord = Math.hypot(point[0] - previous[0], point[1] - previous[1]);
+      while (nextAt <= length + chord) {
+        const k = chord === 0 ? 0 : (nextAt - length) / chord;
+        const y = previous[1] + (point[1] - previous[1]) * k;
+        points.push([previous[0] + (point[0] - previous[0]) * k, y]);
+        highest = Math.max(highest, y);
+        reach.push(highest);
+        nextAt += SAMPLE_STEP;
+      }
+      length += chord;
+      previous = point;
+    }
+  }
+  return { length, points, reach, step: SAMPLE_STEP };
 }
 
 /** Sections whose crossing gets a loop instead of a plain swoop. */
@@ -141,22 +200,8 @@ function buildRoute(host: HTMLElement): Route | null {
   points.push([last[0] + (middle - last[0]) * 0.55, last[1] + 70]);
   points.push([middle, last[1] + 110]);
 
-  return { d: smoothPath(points), width, height };
-}
-
-function sample(path: SVGPathElement): Sampled {
-  const length = path.getTotalLength();
-  const step = 6;
-  const points: Point[] = [];
-  const reach: number[] = [];
-  let highest = Number.NEGATIVE_INFINITY;
-  for (let at = 0; at <= length; at += step) {
-    const point = path.getPointAtLength(at);
-    points.push([point.x, point.y]);
-    highest = Math.max(highest, point.y);
-    reach.push(highest);
-  }
-  return { length, points, reach, step };
+  const cubics = catmullRom(points);
+  return { d: pathData(cubics), width, height, sampled: sampleRoute(cubics) };
 }
 
 export function ScrollThread({
@@ -191,7 +236,7 @@ export function ScrollThread({
     const path = drawnRef.current;
     const svg = svgRef.current;
     if (!route || !path || !svg) return;
-    const sampled = sample(path);
+    const { sampled } = route;
     path.style.strokeDasharray = `${sampled.length} ${sampled.length}`;
 
     if (reduced) {

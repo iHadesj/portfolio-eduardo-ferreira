@@ -38,12 +38,16 @@ export function Hero({ dict }: { dict: Dictionary }) {
 
   return (
     <ScrollSection id="hero" className="relative isolate" flowStrength={18}>
+      {/* `data-mobius-light` marks every node that reads the sculpture's
+          light variables; Hero3D writes them only there. */}
       <div
         aria-hidden
+        data-mobius-light
         className="hero-reactive-aura pointer-events-none absolute inset-0 z-[-1]"
       />
       <div
         aria-hidden
+        data-mobius-light
         className="hero-reactive-caustics pointer-events-none absolute inset-0 z-[-1]"
       />
       <div className="container-hades relative grid min-h-dvh grid-cols-1 content-start items-start gap-3 pt-24 pb-12 sm:gap-8 sm:pb-20 lg:grid-cols-12 lg:content-normal lg:items-center lg:gap-6">
@@ -73,6 +77,7 @@ export function Hero({ dict }: { dict: Dictionary }) {
               </span>
               <span
                 aria-hidden
+                data-mobius-light
                 className="hero-title-light pointer-events-none absolute inset-0 block [word-spacing:0.08em]"
               >
                 Edu Ferreira
@@ -94,6 +99,7 @@ export function Hero({ dict }: { dict: Dictionary }) {
             <Magnetic className="inline-flex">
               <SmoothLink
                 href="#projetos"
+                data-mobius-light
                 className={cn(
                   buttonVariants({ variant: "primary", size: "lg" }),
                   "hero-light-cta h-11 px-5 text-sm sm:h-12 sm:px-6 sm:text-base",
@@ -108,6 +114,7 @@ export function Hero({ dict }: { dict: Dictionary }) {
               type="application/pdf"
               aria-label={dict.hero.ctaCvAria}
               data-cursor="hover"
+              data-mobius-light
               className={cn(
                 buttonVariants({ variant: "ghost", size: "lg" }),
                 "hero-light-cta h-11 px-5 text-sm sm:h-12 sm:px-6 sm:text-base",
@@ -128,6 +135,7 @@ export function Hero({ dict }: { dict: Dictionary }) {
                     target={external ? "_blank" : undefined}
                     rel={external ? "noopener noreferrer" : undefined}
                     data-cursor="hover"
+                    data-mobius-light
                     className="hero-light-social rounded-pill border-ash text-smoke hover:border-molten hover:text-bone inline-flex size-9 items-center justify-center border transition-colors sm:size-10"
                   >
                     <Icon className="size-4 sm:size-[18px]" />

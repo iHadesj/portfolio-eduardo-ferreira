@@ -5,7 +5,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { RepoCard } from "./repo-card";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { RECENT_WINDOW_MONTHS, type ReposPage } from "@/lib/github";
+import type { ReposPage } from "@/lib/github";
 import { useI18n } from "@/lib/i18n/locale-provider";
 import { fill } from "@/lib/i18n/format";
 
@@ -22,14 +22,18 @@ async function fetchReposPage(page: number): Promise<ReposPage> {
  * `cutoff`: ISO do limite da janela recente, calculado no servidor
  * (`recentWindowCutoff`). Por padrão o feed só mostra repos com push depois
  * dele; o resto fica atrás de um clique e volta a carregar 9 em 9, manualmente.
+ * `windowMonths` também vem do servidor: importar o valor de `@/lib/github`
+ * aqui arrastaria `env.ts` (e o zod inteiro) para o bundle do cliente.
  */
 export function GithubFeed({
   initialData,
   cutoff,
+  windowMonths,
   intl,
 }: {
   initialData: ReposPage;
   cutoff: string;
+  windowMonths: number;
   intl: "pt-BR" | "en-US";
 }) {
   const { dict } = useI18n();
@@ -136,7 +140,7 @@ export function GithubFeed({
       ) : (
         <p className="text-smoke text-center font-mono text-xs">
           {fill(dict.githubFeed.emptyWindow, {
-            months: RECENT_WINDOW_MONTHS,
+            months: windowMonths,
           })}
         </p>
       )}
