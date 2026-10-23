@@ -3,7 +3,9 @@
  * GitHub profile README (github.com/iHadesj/iHadesJ, src/art): a head
  * sculpted from signed distance functions, ray marched, turned into glyphs,
  * with its back half dissolving into a stream of pixels and a mirrored
- * training log. `art/` and `lib/` are copied verbatim from that repo.
+ * training log. `art/` and `lib/` are copied from that repo; head.mjs is
+ * re-sculpted (an idealised male head) and portrait.mjs turns the camera
+ * closer to profile with the chin up.
  *
  *   node scripts/ascii-face/generate.mjs
  *

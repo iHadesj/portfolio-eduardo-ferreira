@@ -7,12 +7,12 @@ import { clamp, smoothstep } from './sdf.mjs';
 import { rng, noise1 } from '../lib/random.mjs';
 
 const CAMERA = {
-  yaw: 0.92, // ~53°: three-quarter view, nose breaking the silhouette
-  pitch: 0.15, // looking slightly down, like the reference
+  yaw: 1.12, // ~64°: close to profile, the jaw and brow line carry the face
+  pitch: -0.16, // chin up, gaze lifted — the statue looking past the viewer
   roll: 0.06,
   distance: 8,
   fov: 0.48,
-  center: [0.45, 0.08, 0],
+  center: [0.3, 0.02, 0],
   light: [0.8, 0.4, 0.5], // from where the face looks: lit profile, shaded cheek
 };
 

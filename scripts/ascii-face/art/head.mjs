@@ -1,10 +1,17 @@
 // A human head sculpted from signed distance functions and ray marched
 // into a luminance buffer. No meshes, no photos: just math.
 //
-// The sculpt is written in centimetres using average adult landmarks
-// (androgynous, mannequin-like): y = 0 at the chin, z = 0 at the ear canal,
-// x = 0 on the midline. Classic canon: eyes at half height, the face split
-// in thirds (hairline / brows / nose base / chin), eye spacing = one eye.
+// Adapted from the profile README's sculpt (github.com/iHadesj/iHadesJ,
+// src/art/head.mjs): the androgynous mannequin became an idealised, almost
+// too-perfect male head — a statue's proportions, slightly uncanny on
+// purpose. Heavy brow over deep-set eyes, a straight Greek nose, high
+// cheekbones over lean cheeks, an angular jaw and a square chin, full lips
+// and a strong neck.
+//
+// The sculpt is written in centimetres: y = 0 at the chin, z = 0 at the ear
+// canal, x = 0 on the midline, the face looking down +z. Classic canon:
+// eyes at half height, the face split in thirds (hairline / brows / nose
+// base / chin), eye spacing = one eye.
 
 import {
   v3, add, sub, mul, dot, norm, clamp, smoothstep,
@@ -15,57 +22,70 @@ import {
 const CM = 7.5; // one local unit (half the skull width) in centimetres
 const ORIGIN = v3(0, 11.5, 0); // eye line, ear-canal depth
 
-const EYE = v3(3.15, 11.5, 7.5); // right/left pupils mirror on x
-const EYE_RADIUS = 1.25;
+const EYE = v3(3.15, 11.45, 7.3); // right/left pupils mirror on x
+const EYE_RADIUS = 1.22;
 
 function eyes(s) {
   return sdSphere(s, EYE, EYE_RADIUS);
 }
 
 // The face volume: an ellipsoid whose width tapers from the cheekbones down
-// to the chin, which gives the classic inverted-egg front silhouette.
+// to the chin. Less taper than the mannequin: a wide, square lower face.
 function faceMass(p) {
-  const taper = 0.64 + 0.36 * smoothstep(-0.5, 11, p[1]);
+  const taper = 0.76 + 0.24 * smoothstep(-0.5, 11, p[1]);
   const q = v3(p[0] / taper, p[1], p[2]);
-  return sdEllipsoid(q, v3(0, 7.8, 3.5), v3(6.0, 7.5, 6.6)) * taper;
+  return sdEllipsoid(q, v3(0, 7.8, 3.5), v3(6.0, 7.5, 6.5)) * taper;
 }
 
 // s = point with |x| (the sculpt is symmetric), p = raw point (centimetres)
 function skin(p, s) {
   // cranium, forehead and the face volume
-  let d = sdEllipsoid(p, v3(0, 14.6, -0.8), v3(7.2, 8.4, 9.3));
-  d = smin(d, sdEllipsoid(p, v3(0, 16.6, 3.6), v3(5.8, 5.4, 5.6)), 2.5);
-  d = smin(d, faceMass(p), 3.2);
+  let d = sdEllipsoid(p, v3(0, 14.6, -0.9), v3(7.2, 8.5, 9.5));
+  d = smin(d, sdEllipsoid(p, v3(0, 16.5, 3.7), v3(5.8, 5.4, 5.6)), 2.5);
+  d = smin(d, faceMass(p), 3.0);
 
-  // gentle structure: cheekbones, brow, chin, jaw angle
-  d = smin(d, sdEllipsoid(s, v3(4.2, 9.6, 6.5), v3(1.6, 1.0, 1.6)), 2.4);
-  d = smin(d, sdEllipsoid(s, v3(3.4, 8.0, 6.4), v3(2.0, 2.0, 1.8)), 2.6); // cheeks
-  d = smin(d, sdCapsule(s, v3(0, 13.4, 9.0), v3(4.0, 13.5, 7.2), 0.45), 2.0);
-  d = smin(d, sdEllipsoid(p, v3(0, 2.4, 8.4), v3(1.9, 1.6, 1.3)), 1.5);
-  d = smin(d, sdCapsule(s, v3(1.8, 1.7, 7.4), v3(4.6, 4.6, 1.0), 0.5), 2.6);
+  // high, sharp cheekbones; the cheek under them stays lean
+  d = smin(d, sdEllipsoid(s, v3(4.3, 10.0, 6.4), v3(1.7, 0.9, 1.6)), 1.7);
+  d = smin(d, sdEllipsoid(s, v3(3.3, 8.2, 6.4), v3(1.5, 1.4, 1.4)), 2.4);
 
-  // eye sockets (shallow) – the eyeballs sit inside
-  d = smax(d, -sdEllipsoid(s, v3(3.15, 11.45, 9.2), v3(1.75, 1.1, 1.35)), 1.1);
+  // heavy brow ridge shading the eyes
+  d = smin(d, sdCapsule(s, v3(0, 13.35, 9.15), v3(4.1, 13.5, 7.35), 0.72), 1.5);
 
-  // nose: dorsum, tip, wings, nostrils
-  d = smin(d, sdRoundCone(p, v3(0, 12.2, 9.35), v3(0, 8.95, 11.35), 0.55, 0.7), 0.8);
-  d = smin(d, sdSphere(p, v3(0, 8.7, 11.25), 0.78), 0.5);
-  d = smin(d, sdSphere(s, v3(1.05, 8.05, 10.0), 0.65), 0.7);
-  d = smax(d, -sdSphere(s, v3(0.62, 7.6, 10.45), 0.26), 0.3);
+  // square, forward chin with a soft cleft
+  d = smin(d, sdEllipsoid(p, v3(0, 2.0, 8.55), v3(2.3, 1.65, 1.4)), 1.2);
+  d = smax(d, -sdEllipsoid(p, v3(0, 1.8, 10.0), v3(0.2, 0.7, 0.3)), 0.3);
 
-  // lips wrap around the dental arch: bend them back towards the corners
+  // angular jaw: a crisp line from the chin to a defined angle, then up
+  const GONION = v3(5.0, 2.6, 0.9);
+  d = smin(d, sdCapsule(s, v3(1.7, 1.2, 7.7), GONION, 0.55), 2.0);
+  d = smin(d, sdCapsule(s, GONION, v3(5.25, 7.6, 0.2), 0.6), 1.9);
+
+  // eye sockets, deep under the brow – the eyeballs sit inside
+  d = smax(d, -sdEllipsoid(s, v3(3.2, 11.5, 9.05), v3(1.8, 1.1, 1.4)), 1.0);
+
+  // nose: a straight dorsum off the brow (Greek profile), a projecting tip,
+  // narrow wings and nostrils
+  d = smin(d, sdRoundCone(p, v3(0, 12.3, 9.5), v3(0, 8.85, 11.7), 0.5, 0.66), 0.7);
+  d = smin(d, sdSphere(p, v3(0, 8.6, 11.55), 0.74), 0.45);
+  d = smin(d, sdSphere(s, v3(1.05, 8.05, 10.05), 0.62), 0.65);
+  d = smax(d, -sdSphere(s, v3(0.6, 7.65, 10.5), 0.25), 0.3);
+
+  // full lips wrapped round the dental arch, a crisp mouth line, and the
+  // fold that sets the lower lip off from the chin
   const m = v3(p[0], p[1], p[2] + 0.16 * p[0] * p[0]);
-  d = smin(d, sdEllipsoid(m, v3(0, 5.75, 9.85), v3(1.85, 0.46, 0.7)), 0.9);
-  d = smin(d, sdEllipsoid(m, v3(0, 4.6, 9.75), v3(1.6, 0.54, 0.75)), 0.9);
-  d = smax(d, -sdEllipsoid(m, v3(0, 5.17, 10.5), v3(1.95, 0.08, 0.55)), 0.2);
-  d = smax(d, -sdEllipsoid(p, v3(0, 3.4, 9.85), v3(1.5, 0.36, 0.5)), 0.6);
+  d = smin(d, sdEllipsoid(m, v3(0, 5.8, 9.9), v3(1.9, 0.52, 0.78)), 0.85);
+  d = smin(d, sdEllipsoid(m, v3(0, 4.62, 9.8), v3(1.65, 0.62, 0.82)), 0.85);
+  d = smax(d, -sdEllipsoid(m, v3(0, 5.2, 10.55), v3(1.95, 0.07, 0.55)), 0.2);
+  d = smax(d, -sdEllipsoid(p, v3(0, 3.45, 9.9), v3(1.5, 0.34, 0.5)), 0.55);
 
-  // ears
-  d = smin(d, sdEllipsoid(s, v3(6.75, 10.6, -0.8), v3(0.5, 2.7, 1.5)), 0.5);
+  // ears: helix rim, a hollow concha and the lobe
+  d = smin(d, sdEllipsoid(s, v3(6.75, 10.6, -0.8), v3(0.55, 2.8, 1.55)), 0.5);
+  d = smax(d, -sdEllipsoid(s, v3(7.15, 10.35, -0.6), v3(0.3, 1.15, 0.65)), 0.45);
 
-  // neck, leaning forward a little, with the two big neck muscles
-  d = smin(d, sdCapsule(p, v3(0, 8.0, -2.4), v3(0, -12, -1.2), 5.2), 3.2);
-  d = smin(d, sdCapsule(s, v3(4.8, 8.4, -2.0), v3(1.4, -10, 3.4), 0.8), 1.6);
+  // a strong neck with the two big neck muscles and the Adam's apple
+  d = smin(d, sdCapsule(p, v3(0, 7.6, -2.4), v3(0, -12, -1.0), 5.5), 2.6);
+  d = smin(d, sdCapsule(s, v3(4.8, 8.4, -2.0), v3(1.4, -10, 3.6), 0.9), 1.5);
+  d = smin(d, sdEllipsoid(p, v3(0, -3.2, 4.15), v3(0.75, 1.15, 0.7)), 1.0);
   return d;
 }
 
@@ -85,11 +105,11 @@ function eyeDistance(pLocal) {
   return eyes(v3(Math.abs(p[0]), p[1], p[2])) / CM;
 }
 
-// Eyelids: only an almond-shaped window of each eyeball glows.
+// Eyelids: only a narrow, almond-shaped window of each eyeball glows.
 function insideEyeOpening(pLocal) {
   const p = toCm(pLocal);
-  const x = (Math.abs(p[0]) - EYE[0]) / 1.6;
-  const y = (p[1] - EYE[1] + 0.05) / 0.75;
+  const x = (Math.abs(p[0]) - EYE[0]) / 1.55;
+  const y = (p[1] - EYE[1] + 0.05) / 0.6;
   return Math.abs(x) < 1 && y * y < (1 - x * x) * (1 - x * x);
 }
 
@@ -171,10 +191,10 @@ export function renderHead({
 
       let t = distance - 4;
       let hit = false;
-      for (let s = 0; s < 180 && t < distance + 4; s++) {
+      for (let s = 0; s < 220 && t < distance + 4; s++) {
         const d = scene(add(ro, mul(rd, t)));
         if (d < 0.0008) { hit = true; break; }
-        t += d * 0.85;
+        t += d * 0.8;
       }
       if (!hit) continue;
 
