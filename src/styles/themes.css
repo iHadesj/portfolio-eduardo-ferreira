@@ -19,6 +19,13 @@ html[data-theme="light"] {
   --color-signal-deep: #000000;
   --color-flare: #000000;
   --color-steel: #3d4049;
+  --color-term-green: #1a7f37;
+  --color-term-blue: #0969da;
+  --color-term-yellow: #9a6700;
+  --color-term-red: #cf222e;
+  --color-ribbon-near: #0a0a0c;
+  --color-ribbon-mid: #4d5563;
+  --color-ribbon-far: #a7afbd;
   --gradient-signal: linear-gradient(
     135deg,
     #000000 0%,
@@ -33,31 +40,38 @@ html[data-theme="light"] {
      soft grey rather than black, and the grain darkens the white. */
   --ambient-line: color-mix(in oklab, var(--color-smoke) 30%, transparent);
   --ambient-line-opacity: 0.6;
-  --ambient-trace: color-mix(in oklab, var(--color-signal) 34%, transparent);
   --ambient-horizon: color-mix(in oklab, var(--color-signal) 4%, transparent);
   --ambient-vignette: color-mix(in oklab, #000 10%, transparent);
   --ambient-grain-opacity: 0.035;
 }
 
-/* Phosphor — secret theme (Fase 7 easter egg). An old CRT: true black, white
-   phosphor at full strength, scanlines and heavy grain. Still no hue. */
+/* Phosphor — secret theme (Fase 7 easter egg). An old green-phosphor CRT:
+   true black, everything in P1 green at different intensities, scanlines
+   and heavy grain. */
 html[data-theme="underworld"] {
   color-scheme: dark;
   --color-void: #000000;
   --color-abyss: #000000;
   --color-basalt: #0b0b0b;
-  --color-ash: #2c2c2c;
-  --color-bone: #ffffff;
-  --color-smoke: #b4b4b4;
-  --color-signal: #ffffff; /* phosphor promoted to accent */
-  --color-signal-deep: #d0d0d0;
-  --color-flare: #ffffff;
-  --color-steel: #cfcfcf;
+  --color-ash: #123d22;
+  --color-bone: #7dffa8;
+  --color-smoke: #3fae66;
+  --color-signal: #5af78e; /* phosphor promoted to accent */
+  --color-signal-deep: #34a35c;
+  --color-flare: #c8ffd9;
+  --color-steel: #5af78e;
+  --color-term-green: #c8ffd9;
+  --color-term-blue: #7dffa8;
+  --color-term-yellow: #c8ffd9;
+  --color-term-red: #c8ffd9;
+  --color-ribbon-near: #b8ffd0;
+  --color-ribbon-mid: #4fd57f;
+  --color-ribbon-far: #1d6b3b;
   --gradient-signal: linear-gradient(
     135deg,
-    #ffffff 0%,
-    #e6e6e6 45%,
-    #9a9a9a 100%
+    #c8ffd9 0%,
+    #5af78e 45%,
+    #1d6b3b 100%
   );
   --glow-signal:
     0 0 0 1px color-mix(in oklab, var(--color-signal) 35%, transparent),
@@ -65,8 +79,6 @@ html[data-theme="underworld"] {
 
   --ambient-line: color-mix(in oklab, var(--color-bone) 20%, transparent);
   --ambient-line-opacity: 0.5;
-  --ambient-trace: color-mix(in oklab, var(--color-bone) 50%, transparent);
-  --ambient-glint: var(--color-flare);
   --ambient-horizon: color-mix(in oklab, var(--color-bone) 6%, transparent);
   --ambient-vignette: color-mix(in oklab, #000 78%, transparent);
   --ambient-grain-opacity: 0.1;

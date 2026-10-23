@@ -37,7 +37,6 @@ export async function GithubActivity({
 
   return (
     <ScrollSection
-      lean={1}
       id="github"
       className="container-hades section-pad scroll-mt-24"
       flowStrength={18}

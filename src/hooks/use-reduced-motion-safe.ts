@@ -8,7 +8,7 @@ import { useMounted } from "@/hooks/use-mounted";
  *
  * motion's `useReducedMotion` already knows the real value on the very first
  * client render, while the server rendered with `false`. Any consumer that
- * returns different markup for reduced motion (Marquee, ScrollCue, Lenis)
+ * returns different markup for reduced motion (Marquee, Lenis)
  * therefore hydrated against mismatched HTML — React error #418.
  *
  * Gating on `useMounted` keeps the hydration render identical to the server's,

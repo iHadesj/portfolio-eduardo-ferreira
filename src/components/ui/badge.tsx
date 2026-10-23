@@ -9,6 +9,8 @@ const badgeVariants = cva(
         default: "border-ash text-smoke",
         signal: "border-signal/40 text-signal",
         flare: "border-flare/40 text-flare",
+        ok: "border-term-green/40 text-term-green",
+        pending: "border-term-yellow/40 text-term-yellow",
       },
     },
     defaultVariants: { variant: "default" },

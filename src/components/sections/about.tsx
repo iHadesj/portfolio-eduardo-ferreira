@@ -12,7 +12,6 @@ export function About({ dict }: { dict: Dictionary }) {
 
   return (
     <ScrollSection
-      lean={1}
       id="sobre"
       className="about-section container-hades section-pad scroll-mt-24"
     >
@@ -32,7 +31,7 @@ export function About({ dict }: { dict: Dictionary }) {
           </Reveal>
         </div>
 
-        <Reveal delay={0.1} className="about-identity">
+        <Reveal className="about-identity">
           <div className="about-portrait-frame">
             <Portrait
               alt={dict.about.portraitAlt}

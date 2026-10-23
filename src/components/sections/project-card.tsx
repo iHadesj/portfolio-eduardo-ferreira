@@ -67,14 +67,14 @@ export function ProjectCard({
             alt={coverAlt}
             fill
             sizes="(min-width: 768px) 20rem, 100vw"
-            className="object-cover object-top transition-transform duration-300 group-hover:scale-[1.03]"
+            className="object-cover object-top grayscale transition duration-300 group-hover:scale-[1.03] group-hover:grayscale-0"
           />
         ) : (
           <div
             className="absolute inset-0 grid place-items-center transition-transform duration-300 group-hover:scale-[1.03]"
             style={{
               background:
-                "radial-gradient(circle at 30% 25%, color-mix(in oklab, var(--color-signal) 16%, transparent), transparent 60%), linear-gradient(160deg, #1b1622, #0f0b15)",
+                "radial-gradient(circle at 30% 25%, color-mix(in oklab, var(--color-signal) 12%, transparent), transparent 60%), linear-gradient(160deg, var(--color-basalt), var(--color-abyss))",
             }}
           >
             {coverGlyph(project.stack)}
@@ -89,7 +89,13 @@ export function ProjectCard({
 
       <div className="flex flex-col gap-3">
         <Badge
-          variant={project.status === "in-progress" ? "flare" : "default"}
+          variant={
+            project.status === "in-progress"
+              ? "pending"
+              : project.status === "shipped"
+                ? "ok"
+                : "default"
+          }
           className="self-start"
         >
           {dict.projects.statuses[project.status]}

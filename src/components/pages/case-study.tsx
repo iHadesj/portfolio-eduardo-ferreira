@@ -59,7 +59,13 @@ export function CaseStudyPage({
 
       <header className="border-ash flex flex-col gap-5 border-b pb-10">
         <Badge
-          variant={project.status === "in-progress" ? "flare" : "default"}
+          variant={
+            project.status === "in-progress"
+              ? "pending"
+              : project.status === "shipped"
+                ? "ok"
+                : "default"
+          }
           className="self-start"
         >
           {dict.projects.statuses[project.status]}

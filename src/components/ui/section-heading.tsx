@@ -23,7 +23,6 @@ export function SectionHeading({
 }: SectionHeadingProps) {
   return (
     <Reveal
-      distance={36}
       className={cn(
         "flex flex-col gap-3",
         align === "center" && "items-center text-center",

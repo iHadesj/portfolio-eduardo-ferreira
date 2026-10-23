@@ -1,16 +1,15 @@
 /**
- * The hero ribbon's backbone: a closed figure-eight that only *suggests* the
- * infinity sign. Three things keep it from reading as a logo:
+ * The ribbon's backbone: a closed figure-eight that should read as ∞ from
+ * every angle the reader can turn it to. So it is symmetric — mirror-image
+ * lobes, no tilt — and only two things give it a third dimension:
  *
- * - The crossing never touches. The two strands pass each other at different
- *   depths (`LIFT`), so the waist opens and closes as the sculpture turns.
- * - The lobes are not mirror images (`LOBE_BIAS`) and are tipped in opposite
- *   directions (`SADDLE`), so it reads as a twisted loop from most angles.
+ * - The crossing never touches. The two strands pass each other at slightly
+ *   different depths (`LIFT`), so the waist opens and closes as it turns.
  * - The ribbon keeps its single Möbius half-twist, distributed over a
  *   rotation-minimising frame so the surface never flips abruptly.
  *
- * Pure math, no three.js: the WebGL geometry, its particles and the SVG
- * poster generator all sample this same curve, so every rendition matches.
+ * Pure math, no three.js: the GPU scene and the server-side ASCII poster
+ * both sample this same curve, so every rendition matches.
  */
 
 export type Vec3 = [number, number, number];
@@ -19,22 +18,12 @@ const TAU = Math.PI * 2;
 
 /** Half-span of the loop along x. */
 const SPAN = 1.3;
-/** Lobe height relative to the span. */
-const LOBE_HEIGHT = 1.22;
+/** Lobe height relative to the span: full enough to keep both loops open. */
+const LOBE_HEIGHT = 1.4;
 /** 1 = Bernoulli lemniscate (slender lobes), 0 = Gerono (round lobes). */
 const ROUNDNESS = 0.5;
 /** Depth that separates the two strands where an infinity sign would cross. */
-const LIFT = 0.72;
-/** Opposite tilt per lobe: a gentle saddle instead of a flat drawing. */
-const SADDLE = 0.1;
-/** Right lobe slightly larger than the left one. */
-const LOBE_BIAS = 0.08;
-/** Re-centres the loop after the lobe bias pushed it to the right. */
-const CENTER_SHIFT = -0.1;
-
-/** Ribbon cross-section, shared by the mesh and the particles. */
-export const RIBBON_HALF_WIDTH = 0.3;
-export const RIBBON_HALF_THICKNESS = 0.032;
+const LIFT = 0.36;
 
 /**
  * Rotation of the ribbon's width at u = 0. With 0 the right tip would lie
@@ -46,24 +35,9 @@ export function infinityPoint(u: number): Vec3 {
   const s = Math.sin(u);
   const c = Math.cos(u);
   const denominator = 1 + ROUNDNESS * s * s;
-  const lobe = 1 + LOBE_BIAS * c;
-  const wobble = 1 + Math.sin(u * 3 + 0.4) * 0.018 + Math.sin(u * 7) * 0.009;
-  const x = ((SPAN * c) / denominator) * lobe * wobble;
-  const y = ((SPAN * LOBE_HEIGHT * s * c) / denominator) * lobe * wobble;
-  const z = LIFT * s + SADDLE * c * Math.abs(c) + Math.sin(u * 2 + 0.9) * 0.025;
-  return [x + CENTER_SHIFT, y, z];
-}
-
-/** Organic variation of the ribbon width along the loop (closed in u). */
-export function ribbonWidth(u: number) {
-  return (
-    RIBBON_HALF_WIDTH *
-    (1 + Math.sin(u * 5 - 0.6) * 0.1 + Math.sin(u * 9) * 0.04)
-  );
-}
-
-export function ribbonThickness(u: number) {
-  return RIBBON_HALF_THICKNESS * (1 + Math.sin(u * 4 + 1.1) * 0.16);
+  const x = (SPAN * c) / denominator;
+  const y = (SPAN * LOBE_HEIGHT * s * c) / denominator;
+  return [x, y, LIFT * s];
 }
 
 const sub = (a: Vec3, b: Vec3): Vec3 => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
@@ -101,11 +75,6 @@ export interface RibbonFrame {
   width: Vec3;
   /** Direction of the ribbon's thickness: tangent × width. */
   depth: Vec3;
-  /**
-   * In-plane "outward" push used by the breathing shader. It fades to zero
-   * at the waist, where outward has no meaning, so the surface never tears.
-   */
-  outward: [number, number];
 }
 
 /**
@@ -171,28 +140,6 @@ export function createRibbonFrames(count: number): RibbonFrame[] {
       rotateAround(transported[index]!, tangent, (index / count) * totalTwist),
     );
     const depth = normalize(cross(tangent, width));
-    const planar = Math.hypot(tangent[0], tangent[1]) || 1;
-    // Left-hand perpendicular in the xy plane; one lobe runs clockwise and
-    // the other counter-clockwise, so cos(u) flips it to point outward in
-    // both and fades it out at the waist.
-    const lobeSide = Math.tanh(Math.cos(u) * 3.2);
-    const outward: [number, number] = [
-      (tangent[1] / planar) * lobeSide,
-      (-tangent[0] / planar) * lobeSide,
-    ];
-    return { u, center, tangent, width, depth, outward };
+    return { u, center, tangent, width, depth };
   });
-}
-
-/** Point on the ribbon surface: `across` and `through` are signed offsets. */
-export function ribbonPoint(
-  frame: RibbonFrame,
-  across: number,
-  through: number,
-): Vec3 {
-  return [
-    frame.center[0] + frame.width[0] * across + frame.depth[0] * through,
-    frame.center[1] + frame.width[1] * across + frame.depth[1] * through,
-    frame.center[2] + frame.width[2] * across + frame.depth[2] * through,
-  ];
 }

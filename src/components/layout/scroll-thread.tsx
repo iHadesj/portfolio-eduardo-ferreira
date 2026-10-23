@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useMediaQuery } from "@/hooks/use-media-query";
 import { useReducedMotionSafe } from "@/hooks/use-reduced-motion-safe";
 
 /**
@@ -204,20 +205,20 @@ function buildRoute(host: HTMLElement): Route | null {
   return { d: pathData(cubics), width, height, sampled: sampleRoute(cubics) };
 }
 
-export function ScrollThread({
-  hostRef,
-}: {
-  hostRef: React.RefObject<HTMLElement | null>;
-}) {
+export function ScrollThread() {
   const reduced = useReducedMotionSafe();
+  // Phones never see the thread (they get the CSS progress bar instead), so
+  // they must not pay for it either: no route building, no scroll listener.
+  const wide = useMediaQuery("(min-width: 48rem)");
   const [route, setRoute] = useState<Route | null>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const drawnRef = useRef<SVGPathElement>(null);
   const headRef = useRef<SVGGElement>(null);
 
   useEffect(() => {
-    const host = hostRef.current;
-    if (!host) return;
+    // The svg sits first inside the content column it traces.
+    const host = svgRef.current?.parentElement;
+    if (!wide || !host) return;
     let frame = 0;
     const rebuild = () => {
       cancelAnimationFrame(frame);
@@ -230,7 +231,7 @@ export function ScrollThread({
       cancelAnimationFrame(frame);
       observer.disconnect();
     };
-  }, [hostRef]);
+  }, [wide]);
 
   useEffect(() => {
     const path = drawnRef.current;
@@ -295,25 +296,29 @@ export function ScrollThread({
     };
   }, [route, reduced]);
 
-  if (!route) return null;
+  if (!wide) return null;
 
   return (
     <svg
       ref={svgRef}
       aria-hidden
-      className="scroll-thread pointer-events-none absolute top-0 left-0 hidden md:block"
-      width={route.width}
-      height={route.height}
-      viewBox={`0 0 ${route.width} ${route.height}`}
+      className="scroll-thread pointer-events-none absolute top-0 left-0"
+      width={route?.width ?? 0}
+      height={route?.height ?? 0}
+      viewBox={route ? `0 0 ${route.width} ${route.height}` : undefined}
     >
-      <path className="scroll-thread__ghost" d={route.d} />
-      <path ref={drawnRef} className="scroll-thread__drawn" d={route.d} />
-      {reduced ? null : (
-        <g ref={headRef} className="scroll-thread__head">
-          <circle r="7" className="scroll-thread__halo" />
-          <circle r="2.6" className="scroll-thread__tip" />
-        </g>
-      )}
+      {route ? (
+        <>
+          <path className="scroll-thread__ghost" d={route.d} />
+          <path ref={drawnRef} className="scroll-thread__drawn" d={route.d} />
+          {reduced ? null : (
+            <g ref={headRef} className="scroll-thread__head">
+              <circle r="7" className="scroll-thread__halo" />
+              <circle r="2.6" className="scroll-thread__tip" />
+            </g>
+          )}
+        </>
+      ) : null}
     </svg>
   );
 }

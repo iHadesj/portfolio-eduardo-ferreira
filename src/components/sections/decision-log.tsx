@@ -38,7 +38,7 @@ export function DecisionLog({
           // The <li> is only the list slot; `.decision` is the card, so the
           // reveal animates the visible box rather than an invisible wrapper.
           <li key={`${decision.choice}-${index}`}>
-            <Reveal delay={index * 0.05} className="decision">
+            <Reveal className="decision">
               <span aria-hidden className="decision__index">
                 {String(index + 1).padStart(2, "0")}
               </span>

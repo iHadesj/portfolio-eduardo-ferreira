@@ -28,6 +28,20 @@
   --color-flare: #ffffff; /* rarest highlight — pure white */
   --color-steel: #aeb3bd; /* code syntax / data viz (9.5:1) */
 
+  /* Console accents (the Snazzy palette the GitHub README uses). Only where
+     a real terminal would colour something: prompt user@host, directories,
+     status, errors, the cursor. Never as decoration. */
+  --color-term-green: #5af78e; /* user@host, ok, cursor (12:1) */
+  --color-term-blue: #57c7ff; /* paths and directories (9.6:1) */
+  --color-term-yellow: #f3f99d; /* in progress, warnings (16:1) */
+  --color-term-red: #ff5c57; /* errors (6.1:1) */
+
+  /* The ∞ ribbon, inked by depth: near strands bright, far ones cool and
+     sunk into the page (atmospheric perspective). */
+  --color-ribbon-near: #f2f4f8;
+  --color-ribbon-mid: #a9b2c2;
+  --color-ribbon-far: #4a5468;
+
   /* Radii */
   --radius-sm: 2px;
   --radius-md: 4px;
@@ -42,7 +56,7 @@
   --animate-marquee: marquee linear infinite;
 
   /* Fluid type scale */
-  --text-hero: clamp(2.25rem, 6.4vw, 4.75rem);
+  --text-hero: clamp(2.25rem, 5vw, 4rem);
   --text-hero--line-height: 1;
   --text-hero--letter-spacing: -0.045em;
   --text-hero--font-weight: 600;
@@ -88,8 +102,6 @@
      Themes override these values rather than the rules that consume them. */
   --ambient-line: color-mix(in oklab, var(--color-smoke) 30%, transparent);
   --ambient-line-opacity: 0.55;
-  --ambient-trace: color-mix(in oklab, var(--color-signal) 22%, transparent);
-  --ambient-glint: var(--color-signal);
   --ambient-horizon: color-mix(in oklab, var(--color-signal) 8%, transparent);
   --ambient-vignette: color-mix(in oklab, var(--color-void) 62%, transparent);
   --ambient-grain-opacity: 0.05;
@@ -156,7 +168,6 @@
     font-family: var(--font-body);
     font-synthesis-weight: none;
     -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
     overflow-x: clip;
   }
 
@@ -180,35 +191,555 @@
 }
 
 /* Continuous section rhythm for the home page: no ruled separators, the
-   thread crossing between sections marks the boundary. */
+   thread crossing between sections marks the boundary.
+
+   Each section rises and fades across its own view timeline (`cover`: from
+   its top entering the bottom edge to its bottom leaving the top edge, with
+   50% = centred and still). From md up it also arcs in from a side — which
+   side alternates by position — and leans back slightly. Pure compositor
+   work; without scroll-driven animations the sections simply sit still. */
 .scroll-flow-section {
+  --flow: 26px;
+  --lean: 1;
   position: relative;
 }
 
-.mobius-ambient-glow {
-  background:
-    radial-gradient(
-      circle at 50% 47%,
-      color-mix(in oklab, var(--color-signal) 39%, transparent) 0%,
-      color-mix(in oklab, var(--color-signal) 17%, transparent) 39%,
-      transparent 72%
-    ),
-    radial-gradient(
-      ellipse at 52% 54%,
-      color-mix(in oklab, var(--color-steel) 11%, transparent),
-      transparent 76%
-    );
+.scroll-flow-section:nth-of-type(odd) {
+  --lean: -1;
 }
 
-@media (min-width: 40rem) {
-  .mobius-ambient-glow {
-    background: radial-gradient(
-      circle at 50% 46%,
-      color-mix(in oklab, var(--color-signal) 30%, transparent) 0%,
-      color-mix(in oklab, var(--color-signal) 11%, transparent) 36%,
-      transparent 66%
-    );
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .scroll-flow-section {
+      animation: section-flow linear both;
+      animation-timeline: view();
+    }
+
+    @media (min-width: 48rem) {
+      .scroll-flow-section:not(#hero) {
+        animation-name: section-flow-lean;
+      }
+    }
   }
+
+  @supports (animation-timeline: scroll()) {
+    .scroll-flow-progress {
+      position: fixed;
+      inset-inline: 0;
+      top: 4rem;
+      z-index: 49;
+      height: 1px;
+      background: var(--color-signal);
+      transform-origin: left;
+      animation: scroll-progress linear both;
+      animation-timeline: scroll(root block);
+    }
+  }
+}
+
+@keyframes section-flow {
+  0% {
+    transform: translateY(var(--flow));
+    opacity: 0.72;
+  }
+  14% {
+    opacity: 0.94;
+  }
+  18% {
+    transform: translateY(6px);
+  }
+  32% {
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(0);
+  }
+  72% {
+    opacity: 1;
+  }
+  82% {
+    transform: translateY(-6px);
+  }
+  90% {
+    opacity: 0.92;
+  }
+  100% {
+    transform: translateY(calc(var(--flow) * -1));
+    opacity: 0.76;
+  }
+}
+
+@keyframes section-flow-lean {
+  0% {
+    transform: perspective(1600px)
+      translate3d(calc(var(--lean) * 34px), var(--flow), 0) rotateX(7deg);
+    opacity: 0.72;
+  }
+  14% {
+    opacity: 0.94;
+  }
+  18% {
+    transform: perspective(1600px) translate3d(calc(var(--lean) * 14px), 6px, 0)
+      rotateX(3deg);
+  }
+  32% {
+    transform: perspective(1600px) translate3d(calc(var(--lean) * 5px), 3px, 0)
+      rotateX(1.2deg);
+    opacity: 1;
+  }
+  50% {
+    transform: perspective(1600px) translate3d(0, 0, 0) rotateX(0deg);
+  }
+  72% {
+    opacity: 1;
+  }
+  75% {
+    transform: perspective(1600px)
+      translate3d(calc(var(--lean) * -4px), -5px, 0) rotateX(-1.5deg);
+  }
+  90% {
+    opacity: 0.92;
+  }
+  100% {
+    transform: perspective(1600px)
+      translate3d(calc(var(--lean) * -22px), calc(var(--flow) * -1), 0)
+      rotateX(-3deg);
+    opacity: 0.76;
+  }
+}
+
+@keyframes scroll-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* The ∞ ribbon (components/three). The stage is a size container so the
+   poster's font size derives from its width: Geist Mono advances 0.6em and
+   lines are 1.2em, so `cols` characters fill the width exactly and the grid
+   lines up with the canvas that later replaces it. The poster is three
+   stacked layers, inked near → far; the canvas reads the same colours. */
+.ribbon-stage {
+  container-type: inline-size;
+  aspect-ratio: 9 / 5;
+}
+
+.ribbon-art {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  font-family: var(--font-mono);
+  font-size: calc(100cqw / (var(--cols) * 0.6));
+  font-weight: 500;
+  line-height: 1.2em;
+}
+
+.ribbon-art pre {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  font: inherit;
+  font-kerning: none;
+  font-variant-ligatures: none;
+  letter-spacing: 0;
+  white-space: pre;
+}
+
+.ribbon-art pre[data-depth="0"] {
+  color: var(--color-ribbon-near);
+}
+
+.ribbon-art pre[data-depth="1"] {
+  color: var(--color-ribbon-mid);
+}
+
+.ribbon-art pre[data-depth="2"] {
+  color: var(--color-ribbon-far);
+}
+
+.ribbon-art[data-layout="band"] {
+  display: none;
+}
+
+@media (min-width: 48rem) {
+  .ribbon-stage {
+    aspect-ratio: 5 / 2;
+  }
+
+  .ribbon-art[data-layout="band"] {
+    display: block;
+  }
+
+  .ribbon-art[data-layout="compact"] {
+    display: none;
+  }
+}
+
+/* "Drag to turn", worded for the input at hand. */
+.ribbon-hint {
+  color: var(--color-smoke);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+
+.ribbon-hint::before {
+  content: "[ ↔ ";
+  color: var(--color-term-green);
+}
+
+.ribbon-hint::after {
+  content: " ]";
+  color: var(--color-term-green);
+}
+
+.ribbon-hint__touch {
+  display: none;
+}
+
+@media (pointer: coarse) {
+  .ribbon-hint__mouse {
+    display: none;
+  }
+
+  .ribbon-hint__touch {
+    display: inline;
+  }
+}
+
+/* The hero's ASCII face (components/face). Each variant is a box shaped
+   like its grid (cols·0.6em × rows·1.2em); text, the pixel stream, the log,
+   the scan line and the eyes are stacked layers in the same art units.
+   Everything that moves animates opacity or transform on its own small
+   layer, so the run and the idle life after it never repaint. */
+.face {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.face__art {
+  position: relative;
+}
+
+.face__variant {
+  position: relative;
+  container-type: inline-size;
+  width: 100%;
+  aspect-ratio: calc(var(--cols) * 0.6 / (var(--rows) * 1.2));
+}
+
+.face__variant[data-variant="wide"] {
+  display: none;
+}
+
+.face__frame {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  color: var(--color-bone);
+  font-family: var(--font-mono);
+  font-size: calc(100cqw / (var(--cols) * 0.6));
+  font-weight: 600;
+  font-kerning: none;
+  font-variant-ligatures: none;
+  letter-spacing: 0;
+  line-height: 1.2em;
+  white-space: pre;
+}
+
+/* Each epoch exists only around its slot, crossfading with its neighbours. */
+.face__frame--early {
+  opacity: 0;
+  animation-name: face-pass;
+  animation-timing-function: linear;
+}
+
+.face__final {
+  position: absolute;
+  inset: 0;
+  animation: face-on 0.8s ease-out both;
+}
+
+.face__band {
+  bottom: auto;
+  animation: face-glitch 7.4s steps(1) infinite;
+}
+
+.face__debris {
+  position: absolute;
+  overflow: visible;
+  fill: var(--color-smoke);
+}
+
+.face__log,
+.face__eyes {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.face__log text {
+  fill: var(--color-smoke);
+  font-family: var(--font-mono);
+  animation: face-on 0.35s both;
+}
+
+.face__log text.is-mark {
+  fill: var(--color-term-green);
+}
+
+/* A faint line sweeping down the portrait, like a capture rig. */
+.face__scan {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  /* Static, so it stays on the compositor: fades the sweep out toward the
+     empty left of the box, where the head is not. */
+  mask-image: linear-gradient(to right, transparent 25%, #000 60%);
+}
+
+.face__scan::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 7%;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    color-mix(in oklab, var(--color-term-green) 5%, transparent) 75%,
+    color-mix(in oklab, var(--color-term-green) 22%, transparent) 97%,
+    transparent
+  );
+  transform: translateY(-100%);
+  animation: face-scan 5.5s linear 0.3s infinite;
+}
+
+/* The eyes light up when training is done, then breathe. The glow is a
+   static filter; only the layer's opacity animates. */
+.face__eyes {
+  fill: var(--color-flare);
+  filter: drop-shadow(0 0 1.5px var(--color-flare));
+  animation:
+    face-ignite 0.9s ease-out var(--done) both,
+    face-breathe 3.4s ease-in-out calc(var(--done) + 0.9s) infinite;
+}
+
+/* `$ ./psycho --train [█████████] done` under the portrait. */
+.face__caption {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: var(--color-smoke);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+
+.face__prompt {
+  color: var(--color-term-green);
+}
+
+.face__bar {
+  display: inline-block;
+  width: 5.5rem;
+  height: 0.55rem;
+  padding: 1px;
+  border: 1px solid var(--color-ash);
+}
+
+.face__bar > span {
+  display: block;
+  height: 100%;
+  background: var(--color-term-green);
+  transform-origin: left;
+  animation: face-progress var(--train) steps(9, end) var(--start) both;
+}
+
+.face__status {
+  color: var(--color-term-green);
+  animation: face-on 0.3s var(--done) both;
+}
+
+@keyframes face-pass {
+  0% {
+    opacity: 0;
+  }
+  22%,
+  62% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes face-on {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes face-glitch {
+  0%,
+  90% {
+    transform: none;
+  }
+  91% {
+    transform: translateX(-2em);
+  }
+  93% {
+    transform: translateX(1.2em);
+  }
+  95% {
+    transform: translateX(-0.7em);
+  }
+  96%,
+  100% {
+    transform: none;
+  }
+}
+
+@keyframes face-twinkle {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  40% {
+    opacity: 0.35;
+  }
+  70% {
+    opacity: 0.85;
+  }
+}
+
+/* Drift left about eight cells and fade, then snap back in from the right. */
+@keyframes face-flow {
+  0% {
+    transform: none;
+    opacity: 1;
+  }
+  82% {
+    transform: translateX(calc(-7.7 * 100cqw / var(--cols)));
+    opacity: 0;
+  }
+  83% {
+    transform: translateX(calc(2.3 * 100cqw / var(--cols)));
+    opacity: 0;
+  }
+  100% {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@keyframes face-scan {
+  0% {
+    transform: translateY(-100%);
+  }
+  70%,
+  100% {
+    transform: translateY(1450%);
+  }
+}
+
+@keyframes face-ignite {
+  0% {
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  45% {
+    opacity: 0.2;
+  }
+  60%,
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes face-breathe {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes face-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Phones: the art is sized by height, so the whole head fits in a band
+   short enough for the copy to start on the first screen. */
+@media (max-width: 63.999rem) {
+  .face {
+    --face-height: min(60vw, 14.5rem);
+    align-items: center;
+  }
+
+  .face__variant {
+    width: calc(var(--face-height) * var(--cols) * 0.6 / (var(--rows) * 1.2));
+    max-width: 100%;
+  }
+}
+
+@media (min-width: 64rem) {
+  .face__variant[data-variant="wide"] {
+    display: block;
+  }
+
+  .face__variant[data-variant="narrow"] {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .face__frame--early,
+  .face__scan {
+    display: none;
+  }
+
+  .face__final,
+  .face__band,
+  .face__debris,
+  .face__log text,
+  .face__eyes,
+  .face__status,
+  .face__bar > span {
+    animation: none;
+  }
+}
+
+/* GitHub contribution calendar as text: square cells (0.6em advance +
+   0.4em tracking = 1em = line height), sized so every week fits the width. */
+.heatmap-ascii {
+  container-type: inline-size;
+}
+
+.heatmap-ascii pre {
+  margin: 0;
+  color: var(--color-term-green);
+  font-family: var(--font-mono);
+  font-size: min(calc(100cqw / var(--cols)), 0.95rem);
+  letter-spacing: 0.4em;
+  line-height: 1;
+  white-space: pre;
 }
 
 /* Hero readout: the "who / stack / shipped" block, laid out like the output
@@ -216,7 +747,7 @@
    on phones. */
 .hero-caret {
   margin-left: 0.08em;
-  color: var(--color-signal);
+  color: var(--color-term-green);
   font-weight: 400;
   animation: caret-blink 1.1s steps(1) infinite;
 }
@@ -244,7 +775,7 @@
 }
 
 .hero-readout dt {
-  color: var(--color-smoke);
+  color: var(--color-term-blue);
 }
 
 .hero-readout dt::after {
@@ -303,6 +834,69 @@
 .project-card,
 .project-card--flip {
   border-radius: var(--radius-md);
+}
+
+/* Case studies past the first few: one line each, like `ls -l`. Title and
+   status share the first row; the summary wraps under the title on phones
+   and sits between them on wide screens. */
+.project-index {
+  display: grid;
+  margin-top: 0.75rem;
+  border-top: 1px solid var(--color-ash);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+}
+
+.project-index a {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.25rem 1rem;
+  padding-block: 0.85rem;
+  border-bottom: 1px solid var(--color-ash);
+  color: var(--color-smoke);
+  transition: color 160ms var(--ease-out-expo);
+}
+
+.project-index__title {
+  color: var(--color-bone);
+}
+
+.project-index__title::before {
+  content: "→ ";
+  color: var(--color-signal-deep);
+}
+
+.project-index__summary {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  line-height: 1.55;
+}
+
+.project-index__status {
+  grid-column: 2;
+  grid-row: 1;
+  font-size: 0.6875rem;
+}
+
+.project-index a:hover .project-index__title {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+@media (min-width: 48rem) {
+  .project-index a {
+    grid-template-columns: 14rem minmax(0, 1fr) auto;
+    align-items: baseline;
+  }
+
+  .project-index__summary {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .project-index__status {
+    grid-column: 3;
+  }
 }
 
 /* Experience: a wandering path instead of a ruled border. Each stop carries
@@ -1156,8 +1750,8 @@
   width: 0.4rem;
   height: 0.4rem;
   flex: 0 0 auto;
-  border-radius: 999px;
-  background: var(--color-signal);
+  border-radius: 0;
+  background: var(--color-term-green);
   animation: availability-pulse 2.6s var(--ease-out-soft) infinite;
 }
 
@@ -1174,16 +1768,11 @@
   animation: none;
 }
 
+/* Opacity only: it stays on the compositor (the old box-shadow ring
+   repainted the pill every frame). */
 @keyframes availability-pulse {
-  0% {
-    box-shadow: 0 0 0 0
-      color-mix(in oklab, var(--color-signal) 55%, transparent);
-  }
-  70% {
-    box-shadow: 0 0 0 0.42rem transparent;
-  }
-  100% {
-    box-shadow: 0 0 0 0 transparent;
+  50% {
+    opacity: 0.25;
   }
 }
 
@@ -1468,8 +2057,8 @@ html[data-theme="light"] .portrait {
    Ambient backdrop. A single fixed layer below all content (z-index: -1, so it
    sits above the propagated body background and below every stacking context
    on the page). `.ambient-field` holds the Cassini contour lines (an SVG used
-   as a mask, tinted by a token) plus the lemniscate trace; it is oversized so
-   the scroll-driven drift never exposes an edge. ::after is the horizon light
+   as a mask, tinted by a token); it is oversized so the scroll-driven drift
+   never exposes an edge. ::after is the horizon light
    and the vignette that darkens the edges, painted above the lines.
    ────────────────────────────────────────────────────────────────────────── */
 .ambient-backdrop {
@@ -1483,8 +2072,7 @@ html[data-theme="light"] .portrait {
 
 .ambient-field {
   position: absolute;
-  /* Centred a little right of and above the viewport centre: on the home
-     page the lemniscate sits behind the hero ribbon. */
+  /* Centred a little right of and above the viewport centre. */
   inset: -34% -50% -34% -18%;
   transform-origin: 50% 50%;
   /* Lines dissolve before any edge: a full-bleed pattern reads as wallpaper,
@@ -1497,8 +2085,7 @@ html[data-theme="light"] .portrait {
   );
 }
 
-.ambient-field__lines,
-.ambient-field__trace {
+.ambient-field__lines {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -1509,29 +2096,6 @@ html[data-theme="light"] .portrait {
   opacity: var(--ambient-line-opacity);
   background: var(--ambient-line);
   mask: url("/textures/cassini-field.svg") center / cover no-repeat;
-}
-
-.ambient-field__trace {
-  overflow: visible;
-  fill: none;
-}
-
-.ambient-field__lemniscate {
-  stroke: var(--ambient-trace);
-  stroke-width: 1.6;
-  vector-effect: non-scaling-stroke;
-}
-
-/* Hidden until motion is allowed: a still glint would read as a smudge. */
-/* No non-scaling-stroke here: it would measure the dashes in screen pixels
-   and ignore pathLength, splitting the single glint into several. */
-.ambient-field__glint {
-  display: none;
-  stroke: var(--ambient-glint);
-  stroke-width: 1.4;
-  stroke-linecap: round;
-  stroke-dasharray: 3.5 96.5;
-  filter: drop-shadow(0 0 4px var(--ambient-glint));
 }
 
 .ambient-backdrop::after {
@@ -1551,6 +2115,26 @@ html[data-theme="light"] .portrait {
     );
 }
 
+/* Scroll-into-view reveal (components/ui/reveal). Scrubbed by the element's
+   own view timeline, so it costs nothing on the main thread; it only runs
+   where scroll-driven animations exist and motion is welcome. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .reveal {
+      animation: reveal-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 60%;
+    }
+  }
+}
+
+@keyframes reveal-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
 @keyframes ambient-drift {
   from {
     transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
@@ -1563,12 +2147,6 @@ html[data-theme="light"] .portrait {
   }
 }
 
-@keyframes ambient-glint {
-  to {
-    stroke-dashoffset: -100;
-  }
-}
-
 @media (prefers-reduced-motion: no-preference) {
   /* Wander across the contour map as the page scrolls. Browsers without
      scroll-driven animations keep the static field, which is fine. */
@@ -1577,14 +2155,6 @@ html[data-theme="light"] .portrait {
       animation: ambient-drift linear both;
       animation-timeline: scroll(root block);
     }
-  }
-}
-
-/* The glint repaints the trace every frame, so only roomy screens get it. */
-@media (prefers-reduced-motion: no-preference) and (min-width: 64rem) {
-  .ambient-field__glint {
-    display: inline;
-    animation: ambient-glint 26s linear infinite;
   }
 }
 

@@ -72,7 +72,8 @@ export const en = {
     availabilityOpen: "Open to opportunities",
     availabilityClosed: "Not available right now",
     availabilityAria: "Professional availability",
-    scrollCue: "scroll",
+    ribbonHintMouse: "drag with your mouse to turn it",
+    ribbonHintTouch: "drag with your finger to turn it",
   },
 
   about: {
@@ -155,6 +156,7 @@ export const en = {
     description:
       "For each one I walk through what I set out to solve, how I solved it, and what I'd do differently today.",
     moreOnGithub: "There's more on my GitHub ↓",
+    indexLabel: "more",
     caseStudy: "Case study →",
     repoAria: "Repository for {title}",
     demoAria: "Live demo of {title}",
@@ -223,7 +225,6 @@ export const en = {
       "Pulled straight from the API, so it's what's actually there — including the days I didn't commit anything.",
     contributionsSuffix: "contributions in the last year",
     contributionsAria: "{total} contributions in the last year",
-    contributionsDay: "{count} contributions on {date}",
     feed: {
       error: "The GitHub oracle didn't answer.",
       retry: "Try again",

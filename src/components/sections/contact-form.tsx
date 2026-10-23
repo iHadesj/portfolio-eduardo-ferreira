@@ -31,7 +31,7 @@ function Field({
       </label>
       {children}
       {error ? (
-        <p id={`${id}-error`} role="alert" className="text-flare text-sm">
+        <p id={`${id}-error`} role="alert" className="text-term-red text-sm">
           {error}
         </p>
       ) : null}
@@ -125,7 +125,7 @@ export function ContactForm({ locale }: { locale: Locale }) {
       </button>
 
       {state.status === "error" && !fe ? (
-        <p role="alert" className="text-flare text-sm">
+        <p role="alert" className="text-term-red text-sm">
           {state.message}
         </p>
       ) : null}

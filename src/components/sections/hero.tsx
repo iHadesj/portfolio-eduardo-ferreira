@@ -2,8 +2,9 @@ import { buttonVariants } from "@/components/ui/button";
 import { SmoothLink } from "@/components/ui/smooth-link";
 import { TransitionLink } from "@/components/ui/transition-link";
 import { AvailabilityPill } from "@/components/ui/availability-pill";
-import { Hero3D } from "@/components/three/hero-3d";
-import { ScrollCue } from "@/components/sections/scroll-cue";
+import { AsciiFace } from "@/components/face/ascii-face";
+import { RibbonStage } from "@/components/three/ribbon-stage";
+import { RibbonPoster } from "@/components/three/ribbon-poster";
 import { siteConfig } from "@/lib/site-config";
 import { ScrollSection } from "@/components/layout/scroll-flow";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
@@ -53,21 +54,24 @@ export function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
 
   return (
     <ScrollSection id="hero" className="relative isolate" flowStrength={18}>
-      <div className="container-hades relative grid min-h-dvh grid-cols-1 content-center gap-6 pt-20 pb-14 lg:grid-cols-12 lg:gap-8 lg:pb-20">
-        <div className="relative z-10 flex min-w-0 flex-col gap-5 lg:col-span-7">
+      <div className="container-hades relative grid grid-cols-1 items-center gap-4 pt-18 sm:gap-6 sm:pt-24 lg:min-h-[calc(100dvh-7rem)] lg:grid-cols-12 lg:gap-8">
+        <div className="relative z-10 flex min-w-0 flex-col gap-5 lg:col-span-6">
           <p className="text-smoke font-mono text-sm">
-            <span aria-hidden>hades@grajau:~$ </span>
+            <span aria-hidden>
+              <span className="text-term-green">hades@grajau</span>:
+              <span className="text-term-blue">~</span>${" "}
+            </span>
             {t.prompt}
           </p>
 
           <div className="flex flex-col gap-3">
-            <h1 className="font-display text-hero text-bone">
+            <h1 className="font-display text-hero text-bone whitespace-nowrap">
               Edu Ferreira
               <span aria-hidden className="hero-caret">
                 _
               </span>
             </h1>
-            <p className="text-bone/90 font-body text-lead max-w-[44ch]">
+            <p className="text-bone/90 font-body sm:text-lead max-w-[44ch] text-base">
               {t.role}
             </p>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
@@ -150,13 +154,19 @@ export function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
           </div>
         </div>
 
-        <div className="relative min-w-0 lg:col-span-5">
-          <Hero3D className="mx-auto aspect-square w-full max-w-[22rem] lg:max-w-none" />
-        </div>
+        {/* Phones: the face crowns the copy. Wide screens: beside it. */}
+        <AsciiFace className="-order-1 lg:order-none lg:col-span-6" />
       </div>
 
-      <div className="pointer-events-none absolute inset-x-0 bottom-6 hidden justify-center lg:flex">
-        <ScrollCue />
+      {/* The ∞ ribbon gets the full width right under the fold line, so on a
+          desktop its top already peeks into the first screen. */}
+      <div className="container-hades pt-10 pb-4 sm:pt-14 sm:pb-10 lg:pt-4">
+        <RibbonStage
+          hintMouse={t.ribbonHintMouse}
+          hintTouch={t.ribbonHintTouch}
+        >
+          <RibbonPoster />
+        </RibbonStage>
       </div>
     </ScrollSection>
   );

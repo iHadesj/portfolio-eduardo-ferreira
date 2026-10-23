@@ -20,7 +20,6 @@ export function Experience({ dict }: { dict: Dictionary }) {
 
   return (
     <ScrollSection
-      lean={-1}
       id="trajetoria"
       className="container-hades section-pad scroll-mt-24"
     >
@@ -72,12 +71,7 @@ export function Experience({ dict }: { dict: Dictionary }) {
                 aria-hidden
                 className="border-abyss bg-ash group-hover:bg-signal absolute top-1.5 -left-[37px] size-2.5 rounded-full border-2 transition-colors"
               />
-              <Reveal
-                delay={index * 0.06}
-                from={index % 2 === 0 ? "left" : "right"}
-                distance={24}
-                className="flex flex-col gap-2"
-              >
+              <Reveal className="flex flex-col gap-2">
                 <span className="text-label text-smoke font-mono uppercase">
                   {item.period}
                 </span>

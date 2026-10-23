@@ -85,7 +85,8 @@ export const pt = {
     availabilityOpen: "Aberto a oportunidades",
     availabilityClosed: "Sem disponibilidade no momento",
     availabilityAria: "Disponibilidade profissional",
-    scrollCue: "scroll",
+    ribbonHintMouse: "arraste com o mouse para girar",
+    ribbonHintTouch: "arraste com o dedo para girar",
   },
 
   about: {
@@ -168,6 +169,7 @@ export const pt = {
     description:
       "Em cada um eu conto o que queria resolver, como resolvi e o que faria diferente hoje.",
     moreOnGithub: "Tem mais coisa no meu GitHub ↓",
+    indexLabel: "outros",
     caseStudy: "Case study →",
     repoAria: "Repositório de {title}",
     demoAria: "Demo de {title}",
@@ -236,7 +238,6 @@ export const pt = {
       "Puxado direto da API, então é o que está lá de verdade — inclusive os dias em que eu não commitei nada.",
     contributionsSuffix: "contribuições no último ano",
     contributionsAria: "{total} contribuições no último ano",
-    contributionsDay: "{count} contribuições em {date}",
     feed: {
       error: "O oráculo do GitHub não respondeu.",
       retry: "Tentar de novo",

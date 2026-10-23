@@ -72,11 +72,7 @@ export function TechStack({ dict }: { dict: Dictionary }) {
   });
 
   return (
-    <ScrollSection
-      lean={-1}
-      id="stack"
-      className="tech-stack section-pad scroll-mt-24"
-    >
+    <ScrollSection id="stack" className="tech-stack section-pad scroll-mt-24">
       <div className="container-hades">
         <div className="tech-stack__intro">
           <SectionHeading
