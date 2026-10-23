@@ -7,7 +7,6 @@ export interface RepoDTO {
   stars: number;
   forks: number;
   language: string | null;
-  languageColor: string | null;
   topics: string[];
   pushedAt: string;
 }
@@ -42,27 +41,6 @@ export interface ContributionsData {
   days: ContributionDay[];
 }
 
-const LANGUAGE_COLORS: Record<string, string> = {
-  Java: "#b07219",
-  TypeScript: "#3178c6",
-  JavaScript: "#f1e05a",
-  HTML: "#e34c26",
-  CSS: "#563d7c",
-  Python: "#3572a5",
-  Shell: "#89e051",
-  "C#": "#178600",
-  "C++": "#f34b7d",
-  C: "#555555",
-  Go: "#00add8",
-  Rust: "#dea584",
-  Kotlin: "#a97bff",
-  PHP: "#4f5d95",
-  Ruby: "#701516",
-  Dockerfile: "#384d54",
-  Vue: "#41b883",
-  SCSS: "#c6538c",
-};
-
 interface GitHubRepo {
   name: string;
   description: string | null;
@@ -84,9 +62,6 @@ function mapRepo(repo: GitHubRepo): RepoDTO {
     stars: repo.stargazers_count,
     forks: repo.forks_count,
     language: repo.language,
-    languageColor: repo.language
-      ? (LANGUAGE_COLORS[repo.language] ?? "#9a92a8")
-      : null,
     topics: repo.topics ?? [],
     pushedAt: repo.pushed_at,
   };

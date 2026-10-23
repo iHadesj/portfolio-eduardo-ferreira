@@ -12,12 +12,11 @@ export function CopyEmail() {
   return (
     <button
       type="button"
-      data-cursor="hover"
       onClick={() => {
         void navigator.clipboard?.writeText(siteConfig.email);
         toast(dict.common.emailCopied);
       }}
-      className="link-underline font-display text-bone hover:text-molten w-fit text-left text-[length:clamp(1.5rem,5vw,3rem)] leading-tight transition-colors hover:bg-[length:100%_1px]"
+      className="link-underline font-display text-bone hover:text-signal w-fit text-left text-[length:clamp(1.5rem,5vw,3rem)] leading-tight transition-colors hover:bg-[length:100%_1px]"
     >
       {siteConfig.email}
     </button>

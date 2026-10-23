@@ -27,9 +27,8 @@ export function LocaleToggle({ className }: { className?: string }) {
       hrefLang={target}
       aria-label={dict.common.switchLanguage}
       title={dict.common.switchLanguage}
-      data-cursor="hover"
       className={cn(
-        "rounded-pill border-ash text-smoke hover:border-molten hover:text-bone inline-flex h-9 items-center justify-center border px-3 font-mono text-xs tracking-[0.08em] uppercase transition-colors duration-200",
+        "rounded-sm border-ash text-smoke hover:border-signal hover:text-bone inline-flex h-9 items-center justify-center border px-3 font-mono text-xs tracking-[0.08em] uppercase transition-colors duration-200",
         className,
       )}
     >

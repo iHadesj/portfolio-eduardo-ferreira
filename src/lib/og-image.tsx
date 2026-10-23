@@ -15,7 +15,7 @@ import { siteConfig } from "@/lib/site-config";
  * 1. Satori (what `next/og` renders with) supports a subset of CSS — flexbox
  *    only, no CSS custom properties. So the palette is repeated here as
  *    literals instead of reading `@theme`, and the cards are always the dark
- *    Obsidian theme: a social preview has no viewer preference to follow.
+ *    terminal theme: a social preview has no viewer preference to follow.
  * 2. Satori cannot read woff2, which is the only format `public/fonts` ships.
  *    `loadFonts` therefore looks for optional TTF/OTF copies and silently falls
  *    back to the built-in face — the layout carries the brand either way.
@@ -24,23 +24,23 @@ import { siteConfig } from "@/lib/site-config";
 export const OG_SIZE = { width: 1200, height: 630 };
 export const OG_CONTENT_TYPE = "image/png";
 
-const ABYSS = "#0e0c12";
-const ASH = "#2b2535";
-const BONE = "#ede8df";
-const SMOKE = "#9a92a8";
-const MOLTEN = "#e8a33d";
+const ABYSS = "#0a0a0c";
+const ASH = "#26262c";
+const BONE = "#f2f4f8";
+const SMOKE = "#9198a5";
+const SIGNAL = "#c8cbd4";
 
-const DISPLAY_FONT = "Clash Display";
-const BODY_FONT = "Satoshi";
+const DISPLAY_FONT = "Geist Mono";
+const BODY_FONT = "Geist";
 
 /**
  * TODO_EDU: drop TTF or OTF copies of the two brand faces at
- * `public/fonts/og/` and the cards pick them up automatically. Fontshare ships
- * both formats; the woff2 files already in `public/fonts` cannot be used here.
+ * `public/fonts/og/` and the cards pick them up automatically. Vercel ships
+ * both as TTF in the `geist` package; next/font serves woff2 only.
  */
 const FONT_FILES = [
-  { file: "ClashDisplay-Semibold.ttf", name: DISPLAY_FONT, weight: 600 },
-  { file: "Satoshi-Regular.ttf", name: BODY_FONT, weight: 400 },
+  { file: "GeistMono-SemiBold.ttf", name: DISPLAY_FONT, weight: 600 },
+  { file: "Geist-Regular.ttf", name: BODY_FONT, weight: 400 },
 ] as const;
 
 type LoadedFont = {
@@ -124,7 +124,7 @@ export async function renderOgImage({
             fontSize: 22,
             letterSpacing: 4,
             textTransform: "uppercase",
-            color: MOLTEN,
+            color: SIGNAL,
           }}
         >
           {eyebrow}
@@ -201,14 +201,14 @@ export async function renderOgImage({
               height: 10,
               marginRight: 14,
               borderRadius: 999,
-              backgroundColor: MOLTEN,
+              backgroundColor: SIGNAL,
             }}
           />
           {footer}
         </div>
       </div>
 
-      {/* Signature molten rule — the one piece every card shares. */}
+      {/* Signature signal rule — the one piece every card shares. */}
       <div
         style={{
           position: "absolute",

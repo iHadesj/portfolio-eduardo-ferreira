@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 
 interface CardProps extends React.ComponentProps<"div"> {
-  /** Adds the molten border + glow hover affordance (for clickable cards). */
+  /** Adds the signal border + glow hover affordance (for clickable cards). */
   interactive?: boolean;
 }
 
@@ -10,7 +10,7 @@ export function Card({ className, interactive = false, ...props }: CardProps) {
     <div
       className={cn(
         "border-ash bg-basalt ease-out-expo rounded-lg border transition duration-200",
-        interactive && "hover:border-molten/40 hover:glow-molten",
+        interactive && "hover:border-signal/40 hover:glow-signal",
         className,
       )}
       {...props}

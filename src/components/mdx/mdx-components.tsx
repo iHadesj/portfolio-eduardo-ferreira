@@ -30,7 +30,7 @@ export function Metric({ label, value }: { label: string; value: string }) {
 
 export function Callout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="not-prose my-6 rounded-md border border-molten/30 bg-molten/5 px-4 py-3 text-sm text-smoke">
+    <div className="not-prose my-6 rounded-md border border-signal/30 bg-signal/5 px-4 py-3 text-sm text-smoke">
       {children}
     </div>
   );

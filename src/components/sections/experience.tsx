@@ -70,7 +70,7 @@ export function Experience({ dict }: { dict: Dictionary }) {
               )}
               <span
                 aria-hidden
-                className="border-abyss bg-ash group-hover:bg-molten absolute top-1.5 -left-[37px] size-2.5 rounded-full border-2 transition-colors"
+                className="border-abyss bg-ash group-hover:bg-signal absolute top-1.5 -left-[37px] size-2.5 rounded-full border-2 transition-colors"
               />
               <Reveal
                 delay={index * 0.06}
@@ -90,7 +90,7 @@ export function Experience({ dict }: { dict: Dictionary }) {
                 <ul className="text-smoke flex flex-col gap-1 text-sm">
                   {item.bullets.map((bullet, bulletIndex) => (
                     <li key={bulletIndex} className="flex gap-2">
-                      <span aria-hidden className="text-molten">
+                      <span aria-hidden className="text-signal">
                         —
                       </span>
                       <span>{bullet}</span>

@@ -5,10 +5,10 @@ import { fill } from "@/lib/i18n/format";
 
 const LEVEL_BG = [
   "bg-ash/40",
-  "bg-molten/30",
-  "bg-molten/55",
-  "bg-molten/80",
-  "bg-molten",
+  "bg-signal/30",
+  "bg-signal/55",
+  "bg-signal/80",
+  "bg-signal",
 ];
 
 export function ContributionsHeatmap({

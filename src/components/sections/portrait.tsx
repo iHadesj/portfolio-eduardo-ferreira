@@ -6,7 +6,7 @@ import { siteConfig } from "@/lib/site-config";
  *
  * The photo is desaturated in CSS and then remapped between two theme tokens by
  * two blend layers (`lighten` lifts the blacks to abyss, `darken` pulls the
- * whites down to molten). Doing it with tokens rather than a baked-in treatment
+ * whites down to signal). Doing it with tokens rather than a baked-in treatment
  * means the same file follows Obsidian, Elysium and Underworld without ever
  * fighting the palette — and there is nothing to re-export when the accent
  * changes.

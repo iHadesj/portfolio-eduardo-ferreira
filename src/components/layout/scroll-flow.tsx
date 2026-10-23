@@ -23,9 +23,9 @@ interface ScrollFlowProps {
 
 /**
  * Gives the home page one continuous, scroll-linked visual rhythm. The content
- * remains regular document flow; the ambient light is fixed and the thread
- * that doubles as the progress indicator is absolutely positioned behind the
- * sections, so anchors, keyboard navigation and native layout keep working.
+ * remains regular document flow; the thread that doubles as the progress
+ * indicator is absolutely positioned behind the sections, so anchors,
+ * keyboard navigation and native layout keep working.
  */
 export function ScrollFlow({ children, id, className }: ScrollFlowProps) {
   const rootRef = useRef<HTMLElement>(null);
@@ -42,27 +42,6 @@ export function ScrollFlow({ children, id, className }: ScrollFlowProps) {
     restDelta: 0.001,
   });
 
-  const firstGlowX = useTransform(progress, [0, 1], ["-7vw", "10vw"]);
-  const firstGlowY = useTransform(progress, [0, 1], ["-12vh", "58vh"]);
-  const secondGlowX = useTransform(progress, [0, 1], ["9vw", "-8vw"]);
-  const secondGlowY = useTransform(progress, [0, 1], ["58vh", "-18vh"]);
-  const thirdGlowX = useTransform(progress, [0, 1], ["-6vw", "7vw"]);
-  const thirdGlowY = useTransform(progress, [0, 1], ["46vh", "-24vh"]);
-  /* The travelling glows must not resolve to nothing: the tail of the page
-     (contact, footer) would otherwise land on a flat fill with no light at all. */
-  const ambientOpacity = useTransform(
-    progress,
-    [0, 0.88, 1],
-    [0.75, 0.62, 0.5],
-  );
-  /* A cold counterweight that only exists in the second half, so the descent
-     shifts in temperature instead of simply dimming. */
-  const thirdGlowOpacity = useTransform(
-    progress,
-    [0.32, 0.68, 1],
-    [0, 0.85, 1],
-  );
-
   return (
     <main
       ref={rootRef}
@@ -70,35 +49,12 @@ export function ScrollFlow({ children, id, className }: ScrollFlowProps) {
       data-scroll-flow
       className={cn("relative isolate overflow-clip", className)}
     >
-      <motion.div
-        aria-hidden
-        className="scroll-flow-ambient pointer-events-none fixed inset-0 z-0 overflow-hidden"
-        style={{ opacity: reduced ? 0.78 : ambientOpacity }}
-      >
-        <motion.div
-          className="scroll-flow-glow-primary absolute -top-[18vw] -left-[24vw] size-[68vw] min-h-96 min-w-96 rounded-full"
-          style={reduced ? undefined : { x: firstGlowX, y: firstGlowY }}
-        />
-        <motion.div
-          className="scroll-flow-glow-secondary absolute right-[-28vw] bottom-[-16vw] size-[72vw] min-h-96 min-w-96 rounded-full"
-          style={reduced ? undefined : { x: secondGlowX, y: secondGlowY }}
-        />
-        <motion.div
-          className="scroll-flow-glow-tertiary absolute bottom-[-34vw] left-[8vw] size-[64vw] min-h-80 min-w-80 rounded-full"
-          style={
-            reduced
-              ? { opacity: 0.85 }
-              : { x: thirdGlowX, y: thirdGlowY, opacity: thirdGlowOpacity }
-          }
-        />
-      </motion.div>
-
       {/* Phones keep a hairline progress bar; from md up the thread itself
           shows how far down the page the reader is. */}
       {!reduced ? (
         <motion.div
           aria-hidden
-          className="bg-molten fixed inset-x-0 top-16 z-[49] h-px origin-left md:hidden"
+          className="bg-signal fixed inset-x-0 top-16 z-[49] h-px origin-left md:hidden"
           style={{ scaleX: progress }}
         />
       ) : null}

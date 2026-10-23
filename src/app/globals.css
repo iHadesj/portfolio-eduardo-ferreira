@@ -4,31 +4,34 @@
 @plugin "@tailwindcss/typography";
 
 /* ──────────────────────────────────────────────────────────────────────────
-   SUBMUNDO — canonical design tokens (dark "Obsidian" is the default theme).
-   Light "Elysium" and secret "Underworld" overrides live in styles/themes.css
-   (they redefine these same custom properties via html[data-theme="…"]).
+   TERMINAL — canonical design tokens. Black and silver, no hue: the accent is
+   light, not colour. Dark is the default; light "Paper" and the secret
+   "Phosphor" (underworld) overrides live in styles/themes.css (they redefine
+   these same custom properties via html[data-theme="…"]).
    ────────────────────────────────────────────────────────────────────────── */
 @theme {
-  /* Fonts (CSS vars provided by next/font in src/lib/fonts.ts) */
-  --font-display: var(--font-clash), ui-sans-serif, system-ui, sans-serif;
-  --font-body: var(--font-satoshi), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-jetbrains), ui-monospace, "JetBrains Mono", monospace;
+  /* Fonts (CSS vars provided by next/font in src/lib/fonts.ts). Display is
+     the mono face on purpose — headings read like a prompt, not a poster. */
+  --font-display: var(--font-geist-mono), ui-monospace, monospace;
+  --font-body: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 
-  /* Palette — dark defaults */
-  --color-abyss: #0e0c12; /* base background — charcoal with violet undertone */
-  --color-basalt: #16131c; /* surfaces / cards */
-  --color-ash: #2b2535; /* borders, dividers, subtle states */
-  --color-bone: #ede8df; /* primary text (warm off-white) */
-  --color-smoke: #9a92a8; /* secondary text */
-  --color-molten: #e8a33d; /* primary accent — molten gold */
-  --color-molten-deep: #c97e1b; /* gold hover/pressed */
-  --color-ember: #e04e2f; /* rare accent — ember */
-  --color-styx: #3e7c8c; /* rarest cold accent — data viz / code syntax */
+  /* Palette — dark defaults. Contrast on abyss in brackets. */
+  --color-void: #050506; /* absolute floor — vignette, shadows */
+  --color-abyss: #0a0a0c; /* base background */
+  --color-basalt: #121215; /* surfaces / cards */
+  --color-ash: #26262c; /* borders, dividers — never text */
+  --color-bone: #f2f4f8; /* primary text (18:1) */
+  --color-smoke: #9198a5; /* secondary text (6.8:1) */
+  --color-signal: #c8cbd4; /* accent — silver (12:1) */
+  --color-signal-deep: #8a8f9c; /* silver pressed (6:1) */
+  --color-flare: #ffffff; /* rarest highlight — pure white */
+  --color-steel: #aeb3bd; /* code syntax / data viz (9.5:1) */
 
   /* Radii */
-  --radius-sm: 6px;
-  --radius-md: 12px;
-  --radius-lg: 20px;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 6px;
   --radius-pill: 9999px;
 
   /* Easings */
@@ -39,18 +42,20 @@
   --animate-marquee: marquee linear infinite;
 
   /* Fluid type scale */
-  --text-hero: clamp(2.75rem, 8vw, 6rem);
-  --text-hero--line-height: 0.95;
-  --text-hero--letter-spacing: -0.02em;
+  --text-hero: clamp(2.25rem, 6.4vw, 4.75rem);
+  --text-hero--line-height: 1;
+  --text-hero--letter-spacing: -0.045em;
   --text-hero--font-weight: 600;
 
-  --text-h2: clamp(1.75rem, 4vw, 2.75rem);
-  --text-h2--line-height: 1.1;
+  --text-h2: clamp(1.5rem, 3.4vw, 2.375rem);
+  --text-h2--line-height: 1.15;
+  --text-h2--letter-spacing: -0.035em;
   --text-h2--font-weight: 500;
 
-  --text-h3: clamp(1.25rem, 2.5vw, 1.5rem);
-  --text-h3--line-height: 1.25;
-  --text-h3--font-weight: 700;
+  --text-h3: clamp(1.0625rem, 2vw, 1.25rem);
+  --text-h3--line-height: 1.3;
+  --text-h3--letter-spacing: -0.02em;
+  --text-h3--font-weight: 600;
 
   --text-body: 1rem;
   --text-body--line-height: 1.7;
@@ -58,36 +63,35 @@
   --text-lead: 1.125rem;
   --text-lead--line-height: 1.7;
 
-  --text-label: 0.8125rem;
+  --text-label: 0.75rem;
   --text-label--line-height: 1.4;
-  --text-label--letter-spacing: 0.08em;
+  --text-label--letter-spacing: 0.04em;
   --text-label--font-weight: 500;
 }
 
 /* Non-namespaced tokens (no utility generation needed) */
 :root {
-  --gradient-molten: linear-gradient(
+  --gradient-signal: linear-gradient(
     135deg,
-    #f2c14e 0%,
-    #e8a33d 45%,
-    #d96c2c 100%
+    #ffffff 0%,
+    #c8cbd4 45%,
+    #6f7480 100%
   );
-  --glow-molten:
-    0 0 0 1px color-mix(in oklab, var(--color-molten) 25%, transparent),
-    0 8px 40px -12px color-mix(in oklab, var(--color-molten) 18%, transparent);
+  --glow-signal:
+    0 0 0 1px color-mix(in oklab, var(--color-signal) 25%, transparent),
+    0 8px 40px -12px color-mix(in oklab, var(--color-signal) 18%, transparent);
   --z-nav: 50;
   --z-palette: 60;
-  --z-cursor: 70;
   --z-toast: 80;
 
   /* Ambient backdrop — the fixed texture field painted behind every page.
      Themes override these values rather than the rules that consume them. */
   --ambient-line: color-mix(in oklab, var(--color-smoke) 30%, transparent);
   --ambient-line-opacity: 0.55;
-  --ambient-trace: color-mix(in oklab, var(--color-molten) 22%, transparent);
-  --ambient-glint: var(--color-molten);
-  --ambient-horizon: color-mix(in oklab, var(--color-molten) 8%, transparent);
-  --ambient-vignette: color-mix(in oklab, #000 58%, transparent);
+  --ambient-trace: color-mix(in oklab, var(--color-signal) 22%, transparent);
+  --ambient-glint: var(--color-signal);
+  --ambient-horizon: color-mix(in oklab, var(--color-signal) 8%, transparent);
+  --ambient-vignette: color-mix(in oklab, var(--color-void) 62%, transparent);
   --ambient-grain-opacity: 0.05;
 
   color-scheme: dark;
@@ -106,19 +110,19 @@
 }
 
 /* Signature gold gradient text (reserved per §2.3 for hero keyword + rare hovers) */
-@utility text-gradient-molten {
-  background-image: var(--gradient-molten);
+@utility text-gradient-signal {
+  background-image: var(--gradient-signal);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
 }
 
-@utility glow-molten {
-  box-shadow: var(--glow-molten);
+@utility glow-signal {
+  box-shadow: var(--glow-signal);
 }
 
-@utility bg-molten-gradient {
-  background-image: var(--gradient-molten);
+@utility bg-signal-gradient {
+  background-image: var(--gradient-signal);
 }
 
 /* Animated underline for link-style controls (background-size 0%→100%) */
@@ -158,13 +162,13 @@
 
   /* Themed text selection (§2.3 / §7.4) */
   ::selection {
-    background: var(--color-molten);
+    background: var(--color-signal);
     color: var(--color-abyss);
   }
 
   /* Focus is a convention, not a phase (§5.7) */
   :focus-visible {
-    outline: 2px solid var(--color-molten);
+    outline: 2px solid var(--color-signal);
     outline-offset: 3px;
     border-radius: 2px;
   }
@@ -175,85 +179,33 @@
   }
 }
 
-/* Continuous section rhythm for the home page. The separators dissolve into
-   the ambient scroll light instead of reading as hard page breaks. */
+/* Continuous section rhythm for the home page: no ruled separators, the
+   thread crossing between sections marks the boundary. */
 .scroll-flow-section {
   position: relative;
-}
-
-/* Mobile screens need a denser color stop: the same large gradients otherwise
-   lose most of their contrast after being compressed into a narrow viewport. */
-.scroll-flow-glow-primary {
-  background: radial-gradient(
-    circle,
-    color-mix(in oklab, var(--color-molten) 18%, transparent) 0%,
-    transparent 68%
-  );
-}
-
-.scroll-flow-glow-secondary {
-  background: radial-gradient(
-    circle,
-    color-mix(in oklab, var(--color-styx) 13%, transparent) 0%,
-    transparent 69%
-  );
-}
-
-.scroll-flow-glow-tertiary {
-  background: radial-gradient(
-    circle,
-    color-mix(in oklab, var(--color-styx) 15%, transparent) 0%,
-    color-mix(in oklab, var(--color-molten) 5%, transparent) 34%,
-    transparent 70%
-  );
 }
 
 .mobius-ambient-glow {
   background:
     radial-gradient(
       circle at 50% 47%,
-      color-mix(in oklab, var(--color-molten) 39%, transparent) 0%,
-      color-mix(in oklab, var(--color-molten) 17%, transparent) 39%,
+      color-mix(in oklab, var(--color-signal) 39%, transparent) 0%,
+      color-mix(in oklab, var(--color-signal) 17%, transparent) 39%,
       transparent 72%
     ),
     radial-gradient(
       ellipse at 52% 54%,
-      color-mix(in oklab, var(--color-styx) 11%, transparent),
+      color-mix(in oklab, var(--color-steel) 11%, transparent),
       transparent 76%
     );
 }
 
 @media (min-width: 40rem) {
-  .scroll-flow-glow-primary {
-    background: radial-gradient(
-      circle,
-      color-mix(in oklab, var(--color-molten) 9%, transparent) 0%,
-      transparent 67%
-    );
-  }
-
-  .scroll-flow-glow-secondary {
-    background: radial-gradient(
-      circle,
-      color-mix(in oklab, var(--color-styx) 7%, transparent) 0%,
-      transparent 68%
-    );
-  }
-
-  .scroll-flow-glow-tertiary {
-    background: radial-gradient(
-      circle,
-      color-mix(in oklab, var(--color-styx) 8%, transparent) 0%,
-      color-mix(in oklab, var(--color-molten) 3%, transparent) 33%,
-      transparent 69%
-    );
-  }
-
   .mobius-ambient-glow {
     background: radial-gradient(
       circle at 50% 46%,
-      color-mix(in oklab, var(--color-molten) 30%, transparent) 0%,
-      color-mix(in oklab, var(--color-molten) 11%, transparent) 36%,
+      color-mix(in oklab, var(--color-signal) 30%, transparent) 0%,
+      color-mix(in oklab, var(--color-signal) 11%, transparent) 36%,
       transparent 66%
     );
   }
@@ -279,13 +231,13 @@
   background:
     radial-gradient(
       circle at var(--mobius-light-x) var(--mobius-light-y),
-      color-mix(in oklab, var(--color-molten) 34%, transparent) 0%,
-      color-mix(in oklab, var(--color-molten) 15%, transparent) 17%,
+      color-mix(in oklab, var(--color-signal) 34%, transparent) 0%,
+      color-mix(in oklab, var(--color-signal) 15%, transparent) 17%,
       transparent 46%
     ),
     radial-gradient(
       ellipse 54% 28% at var(--mobius-light-x) var(--mobius-light-y),
-      color-mix(in oklab, var(--color-styx) 13%, transparent),
+      color-mix(in oklab, var(--color-steel) 13%, transparent),
       transparent 70%
     );
   transition: opacity 90ms linear;
@@ -302,7 +254,7 @@
     radial-gradient(
       ellipse 23% 15% at calc(var(--mobius-light-x) - 7%)
         calc(var(--mobius-light-y) + 5%),
-      color-mix(in oklab, var(--color-molten) 17%, transparent),
+      color-mix(in oklab, var(--color-signal) 17%, transparent),
       transparent 75%
     );
   mix-blend-mode: screen;
@@ -315,7 +267,7 @@
   background: radial-gradient(
     circle at var(--mobius-light-x) 50%,
     var(--color-bone) 0%,
-    var(--color-molten) 24%,
+    var(--color-signal) 24%,
     transparent 66%
   );
   background-clip: text;
@@ -323,20 +275,20 @@
   mix-blend-mode: screen;
   filter: drop-shadow(
     0 0 var(--mobius-title-blur)
-      color-mix(in oklab, var(--color-molten) 34%, transparent)
+      color-mix(in oklab, var(--color-signal) 34%, transparent)
   );
 }
 
 .hero-light-cta {
   filter: drop-shadow(
     0 0 var(--mobius-cta-blur)
-      color-mix(in oklab, var(--color-molten) 24%, transparent)
+      color-mix(in oklab, var(--color-signal) 24%, transparent)
   );
 }
 
 .hero-light-social {
   box-shadow: 0 0 var(--mobius-social-blur)
-    color-mix(in oklab, var(--color-molten) 12%, transparent);
+    color-mix(in oklab, var(--color-signal) 12%, transparent);
 }
 
 @media (min-width: 64rem) {
@@ -349,26 +301,22 @@
     background:
       radial-gradient(
         circle at var(--mobius-light-x) var(--mobius-light-y),
-        color-mix(in oklab, var(--color-molten) 29%, transparent) 0%,
-        color-mix(in oklab, var(--color-molten) 12%, transparent) 17%,
+        color-mix(in oklab, var(--color-signal) 29%, transparent) 0%,
+        color-mix(in oklab, var(--color-signal) 12%, transparent) 17%,
         transparent 43%
       ),
       radial-gradient(
         ellipse 45% 30% at var(--mobius-light-x) var(--mobius-light-y),
-        color-mix(in oklab, var(--color-styx) 10%, transparent),
+        color-mix(in oklab, var(--color-steel) 10%, transparent),
         transparent 68%
       );
   }
 }
 
-/* Project cards drop the uniform rounded rectangle for uneven corners, the
-   same hand-cut feel as the stack cards; flipped rows mirror them. */
-.project-card {
-  border-radius: 1.75rem 1.1rem 2.35rem 1.25rem;
-}
-
+/* Project cards are terminal panes: square-ish, one radius for every row. */
+.project-card,
 .project-card--flip {
-  border-radius: 1.1rem 1.75rem 1.25rem 2.35rem;
+  border-radius: var(--radius-md);
 }
 
 /* Experience: a wandering path instead of a ruled border. Each stop carries
@@ -395,7 +343,7 @@
 
 .experience-stop__line,
 .experience-stop__bend {
-  stroke: color-mix(in oklab, var(--color-ash) 62%, var(--color-molten));
+  stroke: color-mix(in oklab, var(--color-ash) 62%, var(--color-signal));
   stroke-width: 1.25;
   vector-effect: non-scaling-stroke;
 }
@@ -439,7 +387,7 @@
 }
 
 .scroll-thread__drawn {
-  stroke: color-mix(in oklab, var(--color-molten) 72%, transparent);
+  stroke: color-mix(in oklab, var(--color-signal) 72%, transparent);
   stroke-width: 1.5;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -451,42 +399,12 @@
 }
 
 .scroll-thread__halo {
-  fill: color-mix(in oklab, var(--color-molten) 22%, transparent);
+  fill: color-mix(in oklab, var(--color-signal) 22%, transparent);
 }
 
 .scroll-thread__tip {
-  fill: var(--color-molten);
-  filter: drop-shadow(0 0 6px var(--color-molten));
-}
-
-.scroll-flow-section:not(#hero)::after {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  top: -7rem;
-  left: 50%;
-  width: min(86vw, 54rem);
-  height: 14rem;
-  transform: translateX(-50%);
-  background: radial-gradient(
-    ellipse at center,
-    color-mix(in oklab, var(--color-molten) 5%, transparent),
-    transparent 70%
-  );
-  pointer-events: none;
-}
-
-@media (max-width: 39.999rem) {
-  .scroll-flow-section:not(#hero)::after {
-    top: -8rem;
-    width: min(108vw, 34rem);
-    height: 17rem;
-    background: radial-gradient(
-      ellipse at center,
-      color-mix(in oklab, var(--color-molten) 11%, transparent),
-      transparent 72%
-    );
-  }
+  fill: var(--color-signal);
+  filter: drop-shadow(0 0 6px var(--color-signal));
 }
 
 /* Navbar surface once scrolled (§F2) */
@@ -569,12 +487,12 @@
   user-select: none;
 }
 [cmdk-item][data-selected="true"] {
-  background: color-mix(in oklab, var(--color-molten) 14%, transparent);
+  background: color-mix(in oklab, var(--color-signal) 14%, transparent);
 }
 [cmdk-item][data-selected="true"]::before {
   content: "→";
   margin-right: 0.125rem;
-  color: var(--color-molten);
+  color: var(--color-signal);
 }
 [cmdk-item] svg {
   color: var(--color-smoke);
@@ -602,7 +520,7 @@
 /* Global reduced-motion kill-switch (§2.7) — covers CSS animations/transitions
    not already handled in JS (marquee, status ping, crossfades, scrollbar). */
 /* About: the story and identity panel share one visual axis. The irregular
-   silhouettes echo the Mobius without tilting the readable content. */
+   panes are square like the rest of the terminal; only the glows stay soft. */
 .about-composition {
   position: relative;
   display: grid;
@@ -618,10 +536,10 @@
   width: min(44vw, 32rem);
   aspect-ratio: 1.25;
   content: "";
-  border-radius: 42% 58% 66% 34% / 48% 38% 62% 52%;
+  border-radius: 50%;
   background: radial-gradient(
     ellipse,
-    color-mix(in oklab, var(--color-molten) 10%, transparent),
+    color-mix(in oklab, var(--color-signal) 10%, transparent),
     transparent 68%
   );
   filter: blur(1.8rem);
@@ -651,8 +569,8 @@
   content: "";
   background: linear-gradient(
     to bottom,
-    var(--color-molten),
-    color-mix(in oklab, var(--color-styx) 60%, transparent),
+    var(--color-signal),
+    color-mix(in oklab, var(--color-steel) 60%, transparent),
     transparent
   );
 }
@@ -669,11 +587,11 @@
   width: 0.45rem;
   height: 0.45rem;
   content: "";
-  border: 1px solid var(--color-molten);
-  border-radius: 48% 52% 43% 57% / 56% 42% 58% 44%;
+  border: 1px solid var(--color-signal);
+  border-radius: 0;
   background: var(--color-abyss);
   box-shadow: 0 0 0.85rem
-    color-mix(in oklab, var(--color-molten) 42%, transparent);
+    color-mix(in oklab, var(--color-signal) 42%, transparent);
 }
 
 .about-identity {
@@ -693,17 +611,17 @@
   inset: -12%;
   z-index: -1;
   content: "";
-  border-radius: 43% 57% 62% 38% / 36% 45% 55% 64%;
+  border-radius: 50%;
   background: radial-gradient(
     ellipse,
-    color-mix(in oklab, var(--color-molten) 17%, transparent),
+    color-mix(in oklab, var(--color-signal) 17%, transparent),
     transparent 69%
   );
   filter: blur(1.2rem);
 }
 
 .about-portrait-frame .portrait {
-  border-radius: 41% 59% 48% 52% / 37% 43% 57% 63%;
+  border-radius: var(--radius-md);
 }
 
 .about-facts {
@@ -715,16 +633,16 @@
   padding: 1.15rem 1.2rem;
   overflow: hidden;
   border: 1px solid color-mix(in oklab, var(--color-ash) 88%, transparent);
-  border-radius: 2rem 1.1rem 2.35rem 1.25rem;
+  border-radius: var(--radius-md);
   background: linear-gradient(
     145deg,
-    color-mix(in oklab, var(--color-molten) 5%, var(--color-basalt)),
+    color-mix(in oklab, var(--color-signal) 5%, var(--color-basalt)),
     color-mix(in oklab, var(--color-basalt) 94%, transparent)
   );
   box-shadow:
     inset 0 1px 0 color-mix(in oklab, var(--color-bone) 7%, transparent),
     0 1.5rem 4rem -2.4rem
-      color-mix(in oklab, var(--color-molten) 26%, transparent);
+      color-mix(in oklab, var(--color-signal) 26%, transparent);
   backdrop-filter: blur(1rem);
   font-family: var(--font-mono);
   font-size: 0.76rem;
@@ -818,9 +736,9 @@
   height: 0.55rem;
   flex: 0 0 auto;
   border-radius: 999px;
-  background: var(--color-molten);
+  background: var(--color-signal);
   box-shadow: 0 0 1.2rem
-    color-mix(in oklab, var(--color-molten) 58%, transparent);
+    color-mix(in oklab, var(--color-signal) 58%, transparent);
 }
 
 .tech-stack__grid {
@@ -854,16 +772,16 @@
 }
 
 .tech-stack__scroll-path--active {
-  stroke: var(--color-molten);
+  stroke: var(--color-signal);
   stroke-width: 2;
   filter: drop-shadow(
-    0 0 0.36rem color-mix(in oklab, var(--color-molten) 64%, transparent)
+    0 0 0.36rem color-mix(in oklab, var(--color-signal) 64%, transparent)
   );
 }
 
 .tech-stack-card {
-  --stack-accent: var(--color-molten);
-  --stack-radius: 1.9rem 1.15rem 2.5rem 1.35rem;
+  --stack-accent: var(--color-signal);
+  --stack-radius: var(--radius-md);
 
   position: relative;
   display: flex;
@@ -915,7 +833,7 @@
   width: 13rem;
   height: 11rem;
   content: "";
-  border-radius: 43% 57% 67% 33% / 37% 45% 55% 63%;
+  border-radius: 50%;
   background: radial-gradient(
     circle,
     color-mix(in oklab, var(--stack-accent) 15%, transparent),
@@ -923,22 +841,6 @@
   );
   pointer-events: none;
   transform: rotate(17deg);
-}
-
-.tech-stack-card:nth-of-type(2) {
-  --stack-radius: 1.2rem 2.4rem 1.35rem 2.1rem;
-}
-
-.tech-stack-card:nth-of-type(3) {
-  --stack-radius: 2.35rem 1.25rem 1.75rem 1.15rem;
-}
-
-.tech-stack-card:nth-of-type(4) {
-  --stack-radius: 1.25rem 2.2rem 2.45rem 1.45rem;
-}
-
-.tech-stack-card:nth-of-type(5) {
-  --stack-radius: 2.15rem 1.25rem 1.25rem 2.4rem;
 }
 
 .tech-stack-card__scan {
@@ -960,24 +862,24 @@
   pointer-events: none;
 }
 
-.tech-stack-card--molten {
-  --stack-accent: var(--color-molten);
+.tech-stack-card--signal {
+  --stack-accent: var(--color-signal);
 }
 
-.tech-stack-card--styx {
-  --stack-accent: var(--color-styx);
+.tech-stack-card--steel {
+  --stack-accent: var(--color-steel);
 }
 
 .tech-stack-card--hybrid {
   --stack-accent: color-mix(
     in oklab,
-    var(--color-styx) 58%,
-    var(--color-molten)
+    var(--color-steel) 58%,
+    var(--color-signal)
   );
 }
 
-.tech-stack-card--ember {
-  --stack-accent: var(--color-ember);
+.tech-stack-card--flare {
+  --stack-accent: var(--color-flare);
 }
 
 .tech-stack-card--bone {
@@ -1002,7 +904,7 @@
   place-items: center;
   color: var(--stack-accent);
   border: 1px solid color-mix(in oklab, var(--stack-accent) 34%, transparent);
-  border-radius: 42% 58% 52% 48% / 38% 46% 54% 62%;
+  border-radius: var(--radius-sm);
   background: color-mix(in oklab, var(--stack-accent) 8%, transparent);
   font-family: var(--font-mono);
   font-size: 0.72rem;
@@ -1165,12 +1067,12 @@
     color: var(--color-bone);
     border-color: color-mix(
       in oklab,
-      var(--color-molten) 34%,
+      var(--color-signal) 34%,
       var(--color-ash)
     );
     background: color-mix(
       in oklab,
-      var(--color-molten) 5%,
+      var(--color-signal) 5%,
       var(--color-basalt)
     );
   }
@@ -1253,10 +1155,10 @@
   gap: 0.5rem;
   padding: 0.3rem 0.7rem;
   border: 1px solid
-    color-mix(in oklab, var(--color-molten) 32%, var(--color-ash));
+    color-mix(in oklab, var(--color-signal) 32%, var(--color-ash));
   border-radius: var(--radius-pill);
-  background: color-mix(in oklab, var(--color-molten) 8%, transparent);
-  color: color-mix(in oklab, var(--color-bone) 86%, var(--color-molten));
+  background: color-mix(in oklab, var(--color-signal) 8%, transparent);
+  color: color-mix(in oklab, var(--color-bone) 86%, var(--color-signal));
   font-family: var(--font-mono);
   font-size: 0.6875rem;
   line-height: 1;
@@ -1269,7 +1171,7 @@
   height: 0.4rem;
   flex: 0 0 auto;
   border-radius: 999px;
-  background: var(--color-molten);
+  background: var(--color-signal);
   animation: availability-pulse 2.6s var(--ease-out-soft) infinite;
 }
 
@@ -1289,7 +1191,7 @@
 @keyframes availability-pulse {
   0% {
     box-shadow: 0 0 0 0
-      color-mix(in oklab, var(--color-molten) 55%, transparent);
+      color-mix(in oklab, var(--color-signal) 55%, transparent);
   }
   70% {
     box-shadow: 0 0 0 0.42rem transparent;
@@ -1311,7 +1213,7 @@
   --duo-shadow: var(--color-abyss);
   --duo-highlight: color-mix(
     in oklab,
-    var(--color-molten) 76%,
+    var(--color-signal) 76%,
     var(--color-bone)
   );
 
@@ -1325,8 +1227,8 @@
 }
 
 html[data-theme="light"] .portrait {
-  --duo-shadow: #241d2b;
-  --duo-highlight: color-mix(in oklab, var(--color-molten) 26%, #ffffff);
+  --duo-shadow: #16161a;
+  --duo-highlight: color-mix(in oklab, var(--color-signal) 26%, #ffffff);
 }
 
 .portrait__img {
@@ -1371,13 +1273,13 @@ html[data-theme="light"] .portrait {
   border-style: dashed;
   background: linear-gradient(
     150deg,
-    color-mix(in oklab, var(--color-molten) 9%, var(--color-basalt)),
+    color-mix(in oklab, var(--color-signal) 9%, var(--color-basalt)),
     var(--color-abyss)
   );
 }
 
 .portrait__monogram {
-  background-image: var(--gradient-molten);
+  background-image: var(--gradient-signal);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
@@ -1415,13 +1317,13 @@ html[data-theme="light"] .portrait {
   padding: 1.25rem 1.35rem;
   border: 1px solid var(--color-ash);
   border-left: 2px solid
-    color-mix(in oklab, var(--color-molten) 45%, var(--color-ash));
+    color-mix(in oklab, var(--color-signal) 45%, var(--color-ash));
   border-radius: var(--radius-md);
   background: color-mix(in oklab, var(--color-basalt) 74%, transparent);
 }
 
 .decision__index {
-  color: color-mix(in oklab, var(--color-molten) 68%, var(--color-smoke));
+  color: color-mix(in oklab, var(--color-signal) 68%, var(--color-smoke));
   font-family: var(--font-mono);
   font-size: 0.7rem;
   line-height: 1.7;
@@ -1457,7 +1359,7 @@ html[data-theme="light"] .portrait {
 }
 
 .decision__row--choice .decision__term {
-  color: var(--color-molten);
+  color: var(--color-signal);
 }
 
 .decision__row--choice .decision__value {
@@ -1469,7 +1371,7 @@ html[data-theme="light"] .portrait {
 }
 
 .decision__row--instead .decision__term {
-  color: color-mix(in oklab, var(--color-styx) 72%, var(--color-smoke));
+  color: color-mix(in oklab, var(--color-steel) 72%, var(--color-smoke));
 }
 
 /* The discarded option reads as discarded at a glance. */
@@ -1484,7 +1386,7 @@ html[data-theme="light"] .portrait {
 }
 
 .decision__row--cost .decision__term {
-  color: color-mix(in oklab, var(--color-ember) 78%, var(--color-smoke));
+  color: color-mix(in oklab, var(--color-flare) 78%, var(--color-smoke));
 }
 
 @media (max-width: 39.999rem) {
@@ -1508,10 +1410,10 @@ html[data-theme="light"] .portrait {
   .decision:hover {
     border-color: color-mix(
       in oklab,
-      var(--color-molten) 26%,
+      var(--color-signal) 26%,
       var(--color-ash)
     );
-    border-left-color: var(--color-molten);
+    border-left-color: var(--color-signal);
     background: color-mix(in oklab, var(--color-basalt) 92%, transparent);
   }
 }
@@ -1523,10 +1425,6 @@ html[data-theme="light"] .portrait {
   ::view-transition-old(*),
   ::view-transition-new(*) {
     animation: none !important;
-  }
-
-  .scroll-flow-ambient {
-    display: none;
   }
 
   *,
@@ -1559,7 +1457,7 @@ html[data-theme="light"] .portrait {
     background-clip: content-box;
   }
   *::-webkit-scrollbar-thumb:hover {
-    background-color: var(--color-molten);
+    background-color: var(--color-signal);
     background-clip: content-box;
   }
 }

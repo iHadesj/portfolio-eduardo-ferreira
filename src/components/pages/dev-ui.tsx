@@ -68,7 +68,7 @@ export function DevUiPage({ locale }: { locale: Locale }) {
     <main className="container-hades section-pad">
       <header className="flex flex-wrap items-end justify-between gap-4 pb-8">
         <div className="flex flex-col gap-2">
-          <p className="text-label text-molten font-mono uppercase">
+          <p className="text-label text-signal font-mono uppercase">
             {"// dev/ui"}
           </p>
           <h1 className="font-display text-h2 text-bone">
@@ -114,8 +114,8 @@ export function DevUiPage({ locale }: { locale: Locale }) {
 
       <Row label="Badge">
         <Badge>shipped</Badge>
-        <Badge variant="molten">em destaque</Badge>
-        <Badge variant="ember">novo</Badge>
+        <Badge variant="signal">em destaque</Badge>
+        <Badge variant="flare">novo</Badge>
       </Row>
 
       <Row label="AvailabilityPill — aberto vs fechado">
@@ -156,7 +156,7 @@ export function DevUiPage({ locale }: { locale: Locale }) {
             <h3 className="font-display text-h3 text-bone">Card interativo</h3>
           </CardHeader>
           <CardBody>
-            <p className="text-smoke">Hover: borda molten + glow.</p>
+            <p className="text-smoke">Hover: borda signal + glow.</p>
           </CardBody>
           <CardFooter>
             <Button variant="link">
@@ -194,8 +194,7 @@ export function DevUiPage({ locale }: { locale: Locale }) {
         <Magnetic className="inline-flex">
           <a
             href={siteConfig.links.github}
-            className="rounded-pill border-ash text-smoke hover:border-molten hover:text-bone inline-flex size-11 items-center justify-center border"
-            data-cursor="hover"
+            className="rounded-sm border-ash text-smoke hover:border-signal hover:text-bone inline-flex size-11 items-center justify-center border"
             aria-label="GitHub"
           >
             <GitHubIcon className="size-5" />
@@ -226,7 +225,7 @@ export function DevUiPage({ locale }: { locale: Locale }) {
             {TECH.map((tech) => (
               <span
                 key={tech}
-                className="text-smoke hover:text-molten font-mono text-sm transition-colors"
+                className="text-smoke hover:text-signal font-mono text-sm transition-colors"
               >
                 {tech}
               </span>
@@ -236,7 +235,7 @@ export function DevUiPage({ locale }: { locale: Locale }) {
             {TECH.map((tech) => (
               <span
                 key={tech}
-                className="text-smoke hover:text-molten font-mono text-sm transition-colors"
+                className="text-smoke hover:text-signal font-mono text-sm transition-colors"
               >
                 {tech}
               </span>
@@ -251,7 +250,7 @@ export function DevUiPage({ locale }: { locale: Locale }) {
             <Download size={18} strokeWidth={1.5} /> Baixar CV
           </a>
         </Button>
-        <span className="text-gradient-molten font-display text-h3">
+        <span className="text-gradient-signal font-display text-h3">
           ouro fundido
         </span>
       </Row>

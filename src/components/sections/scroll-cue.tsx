@@ -23,7 +23,7 @@ export function ScrollCue() {
     >
       <div className="bg-ash relative h-12 w-px overflow-hidden">
         <motion.div
-          className="bg-molten absolute inset-x-0 top-0 h-3"
+          className="bg-signal absolute inset-x-0 top-0 h-3"
           animate={{ y: ["-100%", "400%"] }}
           transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
         />

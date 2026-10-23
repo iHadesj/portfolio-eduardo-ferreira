@@ -56,7 +56,7 @@ export function Hero({ dict }: { dict: Dictionary }) {
               first question a recruiter has, and this is the first line they
               read. */}
           <div className="relative z-[30] flex flex-wrap items-center gap-x-3 gap-y-2">
-            <p className="text-molten font-mono text-[0.65rem] leading-[1.45] tracking-[0.07em] uppercase sm:text-label">
+            <p className="text-signal font-mono text-[0.65rem] leading-[1.45] tracking-[0.07em] uppercase sm:text-label">
               {dict.hero.eyebrow}
             </p>
             <AvailabilityPill
@@ -85,7 +85,7 @@ export function Hero({ dict }: { dict: Dictionary }) {
             </span>
             <span className="text-smoke relative z-[30] mt-2.5 block max-w-[18ch] text-[1.3rem] leading-[1.08] sm:mt-3 sm:text-[length:clamp(1.5rem,3.5vw,2.5rem)] sm:leading-[1.1]">
               {dict.hero.taglineLead}{" "}
-              <span className="text-gradient-molten">
+              <span className="text-gradient-signal">
                 {dict.hero.taglineAccent}
               </span>
             </span>
@@ -113,7 +113,6 @@ export function Hero({ dict }: { dict: Dictionary }) {
               download={siteConfig.cvFileName}
               type="application/pdf"
               aria-label={dict.hero.ctaCvAria}
-              data-cursor="hover"
               data-mobius-light
               className={cn(
                 buttonVariants({ variant: "ghost", size: "lg" }),
@@ -134,9 +133,8 @@ export function Hero({ dict }: { dict: Dictionary }) {
                     aria-label={label}
                     target={external ? "_blank" : undefined}
                     rel={external ? "noopener noreferrer" : undefined}
-                    data-cursor="hover"
                     data-mobius-light
-                    className="hero-light-social rounded-pill border-ash text-smoke hover:border-molten hover:text-bone inline-flex size-9 items-center justify-center border transition-colors sm:size-10"
+                    className="hero-light-social rounded-sm border-ash text-smoke hover:border-signal hover:text-bone inline-flex size-9 items-center justify-center border transition-colors sm:size-10"
                   >
                     <Icon className="size-4 sm:size-[18px]" />
                   </a>

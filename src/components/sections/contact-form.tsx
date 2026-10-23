@@ -11,7 +11,7 @@ import type { Locale } from "@/lib/i18n/config";
 const INITIAL: ContactState = { status: "idle" };
 
 const inputClass =
-  "rounded-md border border-ash bg-abyss px-3.5 py-2.5 text-bone outline-none transition-colors placeholder:text-smoke/60 focus-visible:border-molten";
+  "rounded-md border border-ash bg-abyss px-3.5 py-2.5 text-bone outline-none transition-colors placeholder:text-smoke/60 focus-visible:border-signal";
 
 function Field({
   id,
@@ -31,7 +31,7 @@ function Field({
       </label>
       {children}
       {error ? (
-        <p id={`${id}-error`} role="alert" className="text-ember text-sm">
+        <p id={`${id}-error`} role="alert" className="text-flare text-sm">
           {error}
         </p>
       ) : null}
@@ -119,14 +119,13 @@ export function ContactForm({ locale }: { locale: Locale }) {
       <button
         type="submit"
         disabled={pending}
-        data-cursor="hover"
         className={cn(buttonVariants({ variant: "primary", size: "lg" }))}
       >
         {pending ? t.sending : t.submit}
       </button>
 
       {state.status === "error" && !fe ? (
-        <p role="alert" className="text-ember text-sm">
+        <p role="alert" className="text-flare text-sm">
           {state.message}
         </p>
       ) : null}

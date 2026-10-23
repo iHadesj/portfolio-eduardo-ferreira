@@ -55,7 +55,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 16 }}
               transition={{ duration: 0.25 }}
-              className="glow-molten rounded-pill border-ash bg-basalt text-bone pointer-events-auto border px-4 py-2 font-mono text-sm"
+              className="glow-signal rounded-sm border-ash bg-basalt text-bone pointer-events-auto border px-4 py-2 font-mono text-sm"
             >
               {current.message}
             </motion.div>

@@ -2,8 +2,8 @@ import { cn } from "@/lib/utils";
 import { Reveal } from "@/components/ui/reveal";
 
 interface SectionHeadingProps {
-  /** Eyebrow label WITHOUT the `//` prefix — the component adds it as a
-   *  string expression (avoids react/jsx-no-comment-textnodes). */
+  /** Eyebrow label WITHOUT the `~/` prefix — the component renders it as a
+   *  path, the way the section would sit in a home directory. */
   eyebrow: string;
   title: React.ReactNode;
   description?: React.ReactNode;
@@ -30,8 +30,8 @@ export function SectionHeading({
         className,
       )}
     >
-      <p className="text-label text-molten font-mono uppercase">
-        {`// ${eyebrow}`}
+      <p className="text-label text-smoke font-mono lowercase">
+        {`~/${eyebrow}`}
       </p>
       <Heading
         className={cn(

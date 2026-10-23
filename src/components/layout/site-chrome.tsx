@@ -4,7 +4,6 @@ import { CommandMenuProvider } from "@/components/layout/command-menu";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { SkipLink } from "@/components/layout/skip-link";
-import { CustomCursor } from "@/components/ui/custom-cursor";
 import { ToastProvider } from "@/components/ui/toast";
 import { EasterEggs } from "@/components/easter-eggs";
 import { UnderworldParticles } from "@/components/underworld-particles";
@@ -12,7 +11,7 @@ import { AmbientBackdrop } from "@/components/layout/ambient-backdrop";
 
 /**
  * The persistent shell around every page: toasts, skip link, navbar (+ mobile
- * nav and ⌘K palette via CommandMenuProvider), footer, overlay cursor, contour
+ * nav and ⌘K palette via CommandMenuProvider), footer, contour
  * backdrop, grain overlay and the easter-egg controller (Konami → Underworld).
  */
 export function SiteChrome({ children }: { children: React.ReactNode }) {
@@ -25,7 +24,6 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
         {children}
         <Footer />
         <UnderworldParticles />
-        <CustomCursor />
         <div aria-hidden className="grain-overlay" />
         <EasterEggs />
       </CommandMenuProvider>

@@ -74,7 +74,7 @@ function MobileUnderworldGate({ onComplete }: { onComplete: () => void }) {
       className="container-hades pb-8"
     >
       <div className="border-ash bg-basalt/35 rounded-lg border p-3">
-        <p className="text-ember mb-2 font-mono text-[0.625rem] tracking-[0.18em] uppercase opacity-75 select-none">
+        <p className="text-flare mb-2 font-mono text-[0.625rem] tracking-[0.18em] uppercase opacity-75 select-none">
           {gate.eyebrow}
         </p>
         <button
@@ -123,7 +123,7 @@ function MobileUnderworldGate({ onComplete }: { onComplete: () => void }) {
                   cy="22"
                   r="19"
                   fill="none"
-                  stroke="var(--color-ember)"
+                  stroke="var(--color-flare)"
                   strokeWidth="1.8"
                   strokeLinecap="round"
                   initial={{ pathLength: 0, opacity: 0.5 }}
@@ -138,7 +138,7 @@ function MobileUnderworldGate({ onComplete }: { onComplete: () => void }) {
             <Flame
               size={18}
               strokeWidth={1.4}
-              className={holding || underworld ? "text-ember" : "text-smoke"}
+              className={holding || underworld ? "text-flare" : "text-smoke"}
             />
           </span>
           <span className="flex flex-col gap-0.5">
@@ -254,8 +254,7 @@ export function MobileNav() {
         onClick={() => setOpen(true)}
         aria-expanded={open}
         aria-label={dict.nav.openMenu}
-        data-cursor="hover"
-        className="rounded-pill border-ash text-smoke hover:border-molten hover:text-bone inline-flex size-9 items-center justify-center border transition-colors md:hidden"
+        className="rounded-sm border-ash text-smoke hover:border-signal hover:text-bone inline-flex size-9 items-center justify-center border transition-colors md:hidden"
       >
         <Menu size={18} strokeWidth={1.5} />
       </button>
@@ -282,7 +281,7 @@ export function MobileNav() {
                       type="button"
                       onClick={() => setOpen(false)}
                       aria-label={dict.nav.closeMenu}
-                      className="rounded-pill border-ash text-smoke hover:border-molten hover:text-bone inline-flex size-9 items-center justify-center border"
+                      className="rounded-sm border-ash text-smoke hover:border-signal hover:text-bone inline-flex size-9 items-center justify-center border"
                     >
                       <X size={18} strokeWidth={1.5} />
                     </button>
@@ -301,7 +300,7 @@ export function MobileNav() {
                             event.preventDefault();
                             go(item.href);
                           }}
-                          className="font-display text-bone hover:text-molten text-4xl transition-colors"
+                          className="font-display text-bone hover:text-signal text-4xl transition-colors"
                         >
                           {item.label[locale]}
                         </a>

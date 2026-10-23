@@ -101,7 +101,6 @@ export function GithubFeed({
         <button
           type="button"
           onClick={() => void refetch()}
-          data-cursor="hover"
           className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
         >
           {dict.githubFeed.retry}
@@ -170,7 +169,6 @@ export function GithubFeed({
             disabled={action.disabled}
             aria-expanded={isArchiveToggle ? false : undefined}
             aria-controls={isArchiveToggle ? ARCHIVE_GRID_ID : undefined}
-            data-cursor="hover"
             className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
           >
             {action.label}

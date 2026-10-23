@@ -1,72 +1,89 @@
 /* ──────────────────────────────────────────────────────────────────────────
-   Theme overrides. Dark "Obsidian" is defined in app/globals.css @theme.
-   These selectors redefine the same custom properties; html[data-theme="…"]
-   (specificity 0,1,1) reliably overrides the @theme :root defaults.
-   next-themes is configured with attribute="data-theme".
+   Theme overrides. The dark terminal theme is defined in app/globals.css
+   @theme. These selectors redefine the same custom properties;
+   html[data-theme="…"] (specificity 0,1,1) reliably overrides the @theme
+   :root defaults. next-themes is configured with attribute="data-theme".
    ────────────────────────────────────────────────────────────────────────── */
 
-/* Elysium — light theme (toggle) */
+/* Paper — light theme (toggle). Pure white paper and black ink: no cream,
+   no tint, the same monochrome rule inverted. */
 html[data-theme="light"] {
   color-scheme: light;
-  --color-abyss: #f5f1e8; /* background */
+  --color-void: #e6e6e8;
+  --color-abyss: #fafafa; /* background */
   --color-basalt: #ffffff; /* surfaces */
-  --color-ash: #e2dbcc; /* borders */
-  --color-bone: #1c1820; /* primary text */
-  --color-smoke: #5a5466; /* secondary text (AA on #F5F1E8) */
-  --color-molten: #a8741f; /* darkened gold (AA contrast) */
-  --color-molten-deep: #875e18;
-  --color-ember: #c23e22;
-  --color-styx: #2e5e6c;
-  --gradient-molten: linear-gradient(
+  --color-ash: #dcdce0; /* borders */
+  --color-bone: #0a0a0c; /* primary text (19:1) */
+  --color-smoke: #55585f; /* secondary text (7.2:1) */
+  --color-signal: #1a1a1f; /* accent — ink (16:1) */
+  --color-signal-deep: #000000;
+  --color-flare: #000000;
+  --color-steel: #3d4049;
+  --gradient-signal: linear-gradient(
     135deg,
-    #c89a3a 0%,
-    #a8741f 45%,
-    #8a4f22 100%
+    #000000 0%,
+    #2a2a30 45%,
+    #6f7480 100%
   );
-  --glow-molten:
-    0 0 0 1px color-mix(in oklab, var(--color-molten) 30%, transparent),
-    0 8px 40px -12px color-mix(in oklab, var(--color-molten) 22%, transparent);
+  --glow-signal:
+    0 0 0 1px color-mix(in oklab, var(--color-signal) 30%, transparent),
+    0 8px 40px -12px color-mix(in oklab, var(--color-signal) 14%, transparent);
 
   /* Paper, not glass: the contours read as pencil lines, the vignette is a
-     warm shadow rather than black, and the grain darkens the cream instead of
-     lifting it. */
-  --ambient-line: color-mix(in oklab, var(--color-smoke) 34%, transparent);
-  --ambient-line-opacity: 0.7;
-  --ambient-trace: color-mix(in oklab, var(--color-molten) 40%, transparent);
-  --ambient-horizon: color-mix(in oklab, var(--color-molten) 6%, transparent);
-  --ambient-vignette: color-mix(in oklab, #6b6152 20%, transparent);
+     soft grey rather than black, and the grain darkens the white. */
+  --ambient-line: color-mix(in oklab, var(--color-smoke) 30%, transparent);
+  --ambient-line-opacity: 0.6;
+  --ambient-trace: color-mix(in oklab, var(--color-signal) 34%, transparent);
+  --ambient-horizon: color-mix(in oklab, var(--color-signal) 4%, transparent);
+  --ambient-vignette: color-mix(in oklab, #000 10%, transparent);
   --ambient-grain-opacity: 0.035;
 }
 
-/* Underworld — secret theme (Fase 7 easter egg): ember becomes protagonist */
+/* Phosphor — secret theme (Fase 7 easter egg). An old CRT: true black, white
+   phosphor at full strength, scanlines and heavy grain. Still no hue. */
 html[data-theme="underworld"] {
   color-scheme: dark;
-  --color-abyss: #0b0709;
-  --color-basalt: #150f11;
-  --color-ash: #3a1f22;
-  --color-bone: #f0e6e2;
-  --color-smoke: #b89a92;
-  --color-molten: #e04e2f; /* ember promoted to primary */
-  --color-molten-deep: #b83a20;
-  --color-ember: #ff6a3d;
-  --color-styx: #8c5a3e;
-  --gradient-molten: linear-gradient(
+  --color-void: #000000;
+  --color-abyss: #000000;
+  --color-basalt: #0b0b0b;
+  --color-ash: #2c2c2c;
+  --color-bone: #ffffff;
+  --color-smoke: #b4b4b4;
+  --color-signal: #ffffff; /* phosphor promoted to accent */
+  --color-signal-deep: #d0d0d0;
+  --color-flare: #ffffff;
+  --color-steel: #cfcfcf;
+  --gradient-signal: linear-gradient(
     135deg,
-    #ff6a3d 0%,
-    #e04e2f 45%,
-    #b02810 100%
+    #ffffff 0%,
+    #e6e6e6 45%,
+    #9a9a9a 100%
   );
-  --glow-molten:
-    0 0 0 1px color-mix(in oklab, var(--color-molten) 35%, transparent),
-    0 8px 48px -12px color-mix(in oklab, var(--color-ember) 30%, transparent);
+  --glow-signal:
+    0 0 0 1px color-mix(in oklab, var(--color-signal) 35%, transparent),
+    0 0 28px -6px color-mix(in oklab, var(--color-signal) 40%, transparent);
 
-  /* The Underworld burns: hotter horizon, deeper vignette, heavier grain,
-     and the infinity in the contours glows like a fuse. */
-  --ambient-line: color-mix(in oklab, var(--color-ember) 22%, transparent);
+  --ambient-line: color-mix(in oklab, var(--color-bone) 20%, transparent);
   --ambient-line-opacity: 0.5;
-  --ambient-trace: color-mix(in oklab, var(--color-ember) 46%, transparent);
-  --ambient-glint: var(--color-ember);
-  --ambient-horizon: color-mix(in oklab, var(--color-ember) 10%, transparent);
-  --ambient-vignette: color-mix(in oklab, #000 68%, transparent);
-  --ambient-grain-opacity: 0.09;
+  --ambient-trace: color-mix(in oklab, var(--color-bone) 50%, transparent);
+  --ambient-glint: var(--color-flare);
+  --ambient-horizon: color-mix(in oklab, var(--color-bone) 6%, transparent);
+  --ambient-vignette: color-mix(in oklab, #000 78%, transparent);
+  --ambient-grain-opacity: 0.1;
+}
+
+/* Scanlines + phosphor bloom on text — only in the secret theme. */
+html[data-theme="underworld"] body {
+  text-shadow: 0 0 6px color-mix(in oklab, var(--color-bone) 35%, transparent);
+}
+
+html[data-theme="underworld"] .grain-overlay::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0 2px,
+    color-mix(in oklab, #000 42%, transparent) 2px 3px
+  );
 }

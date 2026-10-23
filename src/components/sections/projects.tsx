@@ -58,7 +58,6 @@ export function Projects({
       <div className="mt-8">
         <SmoothLink
           href="#github"
-          data-cursor="hover"
           className="link-underline text-smoke text-sm hover:bg-[length:100%_1px]"
         >
           {dict.projects.moreOnGithub}

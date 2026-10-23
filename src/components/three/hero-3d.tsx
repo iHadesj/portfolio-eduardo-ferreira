@@ -283,7 +283,7 @@ export function Hero3D({ className }: { className?: string }) {
       ) : null}
       {showScene && ready && tier === "lite" && showHint ? (
         <div className="text-smoke pointer-events-none absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2 rounded-full border border-white/8 bg-black/35 px-3 py-1.5 font-mono text-[0.625rem] tracking-[0.08em] whitespace-nowrap backdrop-blur-sm">
-          <span className="text-molten" aria-hidden>
+          <span className="text-signal" aria-hidden>
             ↔
           </span>
           Arraste · toque · segure

@@ -20,8 +20,8 @@ export function ContactEmail({ name, email, message }: ContactEmailProps) {
     <Html lang="pt-BR">
       <Body
         style={{
-          backgroundColor: "#0E0C12",
-          color: "#EDE8DF",
+          backgroundColor: "#0A0A0C",
+          color: "#F2F4F8",
           fontFamily: "ui-sans-serif, system-ui, sans-serif",
           padding: "24px",
         }}
@@ -29,16 +29,16 @@ export function ContactEmail({ name, email, message }: ContactEmailProps) {
         <Container
           style={{
             maxWidth: "560px",
-            border: "1px solid #2B2535",
+            border: "1px solid #26262C",
             borderRadius: "12px",
-            backgroundColor: "#16131C",
+            backgroundColor: "#121215",
             padding: "28px",
           }}
         >
           <Text
             style={{
               fontFamily: "monospace",
-              color: "#E8A33D",
+              color: "#C8CBD4",
               letterSpacing: "0.08em",
               textTransform: "uppercase",
               fontSize: "12px",
@@ -47,15 +47,15 @@ export function ContactEmail({ name, email, message }: ContactEmailProps) {
           >
             {"// novo contato"}
           </Text>
-          <Heading style={{ color: "#EDE8DF", fontSize: "22px" }}>
+          <Heading style={{ color: "#F2F4F8", fontSize: "22px" }}>
             {name}
           </Heading>
-          <Text style={{ color: "#9A92A8", marginTop: "-8px" }}>{email}</Text>
-          <Hr style={{ borderColor: "#2B2535" }} />
+          <Text style={{ color: "#9198A5", marginTop: "-8px" }}>{email}</Text>
+          <Hr style={{ borderColor: "#26262C" }} />
           <Section>
             <Text
               style={{
-                color: "#EDE8DF",
+                color: "#F2F4F8",
                 lineHeight: 1.7,
                 whiteSpace: "pre-wrap",
               }}

@@ -21,7 +21,7 @@ export function NotFoundView() {
       id="conteudo"
       className="container-hades flex min-h-dvh flex-col items-center justify-center gap-6 text-center"
     >
-      <p className="text-label text-molten font-mono uppercase">
+      <p className="text-label text-signal font-mono uppercase">
         {dict.notFound.eyebrow}
       </p>
       <h1 className="font-display text-hero text-bone">
@@ -30,7 +30,6 @@ export function NotFoundView() {
       <p className="prose-measure text-smoke">{dict.notFound.description}</p>
       <Link
         href={localePath(locale, "/")}
-        data-cursor="hover"
         className={cn(buttonVariants({ variant: "primary", size: "lg" }))}
       >
         {dict.notFound.cta}

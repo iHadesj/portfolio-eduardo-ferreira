@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 
 /** Glyph for covers of projects without screenshot (rodam no console/IDE). */
 function coverGlyph(stack: string[]) {
-  const glyphClass = "text-molten/60 size-12";
+  const glyphClass = "text-signal/60 size-12";
   if (stack.includes("Java"))
     return <Coffee aria-hidden className={glyphClass} strokeWidth={1.25} />;
   if (stack.includes("JavaScript"))
@@ -48,7 +48,7 @@ export function ProjectCard({
   return (
     <article
       className={cn(
-        "project-card group border-ash bg-basalt hover:border-molten/40 hover:glow-molten relative grid gap-6 border p-5 transition-colors duration-200 md:p-6",
+        "project-card group border-ash bg-basalt hover:border-signal/40 hover:glow-signal relative grid gap-6 border p-5 transition-colors duration-200 md:p-6",
         flip
           ? "project-card--flip md:grid-cols-[1fr_minmax(0,20rem)]"
           : "md:grid-cols-[minmax(0,20rem)_1fr]",
@@ -74,7 +74,7 @@ export function ProjectCard({
             className="absolute inset-0 grid place-items-center transition-transform duration-300 group-hover:scale-[1.03]"
             style={{
               background:
-                "radial-gradient(circle at 30% 25%, color-mix(in oklab, var(--color-molten) 16%, transparent), transparent 60%), linear-gradient(160deg, #1b1622, #0f0b15)",
+                "radial-gradient(circle at 30% 25%, color-mix(in oklab, var(--color-signal) 16%, transparent), transparent 60%), linear-gradient(160deg, #1b1622, #0f0b15)",
             }}
           >
             {coverGlyph(project.stack)}
@@ -89,7 +89,7 @@ export function ProjectCard({
 
       <div className="flex flex-col gap-3">
         <Badge
-          variant={project.status === "in-progress" ? "ember" : "default"}
+          variant={project.status === "in-progress" ? "flare" : "default"}
           className="self-start"
         >
           {dict.projects.statuses[project.status]}
@@ -99,11 +99,7 @@ export function ProjectCard({
           className="font-display text-h3 text-bone"
           style={{ viewTransitionName: projectTitleName(project.slug) }}
         >
-          <TransitionLink
-            href={href}
-            data-cursor="hover"
-            className="after:absolute after:inset-0"
-          >
+          <TransitionLink href={href} className="after:absolute after:inset-0">
             {project.title}
           </TransitionLink>
         </h3>
@@ -113,7 +109,7 @@ export function ProjectCard({
         <ul className="text-smoke flex flex-col gap-1.5 text-sm">
           {project.highlights.map((highlight) => (
             <li key={highlight} className="flex gap-2">
-              <span aria-hidden className="text-molten">
+              <span aria-hidden className="text-signal">
                 →
               </span>
               <span>{highlight}</span>
@@ -130,8 +126,7 @@ export function ProjectCard({
         <div className="relative z-10 mt-2 flex items-center gap-4 text-sm">
           <TransitionLink
             href={href}
-            data-cursor="hover"
-            className="link-underline text-molten hover:bg-[length:100%_1px]"
+            className="link-underline text-signal hover:bg-[length:100%_1px]"
           >
             {dict.projects.caseStudy}
           </TransitionLink>
@@ -143,7 +138,6 @@ export function ProjectCard({
               aria-label={fill(dict.projects.repoAria, {
                 title: project.title,
               })}
-              data-cursor="hover"
               className="text-smoke hover:text-bone transition-colors"
             >
               <GitHubIcon className="size-[18px]" />
@@ -157,7 +151,6 @@ export function ProjectCard({
               aria-label={fill(dict.projects.demoAria, {
                 title: project.title,
               })}
-              data-cursor="hover"
               className="text-smoke hover:text-bone transition-colors"
             >
               <ArrowUpRight size={18} strokeWidth={1.5} />

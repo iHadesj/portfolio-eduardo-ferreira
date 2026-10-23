@@ -13,13 +13,13 @@ const STACK_VISUALS = [
   {
     index: "01",
     code: "</>",
-    accent: "molten",
+    accent: "signal",
     tools: ["TypeScript", "React", "Next.js", "Vite", "Tailwind CSS"],
   },
   {
     index: "02",
     code: "API",
-    accent: "styx",
+    accent: "steel",
     tools: [
       "Java",
       "Spring",
@@ -45,7 +45,7 @@ const STACK_VISUALS = [
   {
     index: "04",
     code: "3D",
-    accent: "ember",
+    accent: "flare",
     tools: [
       "Motion",
       "Three.js",

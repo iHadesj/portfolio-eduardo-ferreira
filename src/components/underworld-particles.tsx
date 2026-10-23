@@ -55,10 +55,10 @@ function createGlowSprite(core: string, glow: string) {
     size / 2,
     size / 2,
   );
-  gradient.addColorStop(0, "rgba(255, 238, 224, 1)");
+  gradient.addColorStop(0, "rgba(255, 255, 255, 1)");
   gradient.addColorStop(0.12, core);
   gradient.addColorStop(0.42, glow);
-  gradient.addColorStop(1, "rgba(80, 0, 4, 0)");
+  gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
   context.fillStyle = gradient;
   context.fillRect(0, 0, size, size);
   return sprite;
@@ -84,12 +84,12 @@ export function UnderworldParticles() {
     let frame = 0;
     let previousTime = performance.now();
     const emberSprite = createGlowSprite(
-      "rgba(235, 39, 28, 0.98)",
-      "rgba(170, 5, 13, 0.38)",
+      "rgba(220, 220, 220, 0.9)",
+      "rgba(140, 140, 140, 0.3)",
     );
     const hotSprite = createGlowSprite(
-      "rgba(255, 116, 75, 1)",
-      "rgba(242, 24, 13, 0.46)",
+      "rgba(255, 255, 255, 1)",
+      "rgba(200, 200, 200, 0.42)",
     );
 
     const resize = () => {

@@ -18,9 +18,9 @@ const proseClass = [
   "prose-headings:font-display prose-headings:text-bone",
   "prose-h2:text-h3 prose-h2:mt-12 prose-h2:mb-3",
   "prose-p:text-smoke prose-li:text-smoke prose-strong:text-bone",
-  "prose-a:text-molten prose-a:no-underline hover:prose-a:underline",
-  "prose-code:text-styx prose-code:font-mono prose-code:before:content-none prose-code:after:content-none",
-  "prose-blockquote:border-l-molten prose-blockquote:text-smoke prose-blockquote:not-italic",
+  "prose-a:text-signal prose-a:no-underline hover:prose-a:underline",
+  "prose-code:text-steel prose-code:font-mono prose-code:before:content-none prose-code:after:content-none",
+  "prose-blockquote:border-l-signal prose-blockquote:text-smoke prose-blockquote:not-italic",
 ].join(" ");
 
 export function CaseStudyPage({
@@ -52,15 +52,14 @@ export function CaseStudyPage({
     <main id="conteudo" className="container-hades section-pad">
       <Link
         href={localePath(locale, "/#projetos")}
-        data-cursor="hover"
-        className="text-smoke hover:text-molten mb-10 inline-flex items-center gap-2 text-sm transition-colors"
+        className="text-smoke hover:text-signal mb-10 inline-flex items-center gap-2 text-sm transition-colors"
       >
         <ArrowLeft size={16} strokeWidth={1.5} /> {t.back}
       </Link>
 
       <header className="border-ash flex flex-col gap-5 border-b pb-10">
         <Badge
-          variant={project.status === "in-progress" ? "ember" : "default"}
+          variant={project.status === "in-progress" ? "flare" : "default"}
           className="self-start"
         >
           {dict.projects.statuses[project.status]}
@@ -99,7 +98,6 @@ export function CaseStudyPage({
               href={project.repo}
               target="_blank"
               rel="noopener noreferrer"
-              data-cursor="hover"
               className="text-smoke hover:text-bone inline-flex items-center gap-1.5 transition-colors"
             >
               <GitHubIcon className="size-[18px]" /> {t.repo}
@@ -110,7 +108,6 @@ export function CaseStudyPage({
               href={project.demo}
               target="_blank"
               rel="noopener noreferrer"
-              data-cursor="hover"
               className="text-smoke hover:text-bone inline-flex items-center gap-1.5 transition-colors"
             >
               <ArrowUpRight size={16} strokeWidth={1.5} /> {t.demo}
@@ -143,7 +140,7 @@ export function CaseStudyPage({
             aria-hidden
             size={18}
             strokeWidth={1.5}
-            className="text-molten mt-0.5 shrink-0"
+            className="text-signal mt-0.5 shrink-0"
           />
           {t.translationNotice}
         </p>
@@ -158,8 +155,7 @@ export function CaseStudyPage({
         {previous ? (
           <Link
             href={projectPath(locale, previous.slug)}
-            data-cursor="hover"
-            className="text-smoke hover:text-molten inline-flex items-center gap-2 transition-colors"
+            className="text-smoke hover:text-signal inline-flex items-center gap-2 transition-colors"
           >
             <ArrowLeft size={16} strokeWidth={1.5} /> {previous.title}
           </Link>
@@ -169,8 +165,7 @@ export function CaseStudyPage({
         {next ? (
           <Link
             href={projectPath(locale, next.slug)}
-            data-cursor="hover"
-            className="text-smoke hover:text-molten inline-flex items-center gap-2 text-right transition-colors"
+            className="text-smoke hover:text-signal inline-flex items-center gap-2 text-right transition-colors"
           >
             {next.title} <ArrowRight size={16} strokeWidth={1.5} />
           </Link>

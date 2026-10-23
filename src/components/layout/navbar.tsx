@@ -63,7 +63,6 @@ export function Navbar() {
         <Link
           href={localePath(locale, "/")}
           aria-label={dict.nav.home}
-          data-cursor="hover"
           className="font-display text-bone text-xl tracking-tight"
         >
           EF
@@ -78,7 +77,6 @@ export function Navbar() {
                   href={item.href}
                   onClick={(event) => handleNav(event, item.href)}
                   aria-current={isActive ? "true" : undefined}
-                  data-cursor="hover"
                   className={cn(
                     "relative inline-block px-3 py-2 text-sm transition-colors",
                     isActive ? "text-bone" : "text-smoke hover:text-bone",
@@ -88,7 +86,7 @@ export function Navbar() {
                   {isActive ? (
                     <motion.span
                       layoutId="nav-underline"
-                      className="bg-molten absolute inset-x-3 -bottom-0.5 h-px"
+                      className="bg-signal absolute inset-x-3 -bottom-0.5 h-px"
                     />
                   ) : null}
                 </a>
@@ -104,8 +102,7 @@ export function Navbar() {
             type="button"
             onClick={() => setOpen(true)}
             aria-label={dict.nav.openCommands}
-            data-cursor="hover"
-            className="rounded-pill border-ash text-smoke hover:border-molten hover:text-bone hidden items-center gap-1.5 border px-3 py-1.5 text-sm transition-colors md:inline-flex"
+            className="rounded-sm border-ash text-smoke hover:border-signal hover:text-bone hidden items-center gap-1.5 border px-3 py-1.5 text-sm transition-colors md:inline-flex"
           >
             <span>{dict.nav.commands}</span>
             <Kbd>⌘</Kbd>

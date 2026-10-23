@@ -21,7 +21,6 @@ export function ThemeToggle({ className }: { className?: string }) {
   return (
     <button
       type="button"
-      data-cursor="hover"
       aria-label={
         mounted
           ? isLight
@@ -31,7 +30,7 @@ export function ThemeToggle({ className }: { className?: string }) {
       }
       onClick={() => setTheme(isLight ? "dark" : "light")}
       className={cn(
-        "rounded-pill border-ash text-smoke hover:border-molten hover:text-bone inline-flex h-9 w-9 items-center justify-center border transition-colors duration-200",
+        "rounded-sm border-ash text-smoke hover:border-signal hover:text-bone inline-flex h-9 w-9 items-center justify-center border transition-colors duration-200",
         className,
       )}
     >

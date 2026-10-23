@@ -52,8 +52,7 @@ export function Footer() {
               // Absolute, not a bare `#hash`: the footer also renders on case
               // study pages, where these sections do not exist.
               href={sectionPath(locale, item.href)}
-              data-cursor="hover"
-              className="text-smoke hover:text-molten w-fit text-sm transition-colors"
+              className="text-smoke hover:text-signal w-fit text-sm transition-colors"
             >
               {item.label[locale]}
             </Link>
@@ -68,8 +67,7 @@ export function Footer() {
                 aria-label={label}
                 target={external ? "_blank" : undefined}
                 rel={external ? "noopener noreferrer" : undefined}
-                data-cursor="hover"
-                className="rounded-pill border-ash text-smoke hover:border-molten hover:text-bone inline-flex size-10 items-center justify-center border transition-colors"
+                className="rounded-sm border-ash text-smoke hover:border-signal hover:text-bone inline-flex size-10 items-center justify-center border transition-colors"
               >
                 <Icon className="size-[18px]" />
               </a>
@@ -84,8 +82,7 @@ export function Footer() {
           href={siteConfig.sourceUrl}
           target="_blank"
           rel="noopener noreferrer"
-          data-cursor="hover"
-          className="hover:text-molten w-fit transition-colors"
+          className="hover:text-signal w-fit transition-colors"
         >
           {dict.footer.viewSource}
         </Link>

@@ -38,10 +38,10 @@ export function EasterEggs() {
   // Console art for the curious recruiter (dev + prod).
   useEffect(() => {
     /* eslint-disable no-console */
-    console.log(`%c${TRIDENT}`, "color:#e8a33d; font-family:monospace");
+    console.log(`%c${TRIDENT}`, "color:#c8cbd4; font-family:monospace");
     console.log(
       `%c${fill(t.consoleHint, { email: siteConfig.email })}`,
-      "color:#9a92a8",
+      "color:#9198a5",
     );
     /* eslint-enable no-console */
   }, [t.consoleHint]);

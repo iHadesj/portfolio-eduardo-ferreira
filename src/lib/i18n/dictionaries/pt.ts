@@ -89,7 +89,7 @@ export const pt = {
   },
 
   stack: {
-    eyebrow: "stack em prática",
+    eyebrow: "stack",
     title: "Ferramentas que viraram produto.",
     description:
       "Organizadas pelo problema que resolvem e ligadas aos projetos em que eu usei cada uma.",
@@ -155,7 +155,7 @@ export const pt = {
   },
 
   experience: {
-    eyebrow: "trajetória",
+    eyebrow: "xp",
     title: "Como eu cheguei até aqui.",
     items: [
       {
@@ -218,7 +218,7 @@ export const pt = {
       showArchive: "Ver repositórios anteriores",
       loadMore: "Carregar mais",
       loading: "Carregando…",
-      archiveLabel: "// arquivo",
+      archiveLabel: "~/arquivo",
       endOfArchive: "fim do arquivo — por enquanto.",
       loadError: "não consegui carregar mais agora.",
       emptyWindow: "nenhum repositório com push nos últimos {months} meses.",
@@ -295,7 +295,7 @@ export const pt = {
 
   notFound: {
     metaTitle: "Alma perdida",
-    eyebrow: "// 404",
+    eyebrow: "~/404",
     title: "Alma perdida",
     description:
       "Essa alma se perdeu no submundo. A página que você procura não existe — ou foi engolida pelo Estige.",
@@ -329,7 +329,7 @@ export const pt = {
     back: "Voltar",
     repo: "Repositório",
     demo: "Demo ao vivo",
-    decisionsEyebrow: "decision log",
+    decisionsEyebrow: "decisions.log",
     decisionsTitle: "Decisões que moldaram o projeto.",
     decisionsDescription:
       "O que eu escolhi, o que descartei junto e o preço que isso cobrou.",

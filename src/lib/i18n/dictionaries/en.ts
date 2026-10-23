@@ -75,7 +75,7 @@ export const en = {
   },
 
   stack: {
-    eyebrow: "stack in practice",
+    eyebrow: "stack",
     title: "Tools that turned into products.",
     description:
       "Grouped by the problem they solve and linked to the projects where I used each one.",
@@ -141,7 +141,7 @@ export const en = {
   },
 
   experience: {
-    eyebrow: "trajectory",
+    eyebrow: "xp",
     title: "How I got here.",
     items: [
       {
@@ -204,7 +204,7 @@ export const en = {
       showArchive: "See earlier repositories",
       loadMore: "Load more",
       loading: "Loading…",
-      archiveLabel: "// archive",
+      archiveLabel: "~/archive",
       endOfArchive: "end of the archive — for now.",
       loadError: "couldn't load any more right now.",
       emptyWindow: "no repository pushed in the last {months} months.",
@@ -279,7 +279,7 @@ export const en = {
 
   notFound: {
     metaTitle: "Lost soul",
-    eyebrow: "// 404",
+    eyebrow: "~/404",
     title: "Lost soul",
     description:
       "This soul got lost in the underworld. The page you're looking for doesn't exist — or the Styx swallowed it.",
@@ -310,7 +310,7 @@ export const en = {
     back: "Back",
     repo: "Repository",
     demo: "Live demo",
-    decisionsEyebrow: "decision log",
+    decisionsEyebrow: "decisions.log",
     decisionsTitle: "Decisions that shaped the project.",
     decisionsDescription:
       "What I picked, what I dropped along with it, and the price that came attached.",
