@@ -35,13 +35,39 @@ export const en = {
   },
 
   hero: {
-    eyebrow: "// fullstack developer — java & react",
-    taglineLead: "Full stack,",
-    taglineAccent: "fully",
-    description:
-      "React and TypeScript on the front, Java on the back. I spent almost two years helping build a portal from scratch at VTT, and now I'm sharpening testing and architecture in my own projects.",
-    ctaProjects: "See projects",
-    ctaCv: "Download CV",
+    prompt: "whoami",
+    role: "Full stack dev. React, Next.js and TypeScript on the front, Java on the back.",
+    location: "grajaú, south side of são paulo",
+    stackLabel: "stack",
+    deliveriesLabel: "shipped",
+    deliveries: [
+      {
+        id: "vtt",
+        name: "VTT",
+        detail:
+          "20 months building the VTT Portal from scratch: point-of-sale management and a game editor for event kiosks",
+      },
+      {
+        id: "api-java",
+        name: "Java API + PostgreSQL",
+        detail:
+          "JPA/Hibernate, MVC layering and business rules tested with JUnit",
+      },
+      {
+        id: "levva",
+        name: "Levva",
+        detail:
+          "offline-first PWA store: 400 products, a wallet in integer cents, 29 tests",
+      },
+      {
+        id: "bernardo",
+        name: "Um abraço, Bernardo",
+        detail:
+          "mobile-first shop with a 3D bear that reacts to touch, orders straight to WhatsApp",
+      },
+    ],
+    ctaProjects: "see projects",
+    ctaCv: "download cv",
     ctaCvAria: "Download résumé as PDF",
     availabilityOpen: "Open to opportunities",
     availabilityClosed: "Not available right now",

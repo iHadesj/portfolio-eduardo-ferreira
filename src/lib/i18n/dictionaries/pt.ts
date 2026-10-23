@@ -49,13 +49,38 @@ export const pt = {
   },
 
   hero: {
-    eyebrow: "// fullstack developer — java & react",
-    taglineLead: "Stack",
-    taglineAccent: "completa",
-    description:
-      "Front em React e TypeScript, back em Java. Passei quase dois anos ajudando a construir um portal do zero na VTT e agora sigo afiando testes e arquitetura nos meus projetos.",
-    ctaProjects: "Ver projetos",
-    ctaCv: "Baixar CV",
+    prompt: "whoami",
+    role: "Full stack dev. React, Next.js e TypeScript no front, Java no back.",
+    location: "grajaú, zona sul de sp",
+    stackLabel: "stack",
+    deliveriesLabel: "entregas",
+    deliveries: [
+      {
+        id: "vtt",
+        name: "VTT",
+        detail:
+          "20 meses construindo o Portal VTT do zero: painel de gestão de PDV e editor de jogos pra totens",
+      },
+      {
+        id: "api-java",
+        name: "API Java + PostgreSQL",
+        detail: "JPA/Hibernate, camadas MVC e regra testada com JUnit",
+      },
+      {
+        id: "levva",
+        name: "Levva",
+        detail:
+          "e-commerce PWA offline-first: 400 produtos, carteira em centavos, 29 testes",
+      },
+      {
+        id: "bernardo",
+        name: "Um abraço, Bernardo",
+        detail:
+          "loja mobile-first com urso 3D que reage ao toque e pedido direto no WhatsApp",
+      },
+    ],
+    ctaProjects: "ver projetos",
+    ctaCv: "baixar cv",
     ctaCvAria: "Baixar currículo em PDF",
     availabilityOpen: "Aberto a oportunidades",
     availabilityClosed: "Sem disponibilidade no momento",

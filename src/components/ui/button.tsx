@@ -7,17 +7,16 @@ import { cn } from "@/lib/utils";
  * tailwind-merge tie-break (and `!` keeps them robust regardless).
  */
 const buttonVariants = cva(
-  "rounded-sm font-body ease-out-expo inline-flex items-center justify-center gap-2 font-medium whitespace-nowrap transition duration-200 disabled:pointer-events-none disabled:opacity-50",
+  "rounded-sm font-mono ease-out-expo inline-flex items-center justify-center gap-2 font-medium whitespace-nowrap transition duration-200 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       size: {
-        sm: "h-9 px-4 text-sm",
-        md: "h-11 px-5 text-[0.9375rem]",
-        lg: "h-12 px-6 text-base",
+        sm: "h-9 px-3.5 text-xs",
+        md: "h-11 px-4 text-sm",
+        lg: "h-12 px-5 text-[0.9375rem]",
       },
       variant: {
-        primary:
-          "bg-signal-gradient text-abyss glow-signal hover:-translate-y-0.5",
+        primary: "bg-bone text-abyss hover:bg-signal",
         ghost:
           "border-ash text-smoke hover:border-signal hover:text-bone border",
         link: "text-signal link-underline !h-auto !rounded-none !px-0 hover:bg-[length:100%_1px]",

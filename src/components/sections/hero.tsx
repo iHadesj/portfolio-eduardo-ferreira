@@ -1,155 +1,161 @@
-import { Download, Mail } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
-import { Magnetic } from "@/components/ui/magnetic";
 import { SmoothLink } from "@/components/ui/smooth-link";
+import { TransitionLink } from "@/components/ui/transition-link";
 import { AvailabilityPill } from "@/components/ui/availability-pill";
 import { Hero3D } from "@/components/three/hero-3d";
 import { ScrollCue } from "@/components/sections/scroll-cue";
-import { GitHubIcon, LinkedInIcon } from "@/components/icons";
 import { siteConfig } from "@/lib/site-config";
-import { cn } from "@/lib/utils";
 import { ScrollSection } from "@/components/layout/scroll-flow";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
+import type { Locale } from "@/lib/i18n/config";
+import { projectPath } from "@/lib/i18n/routes";
+
+/** Stack names are proper nouns: the same in every locale. */
+const STACK = [
+  "React",
+  "Next.js",
+  "TypeScript",
+  "Java",
+  "Spring",
+  "PostgreSQL",
+  "Three.js",
+] as const;
+
+/** Case study behind each delivery id; anything else is the job itself. */
+const DELIVERY_SLUG: Record<string, string> = {
+  "api-java": "api-java-postgresql",
+  levva: "levva-loja-e-sorte",
+  bernardo: "um-abraco-bernardo",
+};
+
+/** Where each delivery points: a case study, or the experience timeline. */
+function deliveryHref(id: string, locale: Locale): string {
+  const slug = DELIVERY_SLUG[id];
+  return slug ? projectPath(locale, slug) : "#trajetoria";
+}
 
 const socials = [
-  {
-    label: "GitHub",
-    href: siteConfig.links.github,
-    Icon: GitHubIcon,
-    external: true,
-  },
-  {
-    label: "LinkedIn",
-    href: siteConfig.links.linkedin,
-    Icon: LinkedInIcon,
-    external: true,
-  },
+  { label: "github", href: siteConfig.links.github, external: true },
+  { label: "linkedin", href: siteConfig.links.linkedin, external: true },
   // mailto: — no new tab, no rel needed.
-  {
-    label: "E-mail",
-    href: siteConfig.links.email,
-    Icon: Mail,
-    external: false,
-  },
+  { label: "email", href: siteConfig.links.email, external: false },
 ];
 
-export function Hero({ dict }: { dict: Dictionary }) {
+/**
+ * The first screen is a terminal readout, not a poster: who, what stack, what
+ * shipped — everything a recruiter scans for — fits above the fold at
+ * 1366×768 and 390×844, rendered on the server with no JS in the way. The
+ * sculpture sits beside it and loads after idle.
+ */
+export function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
   const { availability } = siteConfig;
+  const t = dict.hero;
 
   return (
     <ScrollSection id="hero" className="relative isolate" flowStrength={18}>
-      {/* `data-mobius-light` marks every node that reads the sculpture's
-          light variables; Hero3D writes them only there. */}
-      <div
-        aria-hidden
-        data-mobius-light
-        className="hero-reactive-aura pointer-events-none absolute inset-0 z-[-1]"
-      />
-      <div
-        aria-hidden
-        data-mobius-light
-        className="hero-reactive-caustics pointer-events-none absolute inset-0 z-[-1]"
-      />
-      <div className="container-hades relative grid min-h-dvh grid-cols-1 content-start items-start gap-3 pt-24 pb-12 sm:gap-8 sm:pb-20 lg:grid-cols-12 lg:content-normal lg:items-center lg:gap-6">
-        <div className="relative flex flex-col gap-5 sm:gap-6 lg:col-span-7">
-          {/* Availability sits with the eyebrow, not below the CTAs: it is the
-              first question a recruiter has, and this is the first line they
-              read. */}
-          <div className="relative z-[30] flex flex-wrap items-center gap-x-3 gap-y-2">
-            <p className="text-signal font-mono text-[0.65rem] leading-[1.45] tracking-[0.07em] uppercase sm:text-label">
-              {dict.hero.eyebrow}
-            </p>
-            <AvailabilityPill
-              open={availability.open}
-              label={
-                availability.open
-                  ? dict.hero.availabilityOpen
-                  : dict.hero.availabilityClosed
-              }
-              ariaLabel={dict.hero.availabilityAria}
-            />
-          </div>
-
-          <h1 className="font-display text-bone">
-            <span className="hero-depth-title relative z-[30] block text-[length:clamp(2.35rem,11vw,2.85rem)] leading-[0.94] font-semibold tracking-[-0.025em] whitespace-nowrap sm:text-hero">
-              <span className="hero-title-base block">
-                <span className="[word-spacing:0.08em]">Edu Ferreira</span>
-              </span>
-              <span
-                aria-hidden
-                data-mobius-light
-                className="hero-title-light pointer-events-none absolute inset-0 block [word-spacing:0.08em]"
-              >
-                Edu Ferreira
-              </span>
-            </span>
-            <span className="text-smoke relative z-[30] mt-2.5 block max-w-[18ch] text-[1.3rem] leading-[1.08] sm:mt-3 sm:text-[length:clamp(1.5rem,3.5vw,2.5rem)] sm:leading-[1.1]">
-              {dict.hero.taglineLead}{" "}
-              <span className="text-gradient-signal">
-                {dict.hero.taglineAccent}
-              </span>
-            </span>
-          </h1>
-
-          <p className="text-smoke relative z-[30] max-w-[34ch] font-body text-[0.975rem] leading-[1.65] sm:max-w-[65ch] sm:text-lead lg:max-w-[38ch]">
-            {dict.hero.description}
+      <div className="container-hades relative grid min-h-dvh grid-cols-1 content-center gap-6 pt-20 pb-14 lg:grid-cols-12 lg:gap-8 lg:pb-20">
+        <div className="relative z-10 flex min-w-0 flex-col gap-5 lg:col-span-7">
+          <p className="text-smoke font-mono text-sm">
+            <span aria-hidden>hades@grajau:~$ </span>
+            {t.prompt}
           </p>
 
-          <div className="relative z-[30] flex flex-wrap items-center gap-3 pt-1 sm:gap-4 sm:pt-2">
-            <Magnetic className="inline-flex">
-              <SmoothLink
-                href="#projetos"
-                data-mobius-light
-                className={cn(
-                  buttonVariants({ variant: "primary", size: "lg" }),
-                  "hero-light-cta h-11 px-5 text-sm sm:h-12 sm:px-6 sm:text-base",
-                )}
-              >
-                {dict.hero.ctaProjects}
-              </SmoothLink>
-            </Magnetic>
+          <div className="flex flex-col gap-3">
+            <h1 className="font-display text-hero text-bone">
+              Edu Ferreira
+              <span aria-hidden className="hero-caret">
+                _
+              </span>
+            </h1>
+            <p className="text-bone/90 font-body text-lead max-w-[44ch]">
+              {t.role}
+            </p>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+              <AvailabilityPill
+                open={availability.open}
+                label={
+                  availability.open ? t.availabilityOpen : t.availabilityClosed
+                }
+                ariaLabel={t.availabilityAria}
+              />
+              <span className="text-smoke font-mono text-xs">{t.location}</span>
+            </div>
+          </div>
+
+          <dl className="hero-readout">
+            <div>
+              <dt>{t.stackLabel}</dt>
+              <dd>
+                <ul className="hero-readout__stack">
+                  {STACK.map((name) => (
+                    <li key={name}>{name}</li>
+                  ))}
+                </ul>
+              </dd>
+            </div>
+            <div>
+              <dt>{t.deliveriesLabel}</dt>
+              <dd>
+                <ul className="hero-readout__deliveries">
+                  {t.deliveries.map((item) => {
+                    const href = deliveryHref(item.id, locale);
+                    return (
+                      <li key={item.id}>
+                        {href.startsWith("#") ? (
+                          <SmoothLink href={href}>{item.name}</SmoothLink>
+                        ) : (
+                          <TransitionLink href={href}>
+                            {item.name}
+                          </TransitionLink>
+                        )}{" "}
+                        <span>{item.detail}</span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </dd>
+            </div>
+          </dl>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <SmoothLink
+              href="#projetos"
+              className={buttonVariants({ variant: "primary", size: "md" })}
+            >
+              {`> ${t.ctaProjects}`}
+            </SmoothLink>
             <a
               href={siteConfig.cvUrl}
               download={siteConfig.cvFileName}
               type="application/pdf"
-              aria-label={dict.hero.ctaCvAria}
-              data-mobius-light
-              className={cn(
-                buttonVariants({ variant: "ghost", size: "lg" }),
-                "hero-light-cta h-11 px-5 text-sm sm:h-12 sm:px-6 sm:text-base",
-              )}
+              aria-label={t.ctaCvAria}
+              className={buttonVariants({ variant: "ghost", size: "md" })}
             >
-              <Download className="size-4 sm:size-[18px]" strokeWidth={1.5} />
-              {dict.hero.ctaCv}
+              {`> ${t.ctaCv}`}
             </a>
-          </div>
-
-          <ul className="relative z-[30] flex items-center gap-2.5 pt-1 sm:gap-3 sm:pt-2">
-            {socials.map(({ label, href, Icon, external }) => (
-              <li key={label}>
-                <Magnetic className="inline-flex">
+            <ul className="text-smoke flex items-center gap-3 font-mono text-xs sm:ml-2">
+              {socials.map(({ label, href, external }) => (
+                <li key={label}>
                   <a
                     href={href}
-                    aria-label={label}
                     target={external ? "_blank" : undefined}
                     rel={external ? "noopener noreferrer" : undefined}
-                    data-mobius-light
-                    className="hero-light-social rounded-sm border-ash text-smoke hover:border-signal hover:text-bone inline-flex size-9 items-center justify-center border transition-colors sm:size-10"
+                    className="hover:text-bone transition-colors"
                   >
-                    <Icon className="size-4 sm:size-[18px]" />
+                    {`[${label}]`}
                   </a>
-                </Magnetic>
-              </li>
-            ))}
-          </ul>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
-        <div className="relative z-20 mt-3 sm:mt-0 lg:col-span-5 lg:overflow-visible">
-          <Hero3D className="mx-auto aspect-square w-full max-w-[26rem] sm:max-w-md lg:w-[148%] lg:max-w-none lg:-translate-x-[30%]" />
+        <div className="relative min-w-0 lg:col-span-5">
+          <Hero3D className="mx-auto aspect-square w-full max-w-[22rem] lg:max-w-none" />
         </div>
       </div>
 
-      <div className="pointer-events-none absolute inset-x-0 bottom-6 flex justify-center">
+      <div className="pointer-events-none absolute inset-x-0 bottom-6 hidden justify-center lg:flex">
         <ScrollCue />
       </div>
     </ScrollSection>

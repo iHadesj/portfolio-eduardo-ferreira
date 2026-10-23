@@ -4,7 +4,6 @@ import Link from "next/link";
 import { Mail } from "lucide-react";
 import { navItems, siteConfig } from "@/lib/site-config";
 import { GitHubIcon, LinkedInIcon } from "@/components/icons";
-import { Magnetic } from "@/components/ui/magnetic";
 import { useI18n } from "@/lib/i18n/locale-provider";
 import { fill } from "@/lib/i18n/format";
 import { sectionPath } from "@/lib/i18n/routes";
@@ -61,17 +60,16 @@ export function Footer() {
 
         <div className="flex items-start gap-3">
           {socials.map(({ label, href, Icon, external }) => (
-            <Magnetic key={label} className="inline-flex">
-              <a
-                href={href}
-                aria-label={label}
-                target={external ? "_blank" : undefined}
-                rel={external ? "noopener noreferrer" : undefined}
-                className="rounded-sm border-ash text-smoke hover:border-signal hover:text-bone inline-flex size-10 items-center justify-center border transition-colors"
-              >
-                <Icon className="size-[18px]" />
-              </a>
-            </Magnetic>
+            <a
+              key={label}
+              href={href}
+              aria-label={label}
+              target={external ? "_blank" : undefined}
+              rel={external ? "noopener noreferrer" : undefined}
+              className="rounded-sm border-ash text-smoke hover:border-signal hover:text-bone inline-flex size-10 items-center justify-center border transition-colors"
+            >
+              <Icon className="size-[18px]" />
+            </a>
           ))}
         </div>
       </div>

@@ -57,17 +57,17 @@ export const siteConfig = {
 } as const;
 
 export const navItems: NavItem[] = [
-  { id: "sobre", href: "#sobre", label: { pt: "Sobre", en: "About" } },
-  { id: "stack", href: "#stack", label: { pt: "Stack", en: "Stack" } },
   {
     id: "projetos",
     href: "#projetos",
-    label: { pt: "Projetos", en: "Projects" },
+    label: { pt: "projetos", en: "projects" },
   },
-  { id: "github", href: "#github", label: { pt: "GitHub", en: "GitHub" } },
+  { id: "trajetoria", href: "#trajetoria", label: { pt: "xp", en: "xp" } },
+  { id: "stack", href: "#stack", label: { pt: "stack", en: "stack" } },
+  { id: "sobre", href: "#sobre", label: { pt: "sobre", en: "about" } },
   {
     id: "contato",
     href: "#contato",
-    label: { pt: "Contato", en: "Contact" },
+    label: { pt: "contato", en: "contact" },
   },
 ];

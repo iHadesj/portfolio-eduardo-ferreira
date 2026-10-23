@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardBody, CardFooter, CardHeader } from "@/components/ui/card";
 import { Kbd } from "@/components/ui/kbd";
 import { LocaleToggle } from "@/components/ui/locale-toggle";
-import { Magnetic } from "@/components/ui/magnetic";
 import { Marquee } from "@/components/ui/marquee";
 import { Reveal } from "@/components/ui/reveal";
 import { ScrambleText } from "@/components/ui/scramble-text";
@@ -185,21 +184,6 @@ export function DevUiPage({ locale }: { locale: Locale }) {
         <Reveal className="text-bone">
           Este bloco faz fade + translateY ao entrar na viewport, uma vez.
         </Reveal>
-      </Row>
-
-      <Row label="Magnetic (apenas pointer: fine)">
-        <Magnetic>
-          <Button variant="primary">Me siga</Button>
-        </Magnetic>
-        <Magnetic className="inline-flex">
-          <a
-            href={siteConfig.links.github}
-            className="rounded-sm border-ash text-smoke hover:border-signal hover:text-bone inline-flex size-11 items-center justify-center border"
-            aria-label="GitHub"
-          >
-            <GitHubIcon className="size-5" />
-          </a>
-        </Magnetic>
       </Row>
 
       <Row label="ScrambleText">
