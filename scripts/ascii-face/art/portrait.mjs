@@ -6,14 +6,16 @@ import { renderHead } from './head.mjs';
 import { clamp, smoothstep } from './sdf.mjs';
 import { rng, noise1 } from '../lib/random.mjs';
 
-const CAMERA = {
-  yaw: 1.12, // ~64°: close to profile, the jaw and brow line carry the face
-  pitch: -0.16, // chin up, gaze lifted — the statue looking past the viewer
-  roll: 0.06,
-  distance: 8,
+export const CAMERA = {
+  // fitted to landmarks (eyes, nose tip, mouth, chin) of the look we're after:
+  // ~28° three-quarter, the far eye just showing past the bridge of the nose
+  yaw: 0.481,
+  pitch: 0.032,
+  roll: -0.076,
+  distance: 6.742,
   fov: 0.48,
-  center: [0.3, 0.02, 0],
-  light: [0.8, 0.4, 0.5], // from where the face looks: lit profile, shaded cheek
+  center: [0.652, 0.386, 0],
+  light: [0.0, 0.5, 0.86], // frontal and a little high: sockets and the band under the cheekbone go dark
 };
 
 // The training log, bottom → top like the reference: the run starts at the
@@ -141,6 +143,10 @@ function traceEyes(buf, sx, sy) {
 export function portrait({
   cols = 160, rows = 72, seed = 1312, sx = 4, sy = 6,
   gamma = 1.25, gain = 1.35, logScale = 1.5, camera = {}, buf: cached,
+  // how far forward (head-local z) the skull lets go of its pixels
+  dissolveAt = 0.14,
+  // 0 = the README's sparse stream; up to ~0.4 = denser, wider, chunkier
+  debrisBoost = 0,
 } = {}) {
   const buf = cached ?? renderHead({ width: cols * sx, height: rows * sy, aspect: (0.6 * sy) / sx, ...CAMERA, ...camera });
   const cells = sampleCells(buf, cols, rows, sx, sy);
@@ -157,7 +163,7 @@ export function portrait({
     const [, y, z] = cell.pos;
     // ragged boundary, further forward on the jaw than on the crown;
     // the neck stays whole and simply fades into shadow
-    const front = 0.14 + 0.16 * clamp(-y) + (edge(cell.r * 0.23) - 0.5) * 0.5;
+    const front = dissolveAt + 0.16 * clamp(-y) + (edge(cell.r * 0.23) - 0.5) * 0.5;
     const neck = smoothstep(-1.15, -2.0, y) * 0.55; // the neck thins out too
     const p = Math.max(smoothstep(front + 0.16, front - 0.32, z), neck * (0.4 + 0.6 * smoothstep(1, 0, z)));
     if (rand() < p) dissolved.push({ ...cell, depth: clamp(front - z, 0, 1.5) });
@@ -194,20 +200,20 @@ export function portrait({
 
   // 1) the skull breaking up: pixels near the boundary stay almost in place
   for (const d of dissolved) {
-    if (d.depth > 0.45 || d.pos[1] < -1.15 || rand() > 0.75 - d.depth) continue;
+    if (d.depth > 0.45 + debrisBoost || d.pos[1] < -1.15 || rand() > 0.75 + debrisBoost - d.depth) continue;
     put(d.c - Math.floor(rand() * rand() * 6 * (1 + d.depth * 4)), d.r, sizeOf(d.lum * 2.2 + 0.25));
   }
 
   // 2) the stream: horizontal bars flowing out of the head, mid height
   layer = 'stream';
-  for (let r = row(0.2); r <= row(0.6); r++) {
+  for (let r = row(0.2 - debrisBoost * 0.1); r <= row(0.6 + debrisBoost * 0.05); r++) {
     const from = leftEdge[r] > 0 ? leftEdge[r] : at(0.58);
-    const reach = at(0.1 + 0.2 * streak(r * 0.45));
+    const reach = at((0.1 + 0.2 * streak(r * 0.45)) * (1 - debrisBoost));
     for (let c = from - 2; c > reach; ) {
       const fade = (c - reach) / Math.max(1, from - reach); // 1 near head → 0
-      const len = 1 + Math.floor(rand() * (1 + 5 * fade));
-      if (rand() < 0.25 + 0.55 * fade) put(c - len + 1, r, len > 1 ? 3 : sizeOf(fade + 0.25), len);
-      c -= len + 1 + Math.floor(rand() * (1 + 7 * (1 - fade)));
+      const len = 1 + Math.floor(rand() * (1 + (5 + 6 * debrisBoost) * fade));
+      if (rand() < 0.25 + 0.55 * fade + debrisBoost * 0.4) put(c - len + 1, r, len > 1 ? 3 : sizeOf(fade + 0.25), len);
+      c -= len + 1 + Math.floor(rand() * (1 + 7 * (1 - fade) * (1 - debrisBoost)));
     }
   }
 
@@ -224,8 +230,8 @@ export function portrait({
 
   // 4) a trail leaving the crown, and a few stray pixels in the dark
   layer = 'stray';
-  for (let c = at(0.33); c < at(0.6); c += 2) if (rand() < 0.8) put(c, row(0.065), sizeOf(0.15 + ((c / cols) - 0.33) * 2.8));
-  for (let k = 0; k < 14; k++) put(at(0.02 + rand() * 0.5), row(0.05 + rand() * 0.9), rand() < 0.4 ? 2 : 1);
+  for (let c = at(0.33 - 0.28 * debrisBoost); c < at(0.6); c += 2) if (rand() < 0.8) put(c, row(0.065), sizeOf(0.15 + ((c / cols) - 0.33) * 2.8));
+  for (let k = 0; k < 14 + Math.round(30 * debrisBoost); k++) put(at(0.02 + rand() * 0.5), row(0.05 + rand() * 0.9), rand() < 0.4 ? 2 : 1);
 
   // --- the log: mirrored lines sitting in the stream ------------------------
   const log = TRAINING_LOG.map((l) => ({

@@ -23,7 +23,7 @@ const CM = 7.5; // one local unit (half the skull width) in centimetres
 const ORIGIN = v3(0, 11.5, 0); // eye line, ear-canal depth
 
 const EYE = v3(3.15, 11.45, 7.3); // right/left pupils mirror on x
-const EYE_RADIUS = 1.22;
+const EYE_RADIUS = 1.3;
 
 function eyes(s) {
   return sdSphere(s, EYE, EYE_RADIUS);
@@ -100,20 +100,25 @@ export function headSDF(pLocal) {
   return Math.min(skin(p, s), eyes(s)) / CM;
 }
 
+/** True where a head-local point is on the visible (glowing) part of an eye. */
+export function isEyeAt(pLocal) {
+  return eyeDistance(pLocal) < 0.004 && insideEyeOpening(pLocal);
+}
+
 function eyeDistance(pLocal) {
   const p = toCm(pLocal);
   return eyes(v3(Math.abs(p[0]), p[1], p[2])) / CM;
 }
 
-// Eyelids: only a narrow, almond-shaped window of each eyeball glows.
+// Eyelids: a wide almond-shaped window of each eyeball glows white.
 function insideEyeOpening(pLocal) {
   const p = toCm(pLocal);
-  const x = (Math.abs(p[0]) - EYE[0]) / 1.55;
-  const y = (p[1] - EYE[1] + 0.05) / 0.6;
+  const x = (Math.abs(p[0]) - EYE[0]) / 1.85;
+  const y = (p[1] - EYE[1] + 0.05) / 0.78;
   return Math.abs(x) < 1 && y * y < (1 - x * x) * (1 - x * x);
 }
 
-function normalAt(f, p) {
+export function normalAt(f, p) {
   const e = 0.002;
   // tetrahedron technique: 4 evaluations instead of 6
   const k = [
@@ -147,6 +152,28 @@ function softShadow(f, p, l, k = 10) {
     t += clamp(h, 0.01, 0.2);
   }
   return clamp(res);
+}
+
+/**
+ * Light at a surface point `pw` (world space) with normal `n`, seen along
+ * `rd`: key light with soft shadows, a cool fill, ambient occlusion and a
+ * grazing rim that outlines the profile. Shared by the ASCII renderer below
+ * and the point-cloud renderer in dots.mjs.
+ */
+export function shadeSkin(scene, pw, n, rd, L) {
+  const shadow = 0.25 + 0.75 * softShadow(scene, add(pw, mul(n, 0.004)), L);
+  const diffuse = clamp(dot(n, L)) * shadow;
+  const fill = clamp(dot(n, norm(v3(-0.8, 0.1, 0.4)))) * 0.16;
+  // grazing-angle glow, stronger on the side the face points to so the
+  // profile (brow, nose, lips, chin) gets a bright outline
+  const grazing = Math.pow(clamp(1 - Math.abs(dot(n, rd))), 2.5);
+  const rim = grazing * (0.18 + 0.45 * clamp(n[0]));
+  // a broad specular sheen: the planes facing the light (brow, bridge of the
+  // nose, cheekbone, lips, chin) burn out to white, like a flash portrait
+  const half = norm(sub(L, rd));
+  const spec = Math.pow(clamp(dot(n, half)), 40) * 0.45 * shadow;
+  const ao = occlusion(scene, pw, n);
+  return clamp((0.03 + Math.pow(diffuse, 1.3) * 0.97 + fill) * (0.3 + 0.7 * ao) + rim + spec);
 }
 
 /**
@@ -202,18 +229,9 @@ export function renderHead({
       const pw = add(ro, mul(rd, t));
       const pl = sceneLocal(pw);
       const n = normalAt(scene, pw);
-      const isEye = eyeDistance(pl) < 0.004 && insideEyeOpening(pl);
+      const isEye = isEyeAt(pl);
 
-      const diffuse = clamp(dot(n, L)) * (0.25 + 0.75 * softShadow(scene, add(pw, mul(n, 0.004)), L));
-      const fill = clamp(dot(n, norm(v3(-0.8, 0.1, 0.4)))) * 0.16;
-      // grazing-angle glow, stronger on the side the face points to so the
-      // profile (brow, nose, lips, chin) gets a bright outline
-      const grazing = Math.pow(clamp(1 - Math.abs(dot(n, rd))), 2.5);
-      const rim = grazing * (0.18 + 0.45 * clamp(n[0]));
-      const ao = occlusion(scene, pw, n);
-      const l = isEye ? 1 : (0.03 + Math.pow(diffuse, 1.3) * 0.97 + fill) * (0.3 + 0.7 * ao) + rim;
-
-      lum[idx] = clamp(l);
+      lum[idx] = isEye ? 1 : shadeSkin(scene, pw, n, rd, L);
       mask[idx] = 1;
       material[idx] = isEye ? 2 : 1;
       local.set(pl, idx * 3);

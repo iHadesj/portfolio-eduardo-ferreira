@@ -409,11 +409,12 @@
   }
 }
 
-/* The hero's ASCII face (components/face). Each variant is a box shaped
-   like its grid (cols·0.6em × rows·1.2em); text, the pixel stream, the log,
-   the scan line and the eyes are stacked layers in the same art units.
-   Everything that moves animates opacity or transform on its own small
-   layer, so the run and the idle life after it never repaint. */
+/* The hero's face (components/face). Each variant is a box shaped like its
+   frames; the dots are 1-bit PNG masks over the theme's ink, and the pixel
+   stream, the log, the scan line and the eyes are stacked layers in the
+   same proportions. Everything that moves animates opacity or transform on
+   its own small layer, so the run and the idle life after it never
+   repaint. */
 .face {
   display: flex;
   min-width: 0;
@@ -423,13 +424,14 @@
 
 .face__art {
   position: relative;
+  width: 100%;
 }
 
 .face__variant {
   position: relative;
   container-type: inline-size;
   width: 100%;
-  aspect-ratio: calc(var(--cols) * 0.6 / (var(--rows) * 1.2));
+  aspect-ratio: var(--aspect);
 }
 
 .face__variant[data-variant="wide"] {
@@ -439,16 +441,11 @@
 .face__frame {
   position: absolute;
   inset: 0;
-  margin: 0;
-  color: var(--color-bone);
-  font-family: var(--font-mono);
-  font-size: calc(100cqw / (var(--cols) * 0.6));
-  font-weight: 600;
-  font-kerning: none;
-  font-variant-ligatures: none;
-  letter-spacing: 0;
-  line-height: 1.2em;
-  white-space: pre;
+  background-color: var(--color-bone);
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
 }
 
 /* Each epoch exists only around its slot, crossfading with its neighbours. */
@@ -465,14 +462,13 @@
 }
 
 .face__band {
-  bottom: auto;
   animation: face-glitch 7.4s steps(1) infinite;
 }
 
 .face__debris {
   position: absolute;
   overflow: visible;
-  fill: var(--color-smoke);
+  fill: var(--color-bone);
 }
 
 .face__log,
@@ -485,7 +481,7 @@
 }
 
 .face__log text {
-  fill: var(--color-smoke);
+  fill: color-mix(in oklab, var(--color-bone) 82%, transparent);
   font-family: var(--font-mono);
   animation: face-on 0.35s both;
 }
@@ -514,8 +510,8 @@
   background: linear-gradient(
     to bottom,
     transparent,
-    color-mix(in oklab, var(--color-term-green) 5%, transparent) 75%,
-    color-mix(in oklab, var(--color-term-green) 22%, transparent) 97%,
+    color-mix(in oklab, var(--color-term-green) 3%, transparent) 75%,
+    color-mix(in oklab, var(--color-term-green) 12%, transparent) 97%,
     transparent
   );
   transform: translateY(-100%);
@@ -593,13 +589,13 @@
     transform: none;
   }
   91% {
-    transform: translateX(-2em);
+    transform: translateX(-2.6%);
   }
   93% {
-    transform: translateX(1.2em);
+    transform: translateX(1.6%);
   }
   95% {
-    transform: translateX(-0.7em);
+    transform: translateX(-0.9%);
   }
   96%,
   100% {
@@ -685,17 +681,15 @@
   }
 }
 
-/* Phones: the art is sized by height, so the whole head fits in a band
-   short enough for the copy to start on the first screen. */
+/* Phones: full width, capped so the copy still starts on the first screen. */
 @media (max-width: 63.999rem) {
   .face {
-    --face-height: min(60vw, 14.5rem);
     align-items: center;
   }
 
   .face__variant {
-    width: calc(var(--face-height) * var(--cols) * 0.6 / (var(--rows) * 1.2));
-    max-width: 100%;
+    max-width: 24rem;
+    margin-inline: auto;
   }
 }
 

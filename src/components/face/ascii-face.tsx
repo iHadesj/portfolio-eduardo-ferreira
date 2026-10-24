@@ -1,26 +1,31 @@
 import type { CSSProperties } from "react";
 import data from "./face-data.json";
+import { FACE_FRAMES } from "./face-frames";
 
 /**
  * The README's `./psycho --train` portrait, in the hero: a head sculpted
- * from signed distance functions and ray marched into glyphs (baked by
- * scripts/ascii-face/generate.mjs), converging epoch by epoch out of a bare
- * wireframe while a mirrored training log climbs the stream of pixels its
- * skull dissolves into. Then the eyes light up and it keeps living: the
- * stream drifts left, edge pixels twinkle, bands of the face glitch now and
- * then, a scan line sweeps down and the eyes breathe.
+ * from signed distance functions and rendered as a point cloud — rows of
+ * dots that follow the skin, like a 3D scan (baked by
+ * scripts/ascii-face/generate.mjs into 1-bit PNGs). It converges epoch by
+ * epoch out of a bare wireframe while a mirrored training log climbs the
+ * stream of pixels its skull dissolves into. Then the eyes light up and it
+ * keeps living: the stream drifts left, edge pixels twinkle, bands of the
+ * face glitch now and then, a scan line sweeps down and the eyes breathe.
  *
- * Pure markup and CSS (`.face*` in globals.css): every moving part is its
- * own small layer animating opacity or transform, so none of it touches the
- * main thread. Reduced motion shows the finished face, still. Decorative:
- * the hero copy next to it says who this is.
+ * Pure markup and CSS (`.face*` in globals.css). The frames are masks over
+ * the theme's ink colour, so the face follows the theme; every moving part
+ * is its own small layer animating opacity or transform, so none of it
+ * touches the main thread. Reduced motion shows the finished face, still.
+ * Decorative: the hero copy next to it says who this is.
  */
 
 type Variant = (typeof data)[keyof typeof data];
+type Frame = (typeof FACE_FRAMES)[keyof typeof FACE_FRAMES][number];
 
-/** Art units: one cell is 6 × 10, like the README's SVG. */
+/** Layout units: one character cell is 6 × 12 (0.6em × 1.2em), as in the
+    README, so stream and log keep its proportions. */
 const CELL_W = 6;
-const CELL_H = 10;
+const CELL_H = 12;
 /** When the run starts, and how long the epochs take to converge. */
 const START = 0.3;
 const TRAIN = 2.8;
@@ -28,22 +33,38 @@ const DONE = START + TRAIN + 0.3;
 
 /** Rows (as fractions of the height) that glitch sideways now and then. */
 const GLITCH_BANDS: readonly (readonly [number, number])[] = [
-  [0.18, 0.22],
-  [0.43, 0.46],
-  [0.68, 0.72],
+  [0.2, 0.25],
+  [0.46, 0.5],
+  [0.7, 0.75],
 ];
 
 const s = (seconds: number) => `${seconds.toFixed(2)}s`;
 
-function rectsPath(rects: readonly (readonly number[])[]): string {
+const mask = (frame: Frame): CSSProperties => ({
+  maskImage: `url(${frame.src})`,
+  WebkitMaskImage: `url(${frame.src})`,
+});
+
+/** Debris squares by kind (dot, small, square), in cell units. */
+const DEBRIS_SIZES = [2, 4, 6];
+/** Next to the skull the pixels come off in chunks: bigger squares. */
+const EDGE_SCALE = 1.6;
+/** Thickness of the stream's bars. */
+const BAR = 7;
+
+function rectsPath(
+  rects: readonly (readonly number[])[],
+  layer: string,
+): string {
+  const scale = layer === "edge" ? EDGE_SCALE : 1;
   return rects
     .map(([c = 0, r = 0, kind = 0, len = 1]) => {
       const x = c * CELL_W;
       const y = r * CELL_H;
       if (kind === 3) {
-        return `M${x + 0.5} ${y + 3.2}h${len * CELL_W - 1}v3.6h${1 - len * CELL_W}z`;
+        return `M${x + 0.5} ${y + (CELL_H - BAR) / 2}h${len * CELL_W - 1}v${BAR}h${1 - len * CELL_W}z`;
       }
-      const size = [1.6, 3, 5][kind] ?? 3;
+      const size = (DEBRIS_SIZES[kind] ?? 4) * scale;
       const pad = (CELL_W - size) / 2;
       return `M${x + pad} ${y + (CELL_H - size) / 2}h${size}v${size}h${-size}z`;
     })
@@ -71,61 +92,71 @@ function debrisMotion(layer: string, k: number): CSSProperties {
   return { animation: `${intro}, ${ambient[layer] ?? ""}` };
 }
 
-function FaceVariant({ name, art }: { name: string; art: Variant }) {
+function FaceVariant({
+  name,
+  art,
+  frames,
+}: {
+  name: string;
+  art: Variant;
+  frames: readonly Frame[];
+}) {
   const width = art.cols * CELL_W;
   const height = art.rows * CELL_H;
-  const early = art.frames.slice(0, -1);
-  const finalLines = (art.frames[art.frames.length - 1] ?? "").split("\n");
-  const slot = TRAIN / Math.max(1, art.frames.length - 1);
-
-  const bands = GLITCH_BANDS.map(([from, to]) => [
-    Math.round(from * art.rows),
-    Math.round(to * art.rows),
-  ]);
-  const inBand = (row: number) =>
-    bands.some(([from = 0, to = 0]) => row >= from && row <= to);
+  const early = frames.slice(0, -1);
+  const final = frames[frames.length - 1];
+  const slot = TRAIN / Math.max(1, frames.length - 1);
 
   return (
     <div
       data-variant={name}
       className="face__variant"
-      style={{ "--cols": art.cols, "--rows": art.rows } as CSSProperties}
+      style={
+        {
+          "--aspect": `${art.width} / ${art.height}`,
+          "--cols": art.cols,
+        } as CSSProperties
+      }
     >
       {/* The run: each epoch fades in over the last and out under the next. */}
       {early.map((frame, epoch) => (
-        <pre
-          key={epoch}
+        <div
+          key={frame.src}
           className="face__frame face__frame--early"
           style={{
+            ...mask(frame),
             animationDuration: s(slot * 1.6),
-            animationDelay: s(START + epoch * slot - slot * 0.3),
+            // The first frame (random init) is already fully in at the first
+            // paint: that makes it the hero's largest paint, early.
+            animationDelay: s(
+              epoch === 0
+                ? -slot * 1.6 * 0.22
+                : START + epoch * slot - slot * 0.3,
+            ),
           }}
-        >
-          {frame}
-        </pre>
+        />
       ))}
 
-      {/* The trained face: still rows plus bands that glitch sideways. */}
-      <div
-        className="face__final"
-        style={{ animationDelay: s(START + TRAIN - slot * 0.3) }}
-      >
-        <pre className="face__frame">
-          {finalLines.map((line, row) => (inBand(row) ? "" : line)).join("\n")}
-        </pre>
-        {bands.map(([from = 0, to = 0], k) => (
-          <pre
-            key={from}
-            className="face__frame face__band"
-            style={{
-              top: `${from * 1.2}em`,
-              animationDelay: s(DONE + 2 + k * 2.3),
-            }}
-          >
-            {finalLines.slice(from, to + 1).join("\n")}
-          </pre>
-        ))}
-      </div>
+      {/* The trained face, plus bands of it that glitch sideways. */}
+      {final ? (
+        <div
+          className="face__final"
+          style={{ animationDelay: s(START + TRAIN - slot * 0.3) }}
+        >
+          <div className="face__frame" style={mask(final)} />
+          {GLITCH_BANDS.map(([from, to], k) => (
+            <div
+              key={from}
+              className="face__frame face__band"
+              style={{
+                ...mask(final),
+                clipPath: `inset(${from * 100}% 0 ${(1 - to) * 100}% 0)`,
+                animationDelay: s(DONE + 2 + k * 2.3),
+              }}
+            />
+          ))}
+        </div>
+      ) : null}
 
       {art.debris.map((group) => {
         const [c0 = 0, r0 = 0, c1 = 0, r1 = 0] = group.box;
@@ -143,7 +174,7 @@ function FaceVariant({ name, art }: { name: string; art: Variant }) {
               ...debrisMotion(group.layer, group.k),
             }}
           >
-            <path d={rectsPath(group.rects)} />
+            <path d={rectsPath(group.rects, group.layer)} />
           </svg>
         );
       })}
@@ -158,9 +189,9 @@ function FaceVariant({ name, art }: { name: string; art: Variant }) {
             key={String(text)}
             className={Number(epoch) % 6 === 0 ? "is-mark" : undefined}
             x={-Number(right) * CELL_W}
-            y={(Number(row) + 0.85) * CELL_H}
+            y={-(Number(row) + 0.15) * CELL_H}
             fontSize={(CELL_W * art.logScale) / 0.6}
-            transform="scale(-1 1)"
+            transform="scale(-1 -1)"
             style={{ animationDelay: s(START + (Number(epoch) / 6) * TRAIN) }}
           >
             {text}
@@ -186,8 +217,12 @@ export function AsciiFace({ className }: { className?: string }) {
   return (
     <div aria-hidden className={className ? `face ${className}` : "face"}>
       <div className="face__art">
-        <FaceVariant name="wide" art={data.wide} />
-        <FaceVariant name="narrow" art={data.narrow} />
+        <FaceVariant name="wide" art={data.wide} frames={FACE_FRAMES.wide} />
+        <FaceVariant
+          name="narrow"
+          art={data.narrow}
+          frames={FACE_FRAMES.narrow}
+        />
       </div>
       <p
         className="face__caption"
