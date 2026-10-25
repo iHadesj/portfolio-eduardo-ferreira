@@ -1,11 +1,17 @@
 // The head as a point cloud: the look of a 3D scan. Instead of shading a
 // grid fixed to the screen (what turned the face into "text"), the surface
-// itself is sampled in rows — rings around the vertical axis, evenly spaced
+// itself is sampled in rows — rings around a vertical axis, evenly spaced
 // on the skin — and each sample becomes a square dot whose size follows its
 // light. The rows bend with the face, crowd where it turns away and spread
 // where it faces the light, which is what makes it read as a scanned head.
 
-import { headSDF, isEyeAt, normalAt, shadeSkin } from "./head.mjs";
+import {
+  headSDF,
+  isEyeAt,
+  normalAt,
+  shadeSurface,
+  surfaceAt,
+} from "./head.mjs";
 import {
   v3,
   add,
@@ -21,11 +27,19 @@ import {
   transpose,
 } from "./sdf.mjs";
 
-/** Rows are rings around this vertical axis (head-local units). */
-const AXIS_Z = 0.27;
-/** Head-local height range swept by the rows: neck to crown. */
+/**
+ * Rows are rings around vertical axes (head-local units): one through the
+ * head, and one inside each part of the neck that sticks out of it — a ring
+ * only finds what faces away from its axis, so the sides of the spine need
+ * an axis of their own. Each axis keeps the parts of its group.
+ */
+const AXES = [
+  { z: 0.27, to: 1.9, group: "head" },
+  { z: -0.47, to: -0.2, group: "neck" },
+  { z: -1.05, to: -0.4, group: "spine" },
+];
+/** Lowest row, at the bottom of the neck; every axis shares the same rows. */
 const Y_FROM = -3.6;
-const Y_TO = 1.9;
 /** Rays start this far from the axis and march inward to the skin. */
 const REACH = 3.2;
 
@@ -89,12 +103,18 @@ export function sampleDots({
   };
 
   const dots = [];
-  let row = 0;
-  for (let y = Y_FROM; y <= Y_TO; y += rowStep, row++) {
+  for (const axis of AXES) {
+    for (let row = 0; Y_FROM + row * rowStep <= axis.to; row++) {
+      sampleRing(axis, row, Y_FROM + row * rowStep);
+    }
+  }
+  return dots;
+
+  function sampleRing(axis, row, y) {
     let theta = -Math.PI;
     while (theta < Math.PI) {
       const dir = v3(Math.sin(theta), 0, Math.cos(theta));
-      const start = v3(dir[0] * REACH, y, AXIS_Z + dir[2] * REACH);
+      const start = v3(dir[0] * REACH, y, axis.z + dir[2] * REACH);
       // march inward from outside the head to the first skin hit
       let t = 0;
       let hit = null;
@@ -116,7 +136,8 @@ export function sampleDots({
 
       const pw = toWorld(hit);
       const shot = project(pw);
-      if (shot) {
+      const surface = surfaceAt(hit);
+      if (shot && surface.group === axis.group) {
         const [x, py, reach] = shot;
         if (x >= 0 && x < width && py >= 0 && py < height && keep(x, py)) {
           const n = normalAt(scene, pw);
@@ -125,7 +146,7 @@ export function sampleDots({
             dots.push({
               x,
               y: py,
-              lum: shadeSkin(scene, pw, n, rd, L),
+              lum: shadeSurface(scene, pw, n, rd, L, surface),
               row,
               theta,
             });
@@ -135,7 +156,6 @@ export function sampleDots({
       theta += step;
     }
   }
-  return dots;
 }
 
 /** A 1-bit canvas: `on` pixels are ink. */
@@ -158,20 +178,19 @@ export function bitmap(width, height) {
 }
 
 /**
- * Halftone in three registers, like a hard-lit photograph pushed to 1 bit:
- * shadows stay black, mid-tones are dots that grow with the light, and
- * highlights take the whole pitch so neighbouring dots merge into solid
- * white planes.
+ * Halftone in flat tones, like a vector illustration printed in dots:
+ * shadows stay black, the half-lit planes get small dots, the lit ones big
+ * dots, and highlights take the whole pitch so neighbouring dots merge into
+ * solid white planes. Few sizes, so each plane of the face reads as one
+ * flat tone with a crisp edge to the next.
  */
 export function dotSize(
   lum,
   pitchPx,
-  { gamma = 1.0, floor = 0.14, solid = 0.92, exposure = 1 } = {},
+  { floor = 0.16, mid = 0.42, solid = 0.8 } = {},
 ) {
-  const tone = Math.pow(lum * exposure, gamma);
-  if (tone < floor) return 0;
-  if (tone >= solid) return pitchPx;
-  const largest = pitchPx - 2;
-  const t = (tone - floor) / (solid - floor);
-  return Math.max(1, Math.min(largest, Math.round(1 + t * (largest - 1))));
+  if (lum < floor) return 0;
+  if (lum < mid) return Math.max(1, Math.round(pitchPx * 0.34));
+  if (lum < solid) return pitchPx - 2;
+  return pitchPx;
 }

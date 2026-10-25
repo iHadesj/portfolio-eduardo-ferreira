@@ -518,11 +518,11 @@
   animation: face-scan 5.5s linear 0.3s infinite;
 }
 
-/* The eyes light up when training is done, then breathe. The glow is a
-   static filter; only the layer's opacity animates. */
+/* The eye lights up in the terminal's green when training is done, then
+   breathes. The glow is a static filter; only the layer's opacity animates. */
 .face__eyes {
-  fill: var(--color-flare);
-  filter: drop-shadow(0 0 1.5px var(--color-flare));
+  fill: var(--color-term-green);
+  filter: drop-shadow(0 0 2px var(--color-term-green));
   animation:
     face-ignite 0.9s ease-out var(--done) both,
     face-breathe 3.4s ease-in-out calc(var(--done) + 0.9s) infinite;

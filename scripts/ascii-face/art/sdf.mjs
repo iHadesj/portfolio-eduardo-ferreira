@@ -73,3 +73,26 @@ export function smin(a, b, k) {
 export function smax(a, b, k) {
   return -smin(-a, -b, k);
 }
+
+// Box with rounded edges: half extents b, corner radius r.
+export function sdRoundBox(p, c, b, r) {
+  const qx = Math.abs(p[0] - c[0]) - b[0];
+  const qy = Math.abs(p[1] - c[1]) - b[1];
+  const qz = Math.abs(p[2] - c[2]) - b[2];
+  const outside = Math.hypot(Math.max(qx, 0), Math.max(qy, 0), Math.max(qz, 0));
+  return outside + Math.min(Math.max(qx, qy, qz), 0) - r;
+}
+
+// Distance from (x, y) to a 2D polyline given as [[x, y], ...].
+export function polylineDistance(x, y, points) {
+  let best = Infinity;
+  for (let i = 1; i < points.length; i++) {
+    const [ax, ay] = points[i - 1];
+    const [bx, by] = points[i];
+    const dx = bx - ax;
+    const dy = by - ay;
+    const h = clamp(((x - ax) * dx + (y - ay) * dy) / (dx * dx + dy * dy));
+    best = Math.min(best, Math.hypot(x - ax - dx * h, y - ay - dy * h));
+  }
+  return best;
+}

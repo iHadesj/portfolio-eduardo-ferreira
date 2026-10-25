@@ -3,9 +3,9 @@ import data from "./face-data.json";
 import { FACE_FRAMES } from "./face-frames";
 
 /**
- * The README's `./psycho --train` portrait, in the hero: a head sculpted
- * from signed distance functions and rendered as a point cloud — rows of
- * dots that follow the skin, like a 3D scan (baked by
+ * The README's `./psycho --train` portrait, in the hero: an android's head
+ * in profile, sculpted from signed distance functions and rendered as a
+ * point cloud — rows of dots that follow the skin, like a 3D scan (baked by
  * scripts/ascii-face/generate.mjs into 1-bit PNGs). It converges epoch by
  * epoch out of a bare wireframe while a mirrored training log climbs the
  * stream of pixels its skull dissolves into. Then the eyes light up and it

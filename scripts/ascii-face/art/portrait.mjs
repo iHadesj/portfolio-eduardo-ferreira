@@ -1,4 +1,4 @@
-// The hero portrait: an SDF head rendered to ASCII, its back half
+// The hero portrait: an SDF android head in profile, the back of its skull
 // dissolving into pixels that stream to the left, while a mirrored training
 // log scrolls through the stream (epoch by epoch the error goes down).
 
@@ -7,33 +7,31 @@ import { clamp, smoothstep } from './sdf.mjs';
 import { rng, noise1 } from '../lib/random.mjs';
 
 export const CAMERA = {
-  // fitted to landmarks (eyes, nose tip, mouth, chin) of the look we're after:
-  // ~28° three-quarter, the far eye just showing past the bridge of the nose
-  yaw: 0.481,
-  pitch: 0.032,
-  roll: -0.076,
-  distance: 6.742,
+  yaw: 1.3, // ~75°: profile, with the front plane of the face still catching the light
+  pitch: -0.06,
+  roll: 0.03,
+  distance: 8,
   fov: 0.48,
-  center: [0.652, 0.386, 0],
-  light: [0.0, 0.5, 0.86], // frontal and a little high: sockets and the band under the cheekbone go dark
+  center: [0.4, 0.02, 0],
+  light: [0.62, 0.3, 0.73], // from where the face looks: the front of the face burns white, the side stays grey
 };
 
 // The training log, bottom → top like the reference: the run starts at the
 // bottom of the stream and each epoch prints above the previous one.
 // `epoch` orders the lines in time (0 = start, 6 = finished).
 export const TRAINING_LOG = [
-  { epoch: 6, row: 0.325, right: 0.47, text: 'TRAINING FINISHED' },
-  { epoch: 5.5, row: 0.365, right: 0.47, text: 'ERROR: 2.35E-09' },
-  { epoch: 5, row: 0.405, right: 0.46, text: '--- EPOCH: 5, AVERAGE' },
-  { epoch: 4.5, row: 0.445, right: 0.47, text: 'ERROR: 6.21E-08' },
-  { epoch: 4, row: 0.485, right: 0.47, text: '--- EPOCH: 4, AVERAGE' },
-  { epoch: 3.5, row: 0.525, right: 0.47, text: 'ERROR: 8.35E-07' },
-  { epoch: 3, row: 0.665, right: 0.525, text: '--- EPOCH: 3, AVERAGE' },
-  { epoch: 2.5, row: 0.705, right: 0.525, text: 'ERROR: 1.62E-05' },
-  { epoch: 2, row: 0.745, right: 0.48, text: '--- EPOCH: 2, AVERAGE' },
-  { epoch: 1.5, row: 0.785, right: 0.525, text: 'ERROR: 5.74E-04' },
-  { epoch: 1, row: 0.825, right: 0.525, text: '--- EPOCH: 1, AVERAGE' },
-  { epoch: 0, row: 0.865, right: 0.525, text: 'TRAINING STARTED' },
+  { epoch: 6, row: 0.325, right: 0.29, text: 'TRAINING FINISHED' },
+  { epoch: 5.5, row: 0.365, right: 0.29, text: 'ERROR: 2.35E-09' },
+  { epoch: 5, row: 0.405, right: 0.28, text: '--- EPOCH: 5, AVERAGE' },
+  { epoch: 4.5, row: 0.445, right: 0.29, text: 'ERROR: 6.21E-08' },
+  { epoch: 4, row: 0.485, right: 0.29, text: '--- EPOCH: 4, AVERAGE' },
+  { epoch: 3.5, row: 0.525, right: 0.29, text: 'ERROR: 8.35E-07' },
+  { epoch: 3, row: 0.665, right: 0.32, text: '--- EPOCH: 3, AVERAGE' },
+  { epoch: 2.5, row: 0.705, right: 0.32, text: 'ERROR: 1.62E-05' },
+  { epoch: 2, row: 0.745, right: 0.28, text: '--- EPOCH: 2, AVERAGE' },
+  { epoch: 1.5, row: 0.785, right: 0.32, text: 'ERROR: 5.74E-04' },
+  { epoch: 1, row: 0.825, right: 0.32, text: '--- EPOCH: 1, AVERAGE' },
+  { epoch: 0, row: 0.865, right: 0.32, text: 'TRAINING STARTED' },
 ];
 
 // Surface-space wireframe: rings (latitude) and meridians (longitude)
@@ -161,10 +159,9 @@ export function portrait({
   for (const cell of cells) {
     if (cell.coverage < 0.15 || !cell.pos) continue;
     const [, y, z] = cell.pos;
-    // ragged boundary, further forward on the jaw than on the crown;
-    // the neck stays whole and simply fades into shadow
-    const front = dissolveAt + 0.16 * clamp(-y) + (edge(cell.r * 0.23) - 0.5) * 0.5;
-    const neck = smoothstep(-1.15, -2.0, y) * 0.55; // the neck thins out too
+    // a ragged boundary down the back of the skull and the neck
+    const front = dissolveAt + 0.06 * clamp(-y) + (edge(cell.r * 0.23) - 0.5) * 0.36;
+    const neck = smoothstep(-1.55, -2.1, y) * 0.45; // the bottom of the neck thins out too
     const p = Math.max(smoothstep(front + 0.16, front - 0.32, z), neck * (0.4 + 0.6 * smoothstep(1, 0, z)));
     if (rand() < p) dissolved.push({ ...cell, depth: clamp(front - z, 0, 1.5) });
     else solid[cell.r * cols + cell.c] = 1;
