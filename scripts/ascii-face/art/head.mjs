@@ -16,7 +16,7 @@
 import {
   v3, add, sub, mul, dot, norm, clamp, smoothstep,
   rotX, rotY, rotZ, mat, matMul, transpose,
-  sdSphere, sdEllipsoid, sdCapsule, sdRoundCone, sdRoundBox, polylineDistance,
+  sdSphere, sdEllipsoid, sdCapsule, sdRoundBox, sdPolygon, polylineDistance,
   smin, smax,
 } from './sdf.mjs';
 
@@ -25,6 +25,16 @@ const ORIGIN = v3(0, 11.5, 0); // eye line
 
 const EYE = v3(3.15, 11.4, 7.3); // right/left pupils mirror on x
 const EYE_RADIUS = 1.25;
+
+/**
+ * The nose in side view (z, y): the reference's ridge from the bridge to the
+ * tip, the underside back to the lip, closed deep inside the face.
+ */
+const NOSE = [
+  [9.7, 11.9], [9.95, 10.87], [10.6, 9.83], [11.12, 8.79], [11.77, 7.75],
+  [11.9, 7.45], [11.6, 7.15], [10.9, 6.9], [10.1, 6.6], [9.7, 6.3],
+  [8.3, 7.0], [8.2, 11.0],
+];
 
 /** The ear modules: one axis through both sides of the skull. */
 const MODULE = { y: 13.4, z: -4.3, r: 5.85 };
@@ -42,33 +52,31 @@ const JAW_SEAM = [
 /**
  * Lines drawn on the face, like the strokes of an illustration (side view,
  * z/y; half-width in cm; only past `from` on |x|): the brow, the crease of
- * the upper lid, the wing of the nose and the mouth. Bold, like the
- * illustration's strokes: each one spans a couple of rows of dots, so it
- * still reads at the size the portrait is shown.
+ * the upper lid and the mouth. Each spans at least a row of dots, so it
+ * still reads at the size the portrait is shown; the mouth stops short of
+ * the lips' edge so the profile line stays clean.
  */
 const INK = [
   { width: 0.22, from: 1.5, line: [[5.4, 13.15], [6.3, 13.55], [7.12, 13.68], [8.0, 13.5], [8.9, 13.0]] },
   { width: 0.12, from: 2.0, line: [[6.1, 12.25], [7.2, 12.5], [8.4, 12.45]] },
-  { width: 0.2, from: 0.6, line: [[8.75, 8.05], [8.45, 7.5], [8.5, 7.0], [8.85, 6.65], [9.35, 6.55]] },
-  { width: 0.24, from: 0.4, line: [[7.3, 4.0], [7.8, 4.2], [8.8, 4.36], [10.2, 4.36]] },
+  { width: 0.14, from: 0.4, line: [[7.5, 4.12], [8.5, 4.32], [9.55, 4.38]] },
 ];
 
 /**
- * How much light each material gives back, how glossy it is, and which
- * group of parts it belongs to (the point cloud samples each group from its
- * own axis, see dots.mjs).
+ * How much light each material gives back, how glossy it is and, for the
+ * skin, the darkest it gets.
  */
 export const MATERIALS = {
-  skin: { albedo: 1, gloss: 0.45, group: 'head' },
-  seam: { albedo: 0, gloss: 0, group: 'head' },
-  housing: { albedo: 0.15, gloss: 0.8, group: 'head' },
-  disc: { albedo: 1, gloss: 0.6, group: 'head' },
-  ring: { albedo: 1, gloss: 0.8, group: 'head' },
-  socket: { albedo: 0.12, gloss: 0.2, group: 'head' },
-  bolt: { albedo: 1, gloss: 1, group: 'head' },
-  column: { albedo: 0.35, gloss: 0.4, group: 'neck' },
-  tube: { albedo: 0.75, gloss: 1, group: 'neck' },
-  spine: { albedo: 0.85, gloss: 0.7, group: 'spine' },
+  skin: { albedo: 1, gloss: 0.45, floor: 0.2 },
+  seam: { albedo: 0, gloss: 0 },
+  housing: { albedo: 0.15, gloss: 0.8 },
+  disc: { albedo: 1, gloss: 0.6 },
+  ring: { albedo: 1, gloss: 0.8 },
+  socket: { albedo: 0.12, gloss: 0.2 },
+  bolt: { albedo: 1, gloss: 1 },
+  column: { albedo: 0.35, gloss: 0.4 },
+  tube: { albedo: 0.75, gloss: 1 },
+  spine: { albedo: 0.85, gloss: 0.7 },
 };
 
 function eyes(s) {
@@ -108,19 +116,22 @@ function skin(p, s) {
   d = smin(d, sdCapsule(s, v3(0, 13.1, 9.0), v3(4.1, 13.3, 7.3), 0.72), 1.5);
   d = smax(d, -sdEllipsoid(s, v3(3.2, 11.45, 9.0), v3(1.8, 1.05, 1.4)), 1.0);
 
-  // a long, straight nose off the brow, narrow wings and nostrils
-  d = smin(d, sdRoundCone(p, v3(0, 11.6, 9.2), v3(0, 7.95, 11.1), 0.45, 0.6), 0.7);
-  d = smin(d, sdSphere(p, v3(0, 7.7, 11.25), 0.62), 0.45);
-  d = smin(d, sdCapsule(p, v3(0, 7.3, 11.15), v3(0, 6.5, 9.9), 0.3), 0.5);
-  d = smin(d, sdSphere(s, v3(1.05, 7.0, 9.85), 0.6), 0.65);
-  d = smax(d, -sdSphere(s, v3(0.6, 6.6, 10.3), 0.24), 0.3);
+  // a long, straight nose with a crisp tip, in one solid piece with the
+  // face (no light between them): the side profile extruded across x,
+  // narrowing to a ridge at the front; small wings melt into the cheeks
+  const side = sdPolygon(p[2], p[1], NOSE);
+  const nose = Math.max(side, (s[0] - (0.28 + 0.62 * Math.max(0, -side))) * 0.8) - 0.06;
+  d = smin(d, nose, 0.5);
+  d = smin(d, sdEllipsoid(s, v3(0.9, 7.0, 9.55), v3(0.55, 0.5, 0.65)), 0.8);
 
-  // closed lips wrapped round the dental arch, and the fold under them
-  const m = v3(p[0], p[1], p[2] + 0.16 * p[0] * p[0]);
-  d = smin(d, sdEllipsoid(m, v3(0, 5.1, 9.65), v3(1.85, 0.6, 0.72)), 0.85);
-  d = smin(d, sdEllipsoid(m, v3(0, 3.6, 9.32), v3(1.6, 0.62, 0.68)), 0.85);
-  d = smax(d, -sdEllipsoid(m, v3(0, 4.38, 10.1), v3(1.9, 0.07, 0.55)), 0.2);
-  d = smax(d, -sdEllipsoid(p, v3(0, 2.5, 9.6), v3(1.4, 0.3, 0.45)), 0.5);
+  // thin, closed lips that barely leave the face, a fine mouth line and the
+  // fold under them; a filler behind them keeps the mouth solid
+  d = smin(d, sdEllipsoid(p, v3(0, 4.6, 8.7), v3(2.0, 2.2, 1.0)), 0.8);
+  const m = v3(p[0], p[1], p[2] + 0.2 * p[0] * p[0]);
+  d = smin(d, sdEllipsoid(m, v3(0, 5.15, 9.85), v3(1.7, 0.75, 0.5)), 1.2);
+  d = smin(d, sdEllipsoid(m, v3(0, 3.65, 9.5), v3(1.45, 0.6, 0.45)), 1.1);
+  d = smax(d, -sdEllipsoid(m, v3(0, 4.38, 10.15), v3(1.8, 0.06, 0.5)), 0.25);
+  d = smax(d, -sdEllipsoid(p, v3(0, 2.55, 9.65), v3(1.4, 0.3, 0.4)), 0.8);
 
   // a strong chin, and the jaw running back to a high angle
   d = smin(d, sdEllipsoid(p, v3(0, 1.3, 8.0), v3(2.3, 1.5, 1.3)), 1.2);
@@ -310,7 +321,7 @@ const FILL = mul(norm(v3(-0.8, 0.1, 0.4)), 0.16);
  * the profile, scaled by the material. Shared by the ASCII renderer below
  * and the point-cloud renderer in dots.mjs.
  */
-export function shadeSurface(scene, pw, n, rd, L, { albedo, gloss } = MATERIALS.skin, F = FILL) {
+export function shadeSurface(scene, pw, n, rd, L, { albedo, gloss, floor = 0 } = MATERIALS.skin, F = FILL) {
   if (!albedo) return 0;
   const shadow = 0.25 + 0.75 * softShadow(scene, add(pw, mul(n, 0.004)), L);
   const diffuse = clamp(dot(n, L)) * shadow;
@@ -324,8 +335,11 @@ export function shadeSurface(scene, pw, n, rd, L, { albedo, gloss } = MATERIALS.
   const half = norm(sub(L, rd));
   const spec = Math.pow(clamp(dot(n, half)), 40) * gloss * shadow;
   const ao = occlusion(scene, pw, n);
-  return clamp(
-    (0.03 + Math.pow(diffuse, 1.3) * 0.97 + fill) * albedo * (0.3 + 0.7 * ao) + rim + spec,
+  // the skin never drops to black: its shadows stay a fine grain of dots,
+  // so only the seams and strokes cut into the face
+  return Math.max(
+    floor,
+    clamp((0.03 + Math.pow(diffuse, 1.3) * 0.97 + fill) * albedo * (0.3 + 0.7 * ao) + rim + spec),
   );
 }
 
@@ -372,10 +386,12 @@ export function renderHead({
 
       let t = distance - 4;
       let hit = false;
-      for (let s = 0; s < 220 && t < distance + 4; s++) {
+      // rays that graze the nose or the jaw crawl along it in tiny steps,
+      // so give them room (and a floor on the step) to get past
+      for (let s = 0; s < 600 && t < distance + 4; s++) {
         const d = scene(add(ro, mul(rd, t)));
         if (d < 0.0008) { hit = true; break; }
-        t += d * 0.8;
+        t += Math.max(d * 0.8, 0.0004);
       }
       if (!hit) continue;
 

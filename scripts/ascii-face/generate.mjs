@@ -50,7 +50,7 @@ const VARIANTS = {
 const PITCH = 0.0062;
 /** Where the skull lets go of its pixels: just behind the ear module, so
     the back of the skull and the spine break up and feed the stream. */
-const DISSOLVE_AT = Number(process.env.FACE_DISSOLVE ?? -1.45);
+const DISSOLVE_AT = Number(process.env.FACE_DISSOLVE ?? -1.3);
 /** A denser, chunkier stream than the README's. */
 const DEBRIS_BOOST = Number(process.env.FACE_DEBRIS ?? 0.5);
 
@@ -221,16 +221,32 @@ function debrisGroups(debris) {
 
 const round = (value) => Math.round(value * 100) / 100;
 
-/** The traced eye openings: shrink a little toward their centre so they
-    glint inside the socket. */
-const EYE_SCALE = 0.92;
-function shrink(poly) {
-  const cx = poly.reduce((sum, [x]) => sum + x, 0) / poly.length;
-  const cy = poly.reduce((sum, [, y]) => sum + y, 0) / poly.length;
-  return poly.map(([x, y]) => [
-    round(cx + (x - cx) * EYE_SCALE),
-    round(cy + (y - cy) * EYE_SCALE),
-  ]);
+/**
+ * The eye, drawn as a clean almond where the traced opening is (in profile
+ * the trace is a blob): wider than tall, the upper lid more arched than the
+ * lower. Layout units are 6 × 12 per cell, so the shape is built in units
+ * and returned in cells.
+ */
+const EYE_WIDTH = 1.3; // × the traced width
+const EYE_HEIGHT = 0.48; // × the traced height
+function almond(poly) {
+  const xs = poly.map(([x]) => x * 6);
+  const ys = poly.map(([, y]) => y * 12);
+  const cx = (Math.min(...xs) + Math.max(...xs)) / 2;
+  const cy = (Math.min(...ys) + Math.max(...ys)) / 2;
+  const w = (Math.max(...xs) - Math.min(...xs)) * EYE_WIDTH;
+  const h = (Math.max(...ys) - Math.min(...ys)) * EYE_HEIGHT;
+  const STEPS = 10;
+  const lid = (t, arch) => Math.pow(Math.sin(Math.PI * t), 0.8) * arch;
+  const upper = Array.from({ length: STEPS + 1 }, (_, i) => {
+    const t = i / STEPS;
+    return [cx - w / 2 + w * t, cy - lid(t, h * 0.58)];
+  });
+  const lower = Array.from({ length: STEPS - 1 }, (_, i) => {
+    const t = 1 - (i + 1) / STEPS;
+    return [cx - w / 2 + w * t, cy + lid(t, h * 0.42)];
+  });
+  return [...upper, ...lower].map(([x, y]) => [round(x / 6), round(y / 12)]);
 }
 
 // ── preview (development only) ─────────────────────────────────────────────
@@ -270,7 +286,7 @@ function compositePreview(face, art, cols, rows) {
       fill(x + (cw - size) / 2, y + (ch - size) / 2, size, size, 160);
     }
   }
-  for (const poly of art.eyes.map(shrink)) {
+  for (const poly of art.eyes.map(almond)) {
     const pts = poly.map(([px, py]) => [px * cw, py * ch]);
     const xs = pts.map(([px]) => px);
     const ys = pts.map(([, py]) => py);
@@ -348,7 +364,7 @@ for (const [name, v] of Object.entries(VARIANTS)) {
   const keep = (x, y) => {
     const c = Math.floor((x / v.width) * v.cols);
     const r = Math.floor((y / height) * v.rows);
-    return art.solid[r * v.cols + c] === 1;
+    return art.gone[r * v.cols + c] !== 1;
   };
   const dots = sampleDots({
     width: v.width,
@@ -389,7 +405,7 @@ for (const [name, v] of Object.entries(VARIANTS)) {
     rows: v.rows,
     width: v.width,
     height,
-    eyes: art.eyes.map(shrink),
+    eyes: art.eyes.map(almond),
     debris: debrisGroups(art.debris),
     log: art.log.map((line) => [line.right, line.r, line.epoch, line.text]),
     logScale: art.logScale,

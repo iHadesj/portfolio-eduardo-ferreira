@@ -150,7 +150,9 @@ export function portrait({
   // 0 = the README's sparse stream; up to ~0.4 = denser, wider, chunkier
   debrisBoost = 0,
 } = {}) {
-  const buf = cached ?? renderHead({ width: cols * sx, height: rows * sy, aspect: (0.6 * sy) / sx, ...CAMERA, ...camera });
+  // a cell is 0.6em × 1.2em, so each of its sx × sy samples is (0.6 / sx) by
+  // (1.2 / sy): the buffer then spans the same frame as the layout
+  const buf = cached ?? renderHead({ width: cols * sx, height: rows * sy, aspect: (0.6 * sy) / (1.2 * sx), ...CAMERA, ...camera });
   const cells = sampleCells(buf, cols, rows, sx, sy);
   const rand = rng(seed);
   const edge = noise1(seed + 1);
@@ -159,16 +161,20 @@ export function portrait({
 
   // --- dissolve: the back of the skull lets go of its pixels -------------
   const solid = new Uint8Array(N);
+  const gone = new Uint8Array(N); // let go: nothing of the head is drawn here
   const dissolved = [];
   for (const cell of cells) {
-    if (cell.coverage < 0.15 || !cell.pos) continue;
+    if (!cell.pos) continue;
     const [, y, z] = cell.pos;
     // a ragged boundary down the back of the skull and the neck
     const front = dissolveAt + 0.06 * clamp(-y) + (edge(cell.r * 0.23) - 0.5) * 0.36;
     const neck = smoothstep(-1.55, -2.1, y) * 0.45; // the bottom of the neck thins out too
     const p = Math.max(smoothstep(front + 0.16, front - 0.32, z), neck * (0.4 + 0.6 * smoothstep(1, 0, z)));
-    if (rand() < p) dissolved.push({ ...cell, depth: clamp(front - z, 0, 1.5) });
-    else solid[cell.r * cols + cell.c] = 1;
+    const thin = cell.coverage < 0.15; // a sliver of the outline
+    if (rand() < p) {
+      gone[cell.r * cols + cell.c] = 1;
+      if (!thin) dissolved.push({ ...cell, depth: clamp(front - z, 0, 1.5) });
+    } else if (!thin) solid[cell.r * cols + cell.c] = 1;
   }
 
   // --- face: light → glyphs (the neck sinks into the jaw's shadow) ----------
@@ -257,6 +263,7 @@ export function portrait({
     cells,
     tone,
     solid,
+    gone,
     face: rowsOf(face, cols, rows),
     eyes: traceEyes(buf, sx, sy),
     debris,

@@ -96,3 +96,25 @@ export function polylineDistance(x, y, points) {
   }
   return best;
 }
+
+// Signed distance from (x, y) to a closed 2D polygon [[x, y], ...]
+// (negative inside).
+export function sdPolygon(x, y, v) {
+  let d = (x - v[0][0]) ** 2 + (y - v[0][1]) ** 2;
+  let sign = 1;
+  for (let i = 0, j = v.length - 1; i < v.length; j = i, i++) {
+    const ex = v[j][0] - v[i][0];
+    const ey = v[j][1] - v[i][1];
+    const wx = x - v[i][0];
+    const wy = y - v[i][1];
+    const h = clamp((wx * ex + wy * ey) / (ex * ex + ey * ey));
+    const bx = wx - ex * h;
+    const by = wy - ey * h;
+    d = Math.min(d, bx * bx + by * by);
+    const above = y >= v[i][1];
+    const below = y < v[j][1];
+    const left = ex * wy > ey * wx;
+    if ((above && below && left) || (!above && !below && !left)) sign = -sign;
+  }
+  return sign * Math.sqrt(d);
+}
