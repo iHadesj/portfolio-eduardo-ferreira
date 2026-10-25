@@ -42,13 +42,15 @@ const JAW_SEAM = [
 /**
  * Lines drawn on the face, like the strokes of an illustration (side view,
  * z/y; half-width in cm; only past `from` on |x|): the brow, the crease of
- * the upper lid, the wing of the nose and the mouth.
+ * the upper lid, the wing of the nose and the mouth. Bold, like the
+ * illustration's strokes: each one spans a couple of rows of dots, so it
+ * still reads at the size the portrait is shown.
  */
 const INK = [
-  { width: 0.17, from: 1.5, line: [[5.4, 13.15], [6.3, 13.55], [7.12, 13.68], [8.0, 13.5], [8.9, 13.0]] },
-  { width: 0.07, from: 2.0, line: [[6.1, 12.25], [7.2, 12.5], [8.4, 12.45]] },
-  { width: 0.08, from: 0.6, line: [[8.75, 8.05], [8.45, 7.5], [8.5, 7.0], [8.85, 6.65], [9.35, 6.55]] },
-  { width: 0.07, from: 0.4, line: [[7.7, 4.2], [8.8, 4.36], [10.2, 4.36]] },
+  { width: 0.22, from: 1.5, line: [[5.4, 13.15], [6.3, 13.55], [7.12, 13.68], [8.0, 13.5], [8.9, 13.0]] },
+  { width: 0.12, from: 2.0, line: [[6.1, 12.25], [7.2, 12.5], [8.4, 12.45]] },
+  { width: 0.2, from: 0.6, line: [[8.75, 8.05], [8.45, 7.5], [8.5, 7.0], [8.85, 6.65], [9.35, 6.55]] },
+  { width: 0.24, from: 0.4, line: [[7.3, 4.0], [7.8, 4.2], [8.8, 4.36], [10.2, 4.36]] },
 ];
 
 /**
@@ -298,17 +300,21 @@ function softShadow(f, p, l, k = 10) {
   return clamp(res);
 }
 
+/** A dim fill from behind the head: direction times strength. */
+const FILL = mul(norm(v3(-0.8, 0.1, 0.4)), 0.16);
+
 /**
  * Light at a surface point `pw` (world space) with normal `n`, seen along
- * `rd`: key light with soft shadows, a cool fill, ambient occlusion and a
- * grazing rim that outlines the profile, scaled by the material. Shared by
- * the ASCII renderer below and the point-cloud renderer in dots.mjs.
+ * `rd`: key light `L` with soft shadows, a fill `F` (direction times
+ * strength, no shadows), ambient occlusion and a grazing rim that outlines
+ * the profile, scaled by the material. Shared by the ASCII renderer below
+ * and the point-cloud renderer in dots.mjs.
  */
-export function shadeSurface(scene, pw, n, rd, L, { albedo, gloss } = MATERIALS.skin) {
+export function shadeSurface(scene, pw, n, rd, L, { albedo, gloss } = MATERIALS.skin, F = FILL) {
   if (!albedo) return 0;
   const shadow = 0.25 + 0.75 * softShadow(scene, add(pw, mul(n, 0.004)), L);
   const diffuse = clamp(dot(n, L)) * shadow;
-  const fill = clamp(dot(n, norm(v3(-0.8, 0.1, 0.4)))) * 0.16;
+  const fill = Math.max(0, dot(n, F));
   // grazing-angle glow, stronger on the side the face points to so the
   // profile (brow, nose, lips, chin) gets a bright outline
   const grazing = Math.pow(clamp(1 - Math.abs(dot(n, rd))), 2.5);
@@ -339,6 +345,7 @@ export function renderHead({
   fov = 0.42,
   center = v3(0.05, -0.28, 0),
   light = norm(v3(0.55, 0.45, 0.85)),
+  fill = FILL,
 } = {}) {
   // object rotation: head turned to the viewer's right, chin up a little
   const R = matMul(rotY(yaw), matMul(rotX(pitch), rotZ(roll)));
@@ -378,7 +385,7 @@ export function renderHead({
       const n = normalAt(scene, pw);
       const isEye = isEyeAt(pl);
 
-      lum[idx] = isEye ? 1 : shadeSurface(scene, pw, n, rd, L, surfaceAt(pl));
+      lum[idx] = isEye ? 1 : shadeSurface(scene, pw, n, rd, L, surfaceAt(pl), fill);
       mask[idx] = 1;
       material[idx] = isEye ? 2 : 1;
       local.set(pl, idx * 3);

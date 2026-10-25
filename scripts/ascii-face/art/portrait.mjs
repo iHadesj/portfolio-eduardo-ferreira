@@ -13,7 +13,11 @@ export const CAMERA = {
   distance: 8,
   fov: 0.48,
   center: [0.4, 0.02, 0],
-  light: [0.62, 0.3, 0.73], // from where the face looks: the front of the face burns white, the side stays grey
+  // key light from where the face looks: brow, nose, lips and chin burn
+  // white against a grey cheek, so the features read in profile; a soft
+  // fill from the camera keeps the side of the head and the module visible
+  light: [0.88, 0.22, 0.42],
+  fill: [0, 0.09, 0.285],
 };
 
 // The training log, bottom → top like the reference: the run starts at the

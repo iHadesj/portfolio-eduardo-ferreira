@@ -59,6 +59,7 @@ export function sampleDots({
   fov,
   center,
   light,
+  fill,
   pitchPx,
   keep = () => true,
 }) {
@@ -146,7 +147,7 @@ export function sampleDots({
             dots.push({
               x,
               y: py,
-              lum: shadeSurface(scene, pw, n, rd, L, surface),
+              lum: shadeSurface(scene, pw, n, rd, L, surface, fill),
               row,
               theta,
             });
