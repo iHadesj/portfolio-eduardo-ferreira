@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useReducedMotionSafe } from "@/hooks/use-reduced-motion-safe";
 import { cn } from "@/lib/utils";
 import {
+  HEAT_INKS,
   HOLE_LAYOUTS,
   NO_PULSE,
   idleView,
@@ -21,11 +22,10 @@ import { parseRgb, useIdleStart } from "./stage-utils";
 
 /** The live scene inks with the poster's own layer colours. */
 function readInks(stage: HTMLElement): HoleInks {
-  const ink = (name: string) => {
+  return HEAT_INKS.map((name) => {
     const layer = stage.querySelector<HTMLElement>(`pre[data-ink="${name}"]`);
     return parseRgb(layer ? getComputedStyle(layer).color : "rgb(255,255,255)");
-  };
-  return { hot: ink("hot"), warm: ink("warm"), cool: ink("cool") };
+  });
 }
 
 const WIDE = "(min-width: 64rem)";

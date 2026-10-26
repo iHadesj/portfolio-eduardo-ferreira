@@ -9,7 +9,8 @@ import {
   FALLOFF,
   FLOW_PERIOD,
   GLYPHS,
-  HOT_AT,
+  HEAT_SCALE,
+  HEAT_STOPS,
   LATTICE,
   MAX_STEPS,
   PULSE_GAIN,
@@ -18,6 +19,7 @@ import {
   SPIN,
   STAR_DENSITY,
   STAR_GRID,
+  STAR_HEAT,
   STEP,
   STEP_MAX,
   STEP_MIN,
@@ -26,7 +28,6 @@ import {
   TAN_HALF_FOV,
   TONE_GAMMA,
   TONE_LUT,
-  WARM_AT,
   cameraFrame,
   imageAspect,
   type HoleLayout,
@@ -44,11 +45,12 @@ import {
  * The black hole, live, in raw WebGL2. Two passes per frame:
  *
  * 1. Rays: one fragment per ray (`cols·2 × rows·2`) traces light back from
- *    the camera exactly like `traceRay` in black-hole.ts and stores it.
- * 2. Glyphs: a full-screen pass reads each cell's mean light — a single
- *    bilinear fetch at the centre of its 2×2 rays — picks the glyph from the
- *    same tone table as the poster, inks it cool → warm → hot, and adds a
- *    soft halo from the blurred light around it.
+ *    the camera exactly like `traceRay` in black-hole.ts and stores its
+ *    light and its heat × light.
+ * 2. Glyphs: a full-screen pass reads each cell's mean light and heat — a
+ *    single bilinear fetch at the centre of its 2×2 rays — picks the glyph
+ *    from the same tone table as the poster, inks it by heat on the
+ *    blackbody ramp, and adds a soft halo from the blurred light around it.
  *
  * The main-thread cost of a frame is a few uniforms and two draw calls.
  */
@@ -109,9 +111,9 @@ float fbm(vec3 p) {
     + 0.2 * noise3(p * 4.13 + 41.7);
 }
 
-vec2 diskAt(vec2 xz, vec3 v) {
+vec3 diskAt(vec2 xz, vec3 v) {
   float r = length(xz);
-  if (r < ${f(DISK_INNER)} || r > ${f(DISK_OUTER)}) return vec2(0.0);
+  if (r < ${f(DISK_INNER)} || r > ${f(DISK_OUTER)}) return vec3(0.0);
   float phi = atan(xz.y, xz.x);
   float omega = ${f(SPIN)} / (r * sqrt(r));
   float flow = uDiskTime / ${f(FLOW_PERIOD)};
@@ -134,7 +136,8 @@ vec2 diskAt(vec2 xz, vec3 v) {
   float flash = ${f(PULSE_GAIN)} * exp(-ring * ring) * exp(-uPulse * 0.5);
   float light = (falloff * (0.18 + 1.25 * smoothstep(0.28, 0.75, grain)) + flash)
     * edges * pow(g, ${f(BEAMING)}) * redshift;
-  return vec2(light, edges * (0.55 + 0.4 * grain));
+  float heat = pow(${f(DISK_INNER)} / r, 0.75) * g * redshift;
+  return vec3(light, edges * (0.55 + 0.4 * grain), heat);
 }
 
 float starAt(vec3 d) {
@@ -154,13 +157,16 @@ void main() {
   vec3 c = cross(p, v);
   float h2 = dot(c, c);
   float light = 0.0;
+  float heat = 0.0;
   float alpha = 0.0;
   for (int i = 0; i < ${MAX_STEPS}; i++) {
     float r2 = dot(p, p);
     float r = sqrt(r2);
     if (r < 1.0) break;
     if (r > ${f(ESCAPE_RADIUS)} && dot(p, v) > 0.0) {
-      light += (1.0 - alpha) * starAt(v);
+      float star = (1.0 - alpha) * starAt(v);
+      light += star;
+      heat += star * ${f(STAR_HEAT)};
       break;
     }
     float dt = clamp(${f(STEP)} * r, ${f(STEP_MIN)}, ${f(STEP_MAX)});
@@ -169,13 +175,16 @@ void main() {
     p += v * dt;
     if (q.y * p.y < 0.0) {
       float t = q.y / (q.y - p.y);
-      vec2 disk = diskAt(mix(q.xz, p.xz, t), v);
+      vec3 disk = diskAt(mix(q.xz, p.xz, t), v);
       light += (1.0 - alpha) * disk.x;
+      heat += (1.0 - alpha) * disk.x * disk.z;
       alpha += (1.0 - alpha) * disk.y;
       if (alpha > 0.98) break;
     }
   }
-  outColor = vec4(1.0 - exp(-${f(EXPOSURE)} * uGain * light), 0.0, 0.0, 1.0);
+  float seen = 1.0 - exp(-${f(EXPOSURE)} * uGain * light);
+  float warmth = light > 0.0 ? heat / light : 0.0;
+  outColor = vec4(seen, min(warmth / ${f(HEAT_SCALE)}, 1.0) * seen, 0.0, 1.0);
 }`;
 
 const GLYPH_COUNT = GLYPHS.length;
@@ -187,23 +196,33 @@ uniform sampler2D uAtlas;
 uniform vec2 uGrid;
 uniform vec2 uResolution;
 uniform float uLut[64];
-uniform vec4 uHot;
-uniform vec4 uWarm;
-uniform vec4 uCool;
+uniform vec4 uInks[${HEAT_STOPS.length}];
 uniform float uHalo;
 out vec4 outColor;
 
-vec4 inkFor(float tone) {
-  return tone < ${f(WARM_AT)}
-    ? mix(uCool, uWarm, smoothstep(0.08, ${f(WARM_AT)}, tone))
-    : mix(uWarm, uHot, smoothstep(${f(WARM_AT)}, ${f(HOT_AT)}, tone));
+const float STOPS[${HEAT_STOPS.length}] = float[](${HEAT_STOPS.map(f).join(", ")});
+
+/* The blackbody ramp: blend between the two stops either side of heat. */
+vec4 inkFor(float heat) {
+  if (heat <= STOPS[0]) return uInks[0];
+  for (int i = 1; i < ${HEAT_STOPS.length}; i++) {
+    if (heat < STOPS[i]) {
+      return mix(uInks[i - 1], uInks[i], (heat - STOPS[i - 1]) / (STOPS[i] - STOPS[i - 1]));
+    }
+  }
+  return uInks[${HEAT_STOPS.length - 1}];
+}
+
+float heatOf(vec4 s) {
+  return s.r > 0.0 ? s.g / s.r * ${f(HEAT_SCALE)} : 0.0;
 }
 
 void main() {
   vec2 g = gl_FragCoord.xy / uResolution * uGrid;
   vec2 cell = floor(g);
   vec2 centre = (cell + 0.5) / uGrid;
-  float light = texture(uLights, centre).r;
+  vec4 rays = texture(uLights, centre);
+  float light = rays.r;
   // Mirrors edgeFade: nothing is ever cut by the edge of the box.
   vec2 side = min(centre, 1.0 - centre);
   float fade = smoothstep(0.0, ${f(EDGE_FADE_X)}, side.x)
@@ -214,31 +233,29 @@ void main() {
   if (index > 0.0) {
     vec2 local = fract(g);
     float ink = texture(uAtlas, vec2((index + local.x) / ${f(GLYPH_COUNT)}, local.y)).a;
-    vec4 color = inkFor(tone);
+    vec4 color = inkFor(heatOf(rays));
     glyph = vec4(color.rgb * color.a, color.a) * ink;
   }
   // Halo: the light blurred over a few cells, so the bright parts bloom.
   vec2 at = gl_FragCoord.xy / uResolution;
   vec2 cellSize = 1.0 / uGrid;
-  float blur = 0.0;
+  vec4 blur = vec4(0.0);
   for (int k = 0; k < 8; k++) {
     float a = float(k) * 0.785398;
     vec2 p = at + vec2(cos(a), sin(a) * 2.0) * cellSize * 1.6;
     // Nothing shines in from beyond the frame (clamping would smear the edge).
     bool inside = all(greaterThanEqual(p, vec2(0.0))) && all(lessThanEqual(p, vec2(1.0)));
-    blur += inside ? texture(uLights, p).r : 0.0;
+    blur += inside ? texture(uLights, p) : vec4(0.0);
   }
   blur /= 8.0;
-  float halo = blur * blur * blur * uHalo * fade;
-  vec4 bloom = vec4(uHot.rgb * uHot.a, uHot.a) * halo;
+  float halo = blur.r * blur.r * blur.r * uHalo * fade;
+  vec4 glow = inkFor(heatOf(blur));
+  vec4 bloom = vec4(glow.rgb * glow.a, glow.a) * halo;
   outColor = glyph + bloom * (1.0 - glyph.a);
 }`;
 
-export interface HoleInks {
-  hot: Rgba;
-  warm: Rgba;
-  cool: Rgba;
-}
+/** One colour per heat stop, cool → hot (`HEAT_INKS`). */
+export type HoleInks = readonly Rgba[];
 
 export interface HoleRendererOptions {
   /** CSS `font-family` of the poster, so the atlas matches it glyph for glyph. */
@@ -300,9 +317,7 @@ export async function createHoleRenderer(
     atlas: gl.getUniformLocation(drawProgram, "uAtlas"),
     grid: gl.getUniformLocation(drawProgram, "uGrid"),
     resolution: gl.getUniformLocation(drawProgram, "uResolution"),
-    hot: gl.getUniformLocation(drawProgram, "uHot"),
-    warm: gl.getUniformLocation(drawProgram, "uWarm"),
-    cool: gl.getUniformLocation(drawProgram, "uCool"),
+    inks: gl.getUniformLocation(drawProgram, "uInks"),
     halo: gl.getUniformLocation(drawProgram, "uHalo"),
   };
 
@@ -399,9 +414,7 @@ export async function createHoleRenderer(
       gl.uniform1i(drawU.atlas, 1);
       gl.uniform2f(drawU.grid, layout.cols, layout.rows);
       gl.uniform2f(drawU.resolution, canvas.width, canvas.height);
-      gl.uniform4fv(drawU.hot, inks.hot);
-      gl.uniform4fv(drawU.warm, inks.warm);
-      gl.uniform4fv(drawU.cool, inks.cool);
+      gl.uniform4fv(drawU.inks, new Float32Array(inks.flat()));
       gl.uniform1f(drawU.halo, options.halo);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
       gl.bindVertexArray(null);

@@ -42,12 +42,14 @@
   --color-ribbon-mid: #a9b2c2;
   --color-ribbon-far: #4a5468;
 
-  /* The black hole, inked by heat: the inner disk and the photon ring burn
-     white, the gas glows warm, faint light and stars stay cool. Follows the
-     theme through the tokens it borrows. */
-  --color-hole-hot: var(--color-flare);
-  --color-hole-warm: var(--color-term-yellow);
-  --color-hole-cool: var(--color-ribbon-far);
+  /* The black hole's disk, inked by its observed temperature — the
+     blackbody ramp from the red rim to the blue-white inner edge (stars sit
+     at the hot end). */
+  --color-hole-ember: #ff4b1f;
+  --color-hole-flame: #ff8a2b;
+  --color-hole-gold: #ffc764;
+  --color-hole-white: #fff4e2;
+  --color-hole-blue: #cfe0ff;
 
   /* Radii */
   --radius-sm: 2px;
@@ -459,18 +461,28 @@
   white-space: pre;
 }
 
-.hole-art pre[data-ink="hot"] {
-  color: var(--color-hole-hot);
+.hole-art pre[data-ink="ember"] {
+  color: var(--color-hole-ember);
+}
+
+.hole-art pre[data-ink="flame"] {
+  color: var(--color-hole-flame);
+}
+
+.hole-art pre[data-ink="gold"] {
+  color: var(--color-hole-gold);
+}
+
+.hole-art pre[data-ink="white"] {
+  color: var(--color-hole-white);
   text-shadow: 0 0 0.6em
-    color-mix(in oklab, var(--color-hole-hot) 50%, transparent);
+    color-mix(in oklab, var(--color-hole-white) 50%, transparent);
 }
 
-.hole-art pre[data-ink="warm"] {
-  color: var(--color-hole-warm);
-}
-
-.hole-art pre[data-ink="cool"] {
-  color: var(--color-hole-cool);
+.hole-art pre[data-ink="blue"] {
+  color: var(--color-hole-blue);
+  text-shadow: 0 0 0.6em
+    color-mix(in oklab, var(--color-hole-blue) 50%, transparent);
 }
 
 .hole-art[data-layout="wide"] {
@@ -485,8 +497,8 @@
   opacity: 0;
   background: radial-gradient(
     closest-side,
-    color-mix(in oklab, var(--color-hole-hot) 75%, transparent),
-    color-mix(in oklab, var(--color-hole-warm) 18%, transparent) 55%,
+    color-mix(in oklab, var(--color-hole-white) 75%, transparent),
+    color-mix(in oklab, var(--color-hole-flame) 18%, transparent) 55%,
     transparent
   );
 }

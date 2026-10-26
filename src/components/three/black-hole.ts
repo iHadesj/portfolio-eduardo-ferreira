@@ -14,7 +14,10 @@
  * angular momentum) — so the far side of the disk shows up above and below
  * the shadow, and a thin photon ring hugs it. The disk is a thin, turbulent
  * sheet whose inner edge is brightest, beamed brighter on the side that
- * turns toward the camera.
+ * turns toward the camera. Its colour is its temperature as seen from the
+ * camera: blackbody red at the rim through orange, yellow and white to a
+ * blue-white inner edge — Doppler-shifted bluer on the approaching side,
+ * redder on the receding one.
  *
  * Everything that has to match the GPU bit for bit (the hash behind noise
  * and stars) is integer math, identical in both languages.
@@ -72,6 +75,9 @@ export const EXPOSURE = 2.4;
 /** Stars: one per lattice cell of the escape direction, now and then. */
 export const STAR_GRID = 110;
 export const STAR_DENSITY = 0.005;
+
+/** Stars burn blue-white (on the heat scale below). */
+export const STAR_HEAT = 1;
 
 /** A ring of light that runs out through the disk (a tap, a release). */
 export const PULSE_SPEED = 7;
@@ -241,8 +247,11 @@ export const RADIAL = 1.3;
 export const FALLOFF = 1.25;
 
 /**
- * Light and opacity of the disk where a ray crosses it, at `(x, z)` with
- * the ray travelling along `(vx, vy, vz)` (from the camera).
+ * Light, opacity and heat of the disk where a ray crosses it, at `(x, z)`
+ * with the ray travelling along `(vx, vy, vz)` (from the camera). Heat is
+ * the observed temperature, ~0.25 (red rim) to ~1.2 (blue-white): the
+ * thin-disk profile T ∝ r^-3/4, times the Doppler factor and the
+ * gravitational redshift.
  */
 export function diskAt(
   x: number,
@@ -252,9 +261,9 @@ export function diskAt(
   vz: number,
   diskTime: number,
   pulse: number,
-): [number, number] {
+): [number, number, number] {
   const r = Math.hypot(x, z);
-  if (r < DISK_INNER || r > DISK_OUTER) return [0, 0];
+  if (r < DISK_INNER || r > DISK_OUTER) return [0, 0, 0];
   const phi = Math.atan2(z, x);
   const omega = SPIN / (r * Math.sqrt(r));
 
@@ -298,7 +307,8 @@ export function diskAt(
     Math.pow(g, BEAMING) *
     redshift;
   const opacity = edges * (0.55 + 0.4 * grain);
-  return [light, opacity];
+  const heat = Math.pow(DISK_INNER / r, 0.75) * g * redshift;
+  return [light, opacity, heat];
 }
 
 /** Starlight for a ray escaping along `(x, y, z)`. */
@@ -316,15 +326,16 @@ export function starAt(x: number, y: number, z: number, time: number): number {
 }
 
 /**
- * Trace one ray back from the camera; returns its tone-mapped light, 0–1.
- * Captured rays stay dark; the disk is crossed as often as the ray bends
- * round, each crossing seen through the ones in front.
+ * Trace one ray back from the camera; returns its tone-mapped light (0–1)
+ * and the mean heat of what it saw, weighted by light. Captured rays stay
+ * dark; the disk is crossed as often as the ray bends round, each crossing
+ * seen through the ones in front.
  */
 export function traceRay(
   eye: Vec3,
   dir: Vec3,
   view: Pick<HoleView, "diskTime" | "time" | "pulse" | "gain">,
-): number {
+): [number, number] {
   let [px, py, pz] = eye;
   let [vx, vy, vz] = dir;
   const cx = py * vz - pz * vy;
@@ -333,13 +344,16 @@ export function traceRay(
   const h2 = cx * cx + cy * cy + cz * cz;
 
   let light = 0;
+  let heat = 0;
   let alpha = 0;
   for (let i = 0; i < MAX_STEPS; i += 1) {
     const r2 = px * px + py * py + pz * pz;
     const r = Math.sqrt(r2);
     if (r < 1) break;
     if (r > ESCAPE_RADIUS && px * vx + py * vy + pz * vz > 0) {
-      light += (1 - alpha) * starAt(vx, vy, vz, view.time);
+      const star = (1 - alpha) * starAt(vx, vy, vz, view.time);
+      light += star;
+      heat += star * STAR_HEAT;
       break;
     }
     const dt = clamp(STEP * r, STEP_MIN, STEP_MAX);
@@ -355,7 +369,7 @@ export function traceRay(
     pz += vz * dt;
     if (qy * py < 0) {
       const f = qy / (qy - py);
-      const [glow, opacity] = diskAt(
+      const [glow, opacity, warmth] = diskAt(
         qx + (px - qx) * f,
         qz + (pz - qz) * f,
         vx,
@@ -365,11 +379,15 @@ export function traceRay(
         view.pulse,
       );
       light += (1 - alpha) * glow;
+      heat += (1 - alpha) * glow * warmth;
       alpha += (1 - alpha) * opacity;
       if (alpha > 0.98) break;
     }
   }
-  return 1 - Math.exp(-EXPOSURE * view.gain * light);
+  return [
+    1 - Math.exp(-EXPOSURE * view.gain * light),
+    light > 0 ? heat / light : 0,
+  ];
 }
 
 /* ── Glyphs ──────────────────────────────────────────────────────────────── */
@@ -437,18 +455,24 @@ export const toneOf = (light: number) => Math.pow(light, TONE_GAMMA);
 
 /* ── Ink ─────────────────────────────────────────────────────────────────── */
 
-/** Tones where the ink reaches warm and hot (see the draw shader). */
-export const WARM_AT = 0.4;
-export const HOT_AT = 0.85;
-
 /**
- * The poster's three ink layers, hot → cool: each cell goes to the layer
- * nearest its tone on the live scene's cool → warm → hot gradient.
+ * Blackbody inks, cool → hot, and the heat at which each one is reached;
+ * the live scene blends between neighbours (see the draw shader), the
+ * poster puts each cell in the layer of its nearest stop.
  */
-export function inkLayer(tone: number): 0 | 1 | 2 {
-  if (tone >= (WARM_AT + HOT_AT) / 2) return 0;
-  if (tone >= (0.08 + WARM_AT) / 2) return 1;
-  return 2;
+export const HEAT_INKS = ["ember", "flame", "gold", "white", "blue"] as const;
+export const HEAT_STOPS = [0.25, 0.42, 0.6, 0.85, 1.15] as const;
+/** Heat is packed into 8 bits as heat / HEAT_SCALE. */
+export const HEAT_SCALE = 1.5;
+
+export function inkLayer(heat: number): number {
+  let best = 0;
+  for (let i = 1; i < HEAT_STOPS.length; i += 1) {
+    const stop = HEAT_STOPS[i] ?? 0;
+    const bestStop = HEAT_STOPS[best] ?? 0;
+    if (Math.abs(heat - stop) < Math.abs(heat - bestStop)) best = i;
+  }
+  return best;
 }
 
 /* ── Frame ───────────────────────────────────────────────────────────────── */
@@ -468,13 +492,21 @@ export function edgeFade(u: number, v: number): number {
 
 /* ── Poster ──────────────────────────────────────────────────────────────── */
 
-/** Every ray of one frame, top row first: `cols·SUB × rows·SUB` lights. */
-export function traceFrame(layout: HoleLayout, view: HoleView): Float32Array {
+/**
+ * Every ray of one frame, top row first (`cols·SUB × rows·SUB`): its light,
+ * and its heat times its light — so a cell's heat is the light-weighted
+ * mean of its rays, as the GPU's filtered fetch computes it.
+ */
+export function traceFrame(
+  layout: HoleLayout,
+  view: HoleView,
+): { lights: Float32Array; heats: Float32Array } {
   const w = layout.cols * SUB;
   const h = layout.rows * SUB;
   const tanY = TAN_HALF_FOV / imageAspect(layout);
   const { eye, right, up, forward } = cameraFrame(view);
-  const out = new Float32Array(w * h);
+  const lights = new Float32Array(w * h);
+  const heats = new Float32Array(w * h);
   for (let y = 0; y < h; y += 1) {
     const v = (1 - ((y + 0.5) / h) * 2) * tanY;
     for (let x = 0; x < w; x += 1) {
@@ -484,20 +516,22 @@ export function traceFrame(layout: HoleLayout, view: HoleView): Float32Array {
         forward[1] + right[1] * u + up[1] * v,
         forward[2] + right[2] * u + up[2] * v,
       ]);
-      out[y * w + x] = traceRay(eye, dir, view);
+      const [light, heat] = traceRay(eye, dir, view);
+      lights[y * w + x] = light;
+      heats[y * w + x] = Math.min(heat / HEAT_SCALE, 1) * light;
     }
   }
-  return out;
+  return { lights, heats };
 }
 
 /**
- * One frame as text: three layers of the same grid (hot, warm, cool), each
- * holding only its own cells, so CSS can ink them like the live scene does.
+ * One frame as text: a layer of the same grid per heat ink (`HEAT_INKS`),
+ * each holding only its own cells, so CSS can ink them like the live scene.
  */
 export function rasterizeHole(layout: HoleLayout, view: HoleView): string[] {
-  const lights = traceFrame(layout, view);
+  const { lights, heats } = traceFrame(layout, view);
   const w = layout.cols * SUB;
-  const layers = [0, 1, 2].map(() =>
+  const layers = HEAT_INKS.map(() =>
     Array.from({ length: layout.rows }, () =>
       new Array<string>(layout.cols).fill(" "),
     ),
@@ -505,9 +539,12 @@ export function rasterizeHole(layout: HoleLayout, view: HoleView): string[] {
   for (let r = 0; r < layout.rows; r += 1) {
     for (let c = 0; c < layout.cols; c += 1) {
       let sum = 0;
+      let warmth = 0;
       for (let dy = 0; dy < SUB; dy += 1) {
         for (let dx = 0; dx < SUB; dx += 1) {
-          sum += lights[(r * SUB + dy) * w + c * SUB + dx] ?? 0;
+          const i = (r * SUB + dy) * w + c * SUB + dx;
+          sum += lights[i] ?? 0;
+          warmth += heats[i] ?? 0;
         }
       }
       const tone =
@@ -515,7 +552,8 @@ export function rasterizeHole(layout: HoleLayout, view: HoleView): string[] {
         edgeFade((c + 0.5) / layout.cols, (r + 0.5) / layout.rows);
       const glyph = GLYPHS[TONE_LUT[Math.round(tone * 63)] ?? 0] ?? " ";
       if (glyph === " ") continue;
-      const row = layers[inkLayer(tone)]?.[r];
+      const heat = sum > 0 ? (warmth / sum) * HEAT_SCALE : 0;
+      const row = layers[inkLayer(heat)]?.[r];
       if (row) row[c] = glyph;
     }
   }
