@@ -380,7 +380,7 @@ export function BlackHoleStage({
         ref={stageRef}
         aria-hidden
         className={cn(
-          "hole-stage relative select-none",
+          "hole-stage relative w-full select-none",
           showCanvas && "cursor-grab touch-pan-y active:cursor-grabbing",
         )}
       >
