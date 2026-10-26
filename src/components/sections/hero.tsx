@@ -43,13 +43,14 @@ const socials = [
   { label: "email", href: siteConfig.links.email, external: false },
 ];
 
-/** The name, one letter per box, so the black hole can pull them apart. */
+/** The name, one letter per box, so the black hole can pull them apart —
+    the last wave of the collapse. */
 function NameLetters({ name }: { name: string }) {
   return name.split(" ").map((word, w) => (
     <span key={word}>
       {w > 0 ? " " : null}
       {[...word].map((letter, i) => (
-        <span key={i} data-pull data-pull-decode className="inline-block">
+        <span key={i} data-pull="3" data-pull-decode className="inline-block">
           {letter}
         </span>
       ))}
@@ -62,7 +63,9 @@ function NameLetters({ name }: { name: string }) {
  * shipped — everything a recruiter scans for — fits above the fold at
  * 1366×768 and 390×844, rendered on the server with no JS in the way. The
  * black hole sits beside it and goes live after idle; held down, it pulls
- * the pieces marked `data-pull` into it (see three/gravity.ts).
+ * the pieces marked `data-pull` into it (see three/gravity.ts) in waves:
+ * metadata first (bare `data-pull`), then the content (`"2"`), the name
+ * last (`"3"`).
  */
 export function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
   const { availability } = siteConfig;
@@ -92,15 +95,19 @@ export function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
           <div className="flex flex-col gap-3">
             <h1
               aria-label="Edu Ferreira"
-              className="font-display text-hero text-bone whitespace-nowrap"
+              className="hero-name font-display text-hero text-bone whitespace-nowrap"
             >
               <NameLetters name="Edu Ferreira" />
-              <span aria-hidden data-pull className="hero-caret inline-block">
+              <span
+                aria-hidden
+                data-pull="3"
+                className="hero-caret inline-block"
+              >
                 _
               </span>
             </h1>
             <p
-              data-pull
+              data-pull="2"
               className="text-bone/90 font-body sm:text-lead max-w-[44ch] text-base"
             >
               {t.role}
@@ -127,50 +134,54 @@ export function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
             </div>
           </div>
 
-          <dl className="hero-readout">
-            <div>
-              <dt data-pull data-pull-decode>
-                {t.stackLabel}
-              </dt>
-              <dd>
-                <ul className="hero-readout__stack">
-                  {STACK.map((name) => (
-                    <li key={name} data-pull data-pull-decode>
-                      {name}
-                    </li>
-                  ))}
-                </ul>
-              </dd>
-            </div>
-            <div>
-              <dt data-pull data-pull-decode>
-                {t.deliveriesLabel}
-              </dt>
-              <dd>
-                <ul className="hero-readout__deliveries">
-                  {t.deliveries.map((item) => {
-                    const href = deliveryHref(item.id, locale);
-                    return (
-                      <li key={item.id} data-pull data-pull-decode>
-                        {href.startsWith("#") ? (
-                          <SmoothLink href={href}>{item.name}</SmoothLink>
-                        ) : (
-                          <TransitionLink href={href}>
-                            {item.name}
-                          </TransitionLink>
-                        )}{" "}
-                        <span>{item.detail}</span>
+          <div className="relative">
+            {/* The rule is its own piece, so the collapse takes it too. */}
+            <span aria-hidden data-pull className="hero-readout__rule" />
+            <dl className="hero-readout">
+              <div>
+                <dt data-pull data-pull-decode>
+                  {t.stackLabel}
+                </dt>
+                <dd>
+                  <ul className="hero-readout__stack">
+                    {STACK.map((name) => (
+                      <li key={name} data-pull data-pull-decode>
+                        {name}
                       </li>
-                    );
-                  })}
-                </ul>
-              </dd>
-            </div>
-          </dl>
+                    ))}
+                  </ul>
+                </dd>
+              </div>
+              <div>
+                <dt data-pull data-pull-decode>
+                  {t.deliveriesLabel}
+                </dt>
+                <dd>
+                  <ul className="hero-readout__deliveries">
+                    {t.deliveries.map((item) => {
+                      const href = deliveryHref(item.id, locale);
+                      return (
+                        <li key={item.id} data-pull="2" data-pull-decode>
+                          {href.startsWith("#") ? (
+                            <SmoothLink href={href}>{item.name}</SmoothLink>
+                          ) : (
+                            <TransitionLink href={href}>
+                              {item.name}
+                            </TransitionLink>
+                          )}{" "}
+                          <span>{item.detail}</span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </dd>
+              </div>
+            </dl>
+          </div>
 
           <div className="flex flex-wrap items-center gap-3">
             <SmoothLink
-              data-pull
+              data-pull="2"
               data-pull-decode
               href="#projetos"
               className={buttonVariants({ variant: "primary", size: "md" })}
@@ -178,7 +189,7 @@ export function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
               {`> ${t.ctaProjects}`}
             </SmoothLink>
             <a
-              data-pull
+              data-pull="2"
               data-pull-decode
               href={siteConfig.cvUrl}
               download={siteConfig.cvFileName}
@@ -208,8 +219,7 @@ export function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
         {/* Phones: the black hole crowns the copy. Wide screens: beside it. */}
         <BlackHoleStage
           className="-order-1 lg:order-none lg:col-span-6"
-          hintMouse={t.holeHintMouse}
-          hintTouch={t.holeHintTouch}
+          copy={t.hole}
         >
           <BlackHolePoster />
         </BlackHoleStage>

@@ -74,8 +74,22 @@ export const en = {
     availabilityAria: "Professional availability",
     ribbonHintMouse: "drag with your mouse to turn it",
     ribbonHintTouch: "drag with your finger to turn it",
-    holeHintMouse: "drag to orbit · hold to pull it all in",
-    holeHintTouch: "swipe to orbit · hold to pull it all in",
+    hole: {
+      tag: "interactive anomaly",
+      detected: "event horizon detected.",
+      how: "hold the singularity for 3 s to collapse the system.",
+      orbitMouse: "drag to orbit",
+      orbitTouch: "swipe to orbit",
+      idle: "hold to collapse",
+      holding: "event horizon",
+      collapsing: "collapse",
+      cancelled: "collapse aborted",
+      restored: "system restored",
+      keyLabel:
+        "Visual effect: hold Space or Enter for 3 seconds to collapse the top of the page. Let go early to cancel.",
+      statusCollapsing: "Collapse in progress.",
+      statusRestored: "System restored.",
+    },
   },
 
   about: {

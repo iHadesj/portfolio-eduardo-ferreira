@@ -503,7 +503,213 @@
   );
 }
 
+/* A faint warm well under the hole: it sinks the backdrop's contour lines
+   around it and lifts the disk off the page — the composition's centre. */
+.hole-stage::before {
+  content: "";
+  position: absolute;
+  inset: 8% 14%;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in oklab, var(--color-hole-ember) 7%, var(--color-abyss)) 0%,
+    color-mix(in oklab, var(--color-abyss) 85%, transparent) 55%,
+    transparent
+  );
+}
+
+/* On paper a well brighter than the page reads as a hole of light, not
+   of dark: there the disk stands on its own. */
+html[data-theme="light"] .hole-stage::before {
+  display: none;
+}
+
+/* The system readout by the hole: near-invisible until the pointer comes
+   close (--near, 0–1, written by the stage), always faint on touch. Orange
+   is the singularity's colour, grey its metadata. Phones get only its tag
+   and the orbit hint, in the stage's corner, clear of the disk; wide
+   screens the whole of it, stacked over the countdown. */
+.hole-readout {
+  position: absolute;
+  top: 0.25rem;
+  left: 0;
+  max-width: 30ch;
+  pointer-events: none;
+  color: var(--color-smoke);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1.5;
+  opacity: 0;
+  transition: opacity 400ms var(--ease-out-expo);
+}
+
+.hole-readout--live {
+  opacity: calc(0.07 + 0.93 * var(--near, 0));
+}
+
+/* While the hold runs, the countdown does the talking. */
+.hole:not([data-phase="idle"]) .hole-readout--live {
+  opacity: 0;
+}
+
+.hole-readout__tag {
+  margin-bottom: 0.15rem;
+  color: var(--color-hole-flame);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hole-readout__tag::before {
+  content: "// ";
+}
+
+.hole-readout__orbit {
+  color: var(--color-signal-deep);
+}
+
+.hole-readout__more {
+  display: none;
+}
+
+.hole-readout__orbit::before {
+  content: "↔ ";
+}
+
+/* The hold's countdown: "hold to collapse // 00:03" over a hairline — the
+   event horizon — that closes in on its centre (the singularity) as the
+   hold runs down, and opens back out after. A button: Space / Enter held
+   down on it is the keyboard way to the same event. */
+.hole-trigger {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.35rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  color: var(--color-smoke);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  visibility: hidden;
+  opacity: 0;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  transition:
+    opacity 400ms var(--ease-out-expo),
+    color 200ms var(--ease-out-expo);
+}
+
+.hole-trigger--live {
+  visibility: visible;
+  opacity: calc(0.55 + 0.45 * var(--near, 0));
+}
+
+.hole-trigger:hover,
+.hole-trigger:focus-visible,
+.hole:not([data-phase="idle"]) .hole-trigger {
+  color: var(--color-bone);
+  opacity: 1;
+}
+
+.hole-trigger__text {
+  display: block;
+  min-width: 36ch;
+  text-align: center;
+}
+
+.hole-trigger__text::before {
+  content: "[ ";
+  color: var(--color-hole-flame);
+}
+
+.hole-trigger__text::after {
+  content: " ]";
+  color: var(--color-hole-flame);
+}
+
+.hole-trigger__time {
+  color: var(--color-hole-flame);
+  font-variant-numeric: tabular-nums;
+}
+
+.hole[data-timer="off"] .hole-trigger__time {
+  display: none;
+}
+
+.hole-trigger__horizon {
+  position: relative;
+  display: block;
+  height: 1px;
+  background: color-mix(in oklab, var(--color-hole-flame) 14%, transparent);
+}
+
+.hole-trigger__horizon > span {
+  position: absolute;
+  inset: 0;
+  background: var(--color-hole-flame);
+  transform-origin: center;
+  transition: transform 900ms var(--ease-out-expo);
+}
+
+/* The singularity at its centre: what the line closes in on. */
+.hole-trigger__horizon::after {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: calc(50% - 1.5px);
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--color-hole-white);
+  box-shadow: 0 0 6px var(--color-hole-flame);
+}
+
+.hole[data-phase="holding"] .hole-trigger__horizon > span {
+  transition: none;
+}
+
+@media (pointer: coarse) {
+  .hole-readout--live {
+    opacity: 0.6;
+  }
+
+  .hole-trigger--live {
+    opacity: 0.85;
+  }
+}
+
+/* The name warms toward the hole's colour as the pull builds (--pull,
+   0–1, written on the hero by the stage while it holds). */
+.hero-name {
+  text-shadow: 0 0 calc(var(--pull, 0) * 0.45em)
+    color-mix(
+      in oklab,
+      var(--color-hole-flame) calc(var(--pull, 0) * 60%),
+      transparent
+    );
+}
+
 @media (min-width: 64rem) {
+  .hole-readout {
+    top: auto;
+    bottom: 3rem;
+    left: 50%;
+    width: max-content;
+    max-width: 60ch;
+    text-align: center;
+    transform: translateX(-50%);
+  }
+
+  .hole-readout__more {
+    display: block;
+  }
+
+  .hole-readout__orbit {
+    margin-top: 0.15rem;
+  }
+
   .hole-stage {
     /* 47.7% wider than the column (195 / 132 cells at the column's
        scale); up to half of that goes right, into the gutter beside the
@@ -544,6 +750,20 @@
   white-space: pre;
 }
 
+/* Section eyebrows carry the hero's singularity down the page: a small ring
+   of the disk's colour before the path, nothing more. */
+.section-mark {
+  display: inline-block;
+  width: 0.55em;
+  height: 0.55em;
+  margin-right: 0.6em;
+  border: 1px solid var(--color-hole-flame);
+  border-radius: 50%;
+  vertical-align: 0.02em;
+  box-shadow: 0 0 0.45em
+    color-mix(in oklab, var(--color-hole-flame) 40%, transparent);
+}
+
 /* Hero readout: the "who / stack / shipped" block, laid out like the output
    of a command — a label column and a value column, collapsing to one column
    on phones. */
@@ -565,10 +785,19 @@
   gap: 0.85rem;
   max-width: 40rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--color-ash);
   font-family: var(--font-mono);
   font-size: 0.8125rem;
   line-height: 1.55;
+}
+
+.hero-readout__rule {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  max-width: 40rem;
+  height: 1px;
+  background: var(--color-ash);
 }
 
 .hero-readout > div {
@@ -577,7 +806,7 @@
 }
 
 .hero-readout dt {
-  color: var(--color-term-blue);
+  color: var(--color-signal-deep);
 }
 
 .hero-readout dt::after {

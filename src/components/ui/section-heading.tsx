@@ -30,6 +30,7 @@ export function SectionHeading({
       )}
     >
       <p className="text-label text-smoke font-mono lowercase">
+        <span aria-hidden className="section-mark" />
         {`~/${eyebrow}`}
       </p>
       <Heading

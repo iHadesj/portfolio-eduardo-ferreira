@@ -87,8 +87,24 @@ export const pt = {
     availabilityAria: "Disponibilidade profissional",
     ribbonHintMouse: "arraste com o mouse para girar",
     ribbonHintTouch: "arraste com o dedo para girar",
-    holeHintMouse: "arraste para orbitar · segure para sugar",
-    holeHintTouch: "deslize para orbitar · segure para sugar",
+    // The black hole's microcopy: a system readout, revealed as the pointer
+    // nears it, and the hold's countdown.
+    hole: {
+      tag: "anomalia interativa",
+      detected: "horizonte de eventos detectado.",
+      how: "segure a singularidade por 3 s para colapsar o sistema.",
+      orbitMouse: "arraste para orbitar",
+      orbitTouch: "deslize para orbitar",
+      idle: "segure para colapsar",
+      holding: "horizonte de eventos",
+      collapsing: "colapso",
+      cancelled: "colapso cancelado",
+      restored: "sistema restaurado",
+      keyLabel:
+        "Efeito visual: segure Espaço ou Enter por 3 segundos para colapsar o topo da página. Solte antes para cancelar.",
+      statusCollapsing: "Colapso em andamento.",
+      statusRestored: "Sistema restaurado.",
+    },
   },
 
   about: {

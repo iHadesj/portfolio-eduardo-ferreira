@@ -16,9 +16,26 @@ import { parseRgb, useIdleStart } from "./stage-utils";
 
 /**
  * `"use client"`: the live scene needs the DOM (canvas, observers, pointer
- * input). The poster passed as `children` is a Server Component, so the
- * first frame still arrives as HTML.
+ * and key input). The poster passed as `children` is a Server Component, so
+ * the first frame still arrives as HTML.
  */
+
+/** The black hole's microcopy (dictionary `hero.hole`). */
+export interface HoleCopy {
+  tag: string;
+  detected: string;
+  how: string;
+  orbitMouse: string;
+  orbitTouch: string;
+  idle: string;
+  holding: string;
+  collapsing: string;
+  cancelled: string;
+  restored: string;
+  keyLabel: string;
+  statusCollapsing: string;
+  statusRestored: string;
+}
 
 /** The live scene inks with the poster's own layer colours. */
 function readInks(stage: HTMLElement): HoleInks {
@@ -34,6 +51,10 @@ const layoutFor = (): HoleLayout =>
 
 /** Bounded offsets: the further you push, the harder it pushes back. */
 const elastic = (x: number, limit: number) => limit * Math.tanh(x / limit);
+const smoothstep = (a: number, b: number, x: number) => {
+  const t = Math.min(1, Math.max(0, (x - a) / (b - a)));
+  return t * t * (3 - 2 * t);
+};
 
 /** Inclination: how far a drag can tilt the view — little enough that the
     disk, seen from above or below, still fits the box — and its return
@@ -47,61 +68,94 @@ const FRICTION = 1.4;
 /** A press that stays this still for this long is a hold, not a drag. */
 const HOLD_DELAY = 0.18;
 const MOVE_TOLERANCE = 6;
-/** Seconds of holding until everything is swallowed — and bursts back. */
-const HOLD_FULL = 2.8;
+/** Seconds of holding until the hero collapses (the countdown's 00:03). */
+const HOLD_FULL = 3;
+/** How long "aborted" / "restored" stay on the countdown line (s). */
+const NOTICE = 1.6;
 
 /** The disk sends out a ring of light now and then on its own. */
 const AUTO_PULSE_FROM = 5;
 const AUTO_PULSE_EVERY = 9;
 
 type Press = "none" | "pending" | "drag" | "hold";
+type Phase = "idle" | "holding" | "collapsing" | "restoring";
+
+/** The countdown at rest: whole seconds, as the readout promises. */
+const AT_REST = `00:0${HOLD_FULL}`;
+
+/** `00:02.41` — the hold's countdown, terminal style. */
+function countdown(seconds: number): string {
+  const s = Math.max(0, seconds);
+  const whole = Math.floor(s);
+  const hundredths = Math.min(99, Math.floor((s - whole) * 100));
+  return `00:${String(whole).padStart(2, "0")}.${String(hundredths).padStart(2, "0")}`;
+}
 
 /**
  * Server poster first; after the page is idle, a WebGL2 canvas takes over
  * with a crossfade and never stops moving: the disk turns, the camera
- * drifts round the hole and nods, stars twinkle and a ring of light runs
- * out through the disk now and then. On a desktop the view leans toward
- * the pointer. A drag (mouse or finger) orbits the camera — a flick keeps
- * it spinning — and, with a mouse, tilts it too, springing back. A tap
- * sends a ring of light out. Holding the hole down makes it pull: it looms
- * larger, spins faster, burns brighter, and the hero's content spirals in
- * (see gravity.ts) until it is let go — or, held long enough, everything
- * is swallowed and bursts back out in a flash. Paused off screen and in
- * background tabs, 30 fps on touch devices. On reduced motion or any
- * failure the poster stays.
+ * drifts round the hole and nods, stars twinkle, dust spirals in, and a
+ * ring of light runs out through the disk now and then. With a mouse, the
+ * view leans toward the pointer, dust near it falls in faster, and a small
+ * system readout beside the hole fades in as the pointer nears it. A drag
+ * orbits the camera (a flick keeps it spinning) and, with a mouse, tilts
+ * it, springing back; a tap sends a ring of light out.
+ *
+ * Holding the hole — pointer, or Space / Enter on the countdown button —
+ * is a small event in three acts: for three seconds the pull builds (the
+ * characters swirl in, the dust speeds up, the page leans toward it, the
+ * countdown runs down and its horizon line closes); letting go before the
+ * end aborts it; at zero the hero collapses into the hole in waves and is
+ * thrown back out (see gravity.ts). Paused off screen and in background
+ * tabs, 30 fps on touch devices. On reduced motion or any failure the
+ * poster stays, and with it none of this.
  */
 export function BlackHoleStage({
   className,
-  hintMouse,
-  hintTouch,
+  copy,
   children,
 }: {
   className?: string;
-  hintMouse: string;
-  hintTouch: string;
+  copy: HoleCopy;
   children: React.ReactNode;
 }) {
   const reduced = useReducedMotionSafe();
   const enabled = useIdleStart(reduced);
+  const holeRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const flashRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const labelRef = useRef<HTMLSpanElement>(null);
+  const timeRef = useRef<HTMLSpanElement>(null);
+  const horizonRef = useRef<HTMLSpanElement>(null);
+  const statusRef = useRef<HTMLParagraphElement>(null);
+  const copyRef = useRef(copy);
   const [live, setLive] = useState(false);
 
   useEffect(() => {
+    copyRef.current = copy;
+  }, [copy]);
+
+  useEffect(() => {
     if (!enabled) return;
+    const hole = holeRef.current;
     const stage = stageRef.current;
     const canvas = canvasRef.current;
-    if (!stage || !canvas) return;
+    const trigger = triggerRef.current;
+    if (!hole || !stage || !canvas || !trigger) return;
 
     let disposed = false;
     let cleanup = () => {};
 
     void (async () => {
-      const [{ createHoleRenderer }, { createGravity }] = await Promise.all([
-        import("./black-hole-gl"),
-        import("./gravity"),
-      ]);
+      const [{ createHoleRenderer }, { createGravity }, dustModule] =
+        await Promise.all([
+          import("./black-hole-gl"),
+          import("./gravity"),
+          import("./black-hole-dust"),
+        ]);
+      const { createDust, shadowRadius } = dustModule;
       const poster = stage.querySelector<HTMLElement>(".hole-art pre");
       if (!poster || disposed) return;
       const fontFamily = getComputedStyle(poster).fontFamily;
@@ -124,8 +178,8 @@ export function BlackHoleStage({
       }
       const root =
         stage.closest<HTMLElement>("[data-gravity-root]") ?? document.body;
-      const gravity: Gravity = createGravity(root, stage);
       const minFrame = fine ? 0 : 1000 / 30;
+      const dust = createDust(fine ? 46 : 26, fine ? 90 : 48);
 
       let inView = true;
       let visible = !document.hidden;
@@ -135,6 +189,7 @@ export function BlackHoleStage({
       let clock = 0;
       let diskTime = 0;
       let first = true;
+      let layout = layoutFor();
 
       // Camera offsets: orbit (with inertia), tilt (springs back), lean.
       let orbit = 0;
@@ -145,8 +200,12 @@ export function BlackHoleStage({
       let leanTilt = 0;
       let leanTargetOrbit = 0;
       let leanTargetTilt = 0;
+      // The pointer: how near the hole (0–1), and where, in em from it.
+      let near = 0;
+      let shownNear = -1;
+      let cursor: [number, number] | null = null;
 
-      // Press state and the pull it drives.
+      // Press state, and the event it drives.
       let press: Press = "none";
       let pressAt = 0;
       let pressX = 0;
@@ -154,9 +213,17 @@ export function BlackHoleStage({
       let lastX = 0;
       let lastY = 0;
       let lastMoveAt = 0;
+      let keyHeld = false;
+      let phase: Phase = "idle";
+      let holdFrom = 0;
+      let collapseFrom = 0;
       let pull = 0;
-      let pulling = false;
+      let surge = 0;
+      let shownPull = -1;
       let lastPulse = -NO_PULSE;
+      let notice = "";
+      let noticeUntil = 0;
+      const shown = { phase: "", label: "", time: "", horizon: "" };
 
       // Rows follow the box's real shape, so the scene can never be drawn
       // stretched — even if the CSS and this layout ever disagree.
@@ -167,7 +234,9 @@ export function BlackHoleStage({
           8,
           Math.round((cols * 0.6 * height) / (Math.max(width, 1) * 1.2)),
         );
-        renderer.resize({ cols, rows }, width, height);
+        layout = { cols, rows };
+        renderer.resize(layout, width, height);
+        dust.resize(layout);
       };
       resize();
 
@@ -182,12 +251,87 @@ export function BlackHoleStage({
         );
       };
 
-      const letGo = (burst: boolean) => {
-        if (!pulling) return;
-        pulling = false;
-        gravity.release(burst);
+      const announce = (text: string) => {
+        if (statusRef.current) statusRef.current.textContent = text;
+      };
+
+      const gravity: Gravity = createGravity(root, stage, () => {
+        // The last of the hero just crossed the horizon.
+        flash();
         pulse();
-        if (burst) flash();
+        phase = "restoring";
+      });
+
+      const beginHold = () => {
+        if (phase === "holding" || phase === "collapsing") return;
+        phase = "holding";
+        holdFrom = clock;
+        notice = "";
+      };
+
+      const endHold = () => {
+        if (phase !== "holding") return;
+        phase = "idle";
+        gravity.release();
+        pulse();
+        notice = copyRef.current.cancelled;
+        noticeUntil = clock + NOTICE;
+      };
+
+      const collapse = () => {
+        phase = "collapsing";
+        collapseFrom = clock;
+        press = "none";
+        keyHeld = false;
+        gravity.collapse();
+        announce(copyRef.current.statusCollapsing);
+      };
+
+      /** The countdown line, written straight to the DOM (no re-render). */
+      const paint = () => {
+        const text = copyRef.current;
+        let label = text.idle;
+        let time = AT_REST;
+        let horizon = 1;
+        if (phase === "holding") {
+          label = text.holding;
+          time = countdown(HOLD_FULL * (1 - pull));
+          horizon = 1 - pull;
+        } else if (phase !== "idle") {
+          label = text.collapsing;
+          time = countdown(0);
+          horizon = 0;
+        } else if (notice && clock < noticeUntil) {
+          label = notice;
+          time = "";
+        }
+        const scale = horizon.toFixed(3);
+        if (shown.phase !== phase) {
+          shown.phase = phase;
+          hole.dataset.phase = phase;
+        }
+        if (shown.label !== label && labelRef.current) {
+          shown.label = label;
+          labelRef.current.textContent = label;
+        }
+        if (shown.time !== time && timeRef.current) {
+          shown.time = time;
+          timeRef.current.textContent = time;
+          hole.dataset.timer = time ? "on" : "off";
+        }
+        if (shown.horizon !== scale && horizonRef.current) {
+          shown.horizon = scale;
+          horizonRef.current.style.transform = `scaleX(${scale})`;
+        }
+        const glow = Math.max(pull, surge);
+        if (Math.abs(glow - shownPull) > 0.004) {
+          shownPull = glow;
+          root.style.setProperty("--pull", glow.toFixed(3));
+        }
+        if (Math.abs(near - shownNear) > 0.01) {
+          shownNear = near;
+          hole.style.setProperty("--near", near.toFixed(2));
+        }
       };
 
       const loop = (now: number) => {
@@ -196,35 +340,50 @@ export function BlackHoleStage({
         last = now;
         clock += dt;
 
-        // The hold: pull grows with time; held to the end, it all bursts.
+        // The hold: pull grows with time; held to zero, the hero collapses.
         if (press === "pending" && clock - pressAt >= HOLD_DELAY) {
           press = "hold";
-          pulling = true;
+          beginHold();
         }
-        if (press === "hold") {
-          pull = Math.min(1, (clock - pressAt - HOLD_DELAY) / HOLD_FULL);
+        if (phase === "holding") {
+          pull = Math.min(1, (clock - holdFrom) / HOLD_FULL);
           // Front-loaded, so the page starts to give the moment you hold.
-          gravity.pull(Math.pow(pull, 0.8));
-          if (pull >= 1) {
-            press = "none";
-            letGo(true);
-          }
+          gravity.attract(Math.pow(pull, 0.8));
+          if (pull >= 1) collapse();
+        } else if (phase === "collapsing") {
+          pull = 1;
+          surge = smoothstep(0, 1.6, clock - collapseFrom);
         } else {
           pull = Math.max(0, pull - dt * 1.4);
+          surge = Math.max(0, surge - dt * 1.8);
         }
-        gravity.step(dt);
+        const moving = gravity.step(dt);
+        if (phase === "restoring" && !moving) {
+          phase = "idle";
+          notice = copyRef.current.restored;
+          noticeUntil = clock + NOTICE;
+          announce(copyRef.current.statusRestored);
+        }
+        paint();
 
         if (now - lastDrawn < minFrame) return;
+        // Integrate over the time since the last drawn frame: on touch,
+        // that is every other one.
+        const step = Math.min(
+          (now - (lastDrawn || now - dt * 1000)) / 1000,
+          0.05,
+        );
         lastDrawn = now;
 
-        diskTime += dt * (1 + 3.5 * pull);
+        const strength = Math.max(pull, surge);
+        diskTime += step * (1 + 3.5 * pull + 3 * surge);
         if (press !== "drag") {
-          tiltVelocity += (-SPRING * tilt - DAMPING * tiltVelocity) * dt;
-          tilt += tiltVelocity * dt;
-          orbit += orbitVelocity * dt;
-          orbitVelocity *= Math.exp(-FRICTION * dt);
+          tiltVelocity += (-SPRING * tilt - DAMPING * tiltVelocity) * step;
+          tilt += tiltVelocity * step;
+          orbit += orbitVelocity * step;
+          orbitVelocity *= Math.exp(-FRICTION * step);
         }
-        const ease = 1 - Math.exp(-dt * 4);
+        const ease = 1 - Math.exp(-step * 4);
         leanOrbit += (leanTargetOrbit - leanOrbit) * ease;
         leanTilt += (leanTargetTilt - leanTilt) * ease;
 
@@ -233,19 +392,46 @@ export function BlackHoleStage({
           clock < AUTO_PULSE_FROM
             ? NO_PULSE
             : (clock - AUTO_PULSE_FROM) % AUTO_PULSE_EVERY;
-        renderer.render({
-          ...idle,
-          azimuth: idle.azimuth + orbit + leanOrbit,
-          inclination: idle.inclination + elastic(tilt + leanTilt, TILT_LIMIT),
-          zoom: 1 - 0.15 * pull,
-          diskTime,
-          pulse: Math.min(auto, clock - lastPulse),
-          gain: 1 + 0.7 * pull,
-        });
+        const zoom = 1 - 0.15 * pull;
+        renderer.render(
+          {
+            ...idle,
+            azimuth: idle.azimuth + orbit + leanOrbit,
+            inclination:
+              idle.inclination + elastic(tilt + leanTilt, TILT_LIMIT),
+            zoom,
+            diskTime,
+            pulse: Math.min(auto, clock - lastPulse),
+            gain: 1 + 0.7 * pull + 0.8 * surge,
+          },
+          {
+            warp: 0.8 * Math.pow(pull, 1.4) + 0.5 * surge,
+            shadow: shadowRadius(layout.cols, zoom),
+            dust: dust.step(step, {
+              pull: strength,
+              near,
+              cursor,
+              zoom,
+              roll: idle.roll,
+            }),
+          },
+        );
         if (first) {
           first = false;
           setLive(true);
         }
+      };
+
+      const settle = () => {
+        // Nothing may stay half swallowed while the loop is asleep.
+        press = "none";
+        keyHeld = false;
+        phase = "idle";
+        pull = 0;
+        surge = 0;
+        notice = "";
+        gravity.reset();
+        paint();
       };
 
       const sync = () => {
@@ -256,11 +442,7 @@ export function BlackHoleStage({
         } else if (!run && frame) {
           cancelAnimationFrame(frame);
           frame = 0;
-          // Nothing may stay half swallowed while the loop is asleep.
-          press = "none";
-          pulling = false;
-          pull = 0;
-          gravity.reset();
+          settle();
         }
       };
 
@@ -323,35 +505,94 @@ export function BlackHoleStage({
       };
       const onUp = () => {
         if (press === "pending") pulse();
-        if (press === "hold") letGo(false);
+        if (press === "hold") endHold();
         if (press === "drag" && performance.now() - lastMoveAt > 120) {
           orbitVelocity = 0;
         }
         press = "none";
       };
       const onCancel = () => {
-        if (press === "hold") letGo(false);
+        if (press === "hold") endHold();
         press = "none";
       };
       const onContextMenu = (event: Event) => event.preventDefault();
-      // Desktop: lean toward the pointer anywhere on the page.
+      // Desktop: lean toward the pointer anywhere on the page, and track
+      // how near it is (the readout, the dust).
       const onHover = (event: PointerEvent) => {
         if (event.pointerType !== "mouse") return;
         const box = stage.getBoundingClientRect();
-        const nx =
-          (event.clientX - (box.left + box.width / 2)) / window.innerWidth;
-        const ny =
-          (event.clientY - (box.top + box.height / 2)) / window.innerHeight;
+        const cx = box.left + box.width / 2;
+        const cy = box.top + box.height / 2;
+        const nx = (event.clientX - cx) / window.innerWidth;
+        const ny = (event.clientY - cy) / window.innerHeight;
         leanTargetOrbit = Math.max(-1, Math.min(1, nx * 2)) * -0.3;
         leanTargetTilt = Math.max(-1, Math.min(1, ny * 2)) * 0.12;
+        const reach = Math.hypot(box.width, box.height) / 2;
+        const distance = Math.hypot(event.clientX - cx, event.clientY - cy);
+        near = 1 - smoothstep(0.3, 1.05, distance / reach);
+        const em = (layout.cols * 0.6) / Math.max(box.width, 1);
+        cursor =
+          distance < reach * 1.2
+            ? [(event.clientX - cx) * em, -(event.clientY - cy) * em]
+            : null;
       };
+      const onLeave = () => {
+        near = 0;
+        cursor = null;
+      };
+
+      // The keyboard way in: hold Space or Enter on the countdown button.
+      const isHoldKey = (event: KeyboardEvent) =>
+        event.key === " " || event.key === "Enter";
+      const onKeyDown = (event: KeyboardEvent) => {
+        if (event.key === "Escape") {
+          keyHeld = false;
+          endHold();
+          return;
+        }
+        if (!isHoldKey(event)) return;
+        event.preventDefault();
+        if (event.repeat || keyHeld) return;
+        keyHeld = true;
+        beginHold();
+      };
+      const onKeyUp = (event: KeyboardEvent) => {
+        if (!isHoldKey(event) || !keyHeld) return;
+        keyHeld = false;
+        endHold();
+      };
+      const onBlur = () => {
+        if (!keyHeld) return;
+        keyHeld = false;
+        endHold();
+      };
+      // Pressing the button itself holds at once (no drag to tell apart).
+      const onTriggerDown = (event: PointerEvent) => {
+        if (event.button !== 0) return;
+        trigger.setPointerCapture(event.pointerId);
+        press = "hold";
+        beginHold();
+      };
+      const onTriggerUp = () => {
+        if (press === "hold") endHold();
+        press = "none";
+      };
+
       stage.addEventListener("pointerdown", onDown);
       stage.addEventListener("pointermove", onMove);
       stage.addEventListener("pointerup", onUp);
       stage.addEventListener("pointercancel", onCancel);
       stage.addEventListener("contextmenu", onContextMenu);
+      trigger.addEventListener("keydown", onKeyDown);
+      trigger.addEventListener("keyup", onKeyUp);
+      trigger.addEventListener("blur", onBlur);
+      trigger.addEventListener("pointerdown", onTriggerDown);
+      trigger.addEventListener("pointerup", onTriggerUp);
+      trigger.addEventListener("pointercancel", onTriggerUp);
+      trigger.addEventListener("contextmenu", onContextMenu);
       if (fine) {
         window.addEventListener("pointermove", onHover, { passive: true });
+        document.documentElement.addEventListener("pointerleave", onLeave);
       }
 
       sync();
@@ -359,6 +600,7 @@ export function BlackHoleStage({
       cleanup = () => {
         cancelAnimationFrame(frame);
         gravity.reset();
+        root.style.removeProperty("--pull");
         io.disconnect();
         ro.disconnect();
         mo.disconnect();
@@ -369,7 +611,15 @@ export function BlackHoleStage({
         stage.removeEventListener("pointerup", onUp);
         stage.removeEventListener("pointercancel", onCancel);
         stage.removeEventListener("contextmenu", onContextMenu);
+        trigger.removeEventListener("keydown", onKeyDown);
+        trigger.removeEventListener("keyup", onKeyUp);
+        trigger.removeEventListener("blur", onBlur);
+        trigger.removeEventListener("pointerdown", onTriggerDown);
+        trigger.removeEventListener("pointerup", onTriggerUp);
+        trigger.removeEventListener("pointercancel", onTriggerUp);
+        trigger.removeEventListener("contextmenu", onContextMenu);
         window.removeEventListener("pointermove", onHover);
+        document.documentElement.removeEventListener("pointerleave", onLeave);
         renderer.dispose();
       };
       if (disposed) cleanup();
@@ -384,7 +634,14 @@ export function BlackHoleStage({
   const showCanvas = enabled && !reduced;
 
   return (
-    <div className={cn("hole flex flex-col items-center gap-3", className)}>
+    <div
+      ref={holeRef}
+      data-phase="idle"
+      className={cn(
+        "hole relative flex flex-col items-center gap-3",
+        className,
+      )}
+    >
       <div
         ref={stageRef}
         aria-hidden
@@ -412,16 +669,43 @@ export function BlackHoleStage({
         ) : null}
         <div ref={flashRef} className="hole-flash" />
       </div>
-      <p
-        aria-hidden
-        className={cn(
-          "stage-hint transition-opacity duration-500",
-          live ? "opacity-100" : "opacity-0",
-        )}
-      >
-        <span className="stage-hint__mouse">{hintMouse}</span>
-        <span className="stage-hint__touch">{hintTouch}</span>
-      </p>
+      {showCanvas ? (
+        <>
+          {/* The system readout: near-invisible until the pointer nears
+              the hole, so the curious find the mechanic and nobody else is
+              interrupted. */}
+          <div
+            aria-hidden
+            className={cn("hole-readout", live && "hole-readout--live")}
+          >
+            <p className="hole-readout__tag">{copy.tag}</p>
+            <p className="hole-readout__more">{copy.detected}</p>
+            <p className="hole-readout__more">{copy.how}</p>
+            <p className="hole-readout__orbit">
+              <span className="stage-hint__mouse">{copy.orbitMouse}</span>
+              <span className="stage-hint__touch">{copy.orbitTouch}</span>
+            </p>
+          </div>
+          <button
+            ref={triggerRef}
+            type="button"
+            aria-label={copy.keyLabel}
+            className={cn("hole-trigger", live && "hole-trigger--live")}
+          >
+            <span aria-hidden className="hole-trigger__text">
+              <span ref={labelRef}>{copy.idle}</span>
+              <span className="hole-trigger__time">
+                {" // "}
+                <span ref={timeRef}>{AT_REST}</span>
+              </span>
+            </span>
+            <span aria-hidden className="hole-trigger__horizon">
+              <span ref={horizonRef} />
+            </span>
+          </button>
+          <p ref={statusRef} aria-live="polite" className="sr-only" />
+        </>
+      ) : null}
     </div>
   );
 }

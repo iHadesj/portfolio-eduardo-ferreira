@@ -33,6 +33,7 @@ import {
   type HoleLayout,
   type HoleView,
 } from "./black-hole";
+import { DUST_GLYPHS } from "./black-hole-dust";
 import {
   FULLSCREEN_VS,
   allocateTexture,
@@ -51,8 +52,12 @@ import {
  *    single bilinear fetch at the centre of its 2×2 rays — picks the glyph
  *    from the same tone table as the poster, inks it by heat on the
  *    blackbody ramp, and adds a soft halo from the blurred light around it.
+ *    Under a hold, the cell reads its light from a point swirled round and
+ *    drawn in from further out, so the characters themselves are dragged
+ *    toward the hole. Dust (black-hole-dust.ts) fills the empty cells.
  *
- * The main-thread cost of a frame is a few uniforms and two draw calls.
+ * The main-thread cost of a frame is a few uniforms, one small texture
+ * upload (the dust) and two draw calls.
  */
 
 const f = (n: number) => (Number.isInteger(n) ? `${n}.0` : `${n}`);
@@ -193,6 +198,10 @@ const DRAW_FS = `#version 300 es
 precision highp float;
 uniform sampler2D uLights;
 uniform sampler2D uAtlas;
+uniform sampler2D uDust;
+uniform sampler2D uDustAtlas;
+uniform float uWarp;
+uniform float uShadow;
 uniform vec2 uGrid;
 uniform vec2 uResolution;
 uniform float uLut[64];
@@ -221,7 +230,17 @@ void main() {
   vec2 g = gl_FragCoord.xy / uResolution * uGrid;
   vec2 cell = floor(g);
   vec2 centre = (cell + 0.5) / uGrid;
-  vec4 rays = texture(uLights, centre);
+  // The pull: each cell shows the light from a point swirled round (as the
+  // disk turns) and further out, so the picture is dragged in — strongest
+  // near the shadow, nothing far out.
+  vec2 em = uGrid * vec2(0.6, 1.2);
+  vec2 q = (centre - 0.5) * em;
+  float near = exp(-length(q) / (uShadow * 2.6));
+  float twist = uWarp * 0.9 * near;
+  float pinch = 1.0 + uWarp * 0.35 * near;
+  vec2 from = mat2(cos(twist), sin(twist), -sin(twist), cos(twist)) * q * pinch / em + 0.5;
+  bool within = all(greaterThanEqual(from, vec2(0.0))) && all(lessThanEqual(from, vec2(1.0)));
+  vec4 rays = within ? texture(uLights, from) : vec4(0.0);
   float light = rays.r;
   // Mirrors edgeFade: nothing is ever cut by the edge of the box.
   vec2 side = min(centre, 1.0 - centre);
@@ -229,12 +248,21 @@ void main() {
     * smoothstep(0.0, ${f(EDGE_FADE_Y)}, side.y);
   float tone = pow(light, ${f(TONE_GAMMA)}) * fade;
   float index = uLut[int(floor(tone * 63.0 + 0.5))];
+  vec2 local = fract(g);
   vec4 glyph = vec4(0.0);
   if (index > 0.0) {
-    vec2 local = fract(g);
     float ink = texture(uAtlas, vec2((index + local.x) / ${f(GLYPH_COUNT)}, local.y)).a;
     vec4 color = inkFor(heatOf(rays));
     glyph = vec4(color.rgb * color.a, color.a) * ink;
+  }
+  // Dust only where the scene itself is dark, so it never muddies the disk.
+  vec4 dust = texelFetch(uDust, ivec2(cell), 0);
+  if (dust.r > 0.0 && tone < 0.22) {
+    float which = floor(dust.r * 255.0 + 0.5);
+    float ink = texture(uDustAtlas, vec2((which + local.x) / ${f(DUST_GLYPHS.length)}, local.y)).a;
+    vec4 color = inkFor(dust.b * ${f(HEAT_SCALE)});
+    vec4 speck = vec4(color.rgb * color.a, color.a) * ink * dust.g * fade;
+    glyph = speck + glyph * (1.0 - speck.a);
   }
   // Halo: the light blurred over a few cells, so the bright parts bloom.
   vec2 at = gl_FragCoord.xy / uResolution;
@@ -265,11 +293,21 @@ export interface HoleRendererOptions {
   halo: number;
 }
 
+/** What the hold adds on top of the scene itself. */
+export interface HoleEffects {
+  /** 0 = none; around 1 = the characters swirl hard into the hole. */
+  warp: number;
+  /** Shadow radius on screen, em (for the warp's reach). */
+  shadow: number;
+  /** One RGBA texel per cell (black-hole-dust.ts), or null for none. */
+  dust: Uint8Array | null;
+}
+
 export interface HoleRenderer {
   /** Match the canvas to its box; call on resize. */
   resize(layout: HoleLayout, width: number, height: number): void;
   setInks(inks: HoleInks): void;
-  render(view: HoleView): void;
+  render(view: HoleView, effects: HoleEffects): void;
   dispose(): void;
 }
 
@@ -319,6 +357,10 @@ export async function createHoleRenderer(
     resolution: gl.getUniformLocation(drawProgram, "uResolution"),
     inks: gl.getUniformLocation(drawProgram, "uInks"),
     halo: gl.getUniformLocation(drawProgram, "uHalo"),
+    dust: gl.getUniformLocation(drawProgram, "uDust"),
+    dustAtlas: gl.getUniformLocation(drawProgram, "uDustAtlas"),
+    warp: gl.getUniformLocation(drawProgram, "uWarp"),
+    shadow: gl.getUniformLocation(drawProgram, "uShadow"),
   };
 
   // The tone table never changes: upload it once.
@@ -331,6 +373,8 @@ export async function createHoleRenderer(
   const lightTexture = gl.createTexture();
   const lightTarget = gl.createFramebuffer();
   const atlasTexture = gl.createTexture();
+  const dustTexture = gl.createTexture();
+  const dustAtlasTexture = gl.createTexture();
 
   let layout: HoleLayout = { cols: 0, rows: 0 };
   let inks = options.inks;
@@ -353,6 +397,7 @@ export async function createHoleRenderer(
       0,
     );
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    allocateTexture(gl, dustTexture, layout.cols, layout.rows);
   };
 
   return {
@@ -372,13 +417,21 @@ export async function createHoleRenderer(
         canvas.width / layout.cols,
         canvas.height / layout.rows,
       );
+      uploadGlyphAtlas(
+        gl,
+        dustAtlasTexture,
+        DUST_GLYPHS,
+        options.fontFamily,
+        canvas.width / layout.cols,
+        canvas.height / layout.rows,
+      );
     },
 
     setInks(next) {
       inks = next;
     },
 
-    render(view) {
+    render(view, effects) {
       const { eye, right, up, forward } = cameraFrame(view);
       const w = layout.cols * SUB;
       const h = layout.rows * SUB;
@@ -416,6 +469,27 @@ export async function createHoleRenderer(
       gl.uniform2f(drawU.resolution, canvas.width, canvas.height);
       gl.uniform4fv(drawU.inks, new Float32Array(inks.flat()));
       gl.uniform1f(drawU.halo, options.halo);
+      gl.uniform1f(drawU.warp, effects.warp);
+      gl.uniform1f(drawU.shadow, Math.max(effects.shadow, 1));
+      gl.activeTexture(gl.TEXTURE2);
+      gl.bindTexture(gl.TEXTURE_2D, dustTexture);
+      if (effects.dust?.length === layout.cols * layout.rows * 4) {
+        gl.texSubImage2D(
+          gl.TEXTURE_2D,
+          0,
+          0,
+          0,
+          layout.cols,
+          layout.rows,
+          gl.RGBA,
+          gl.UNSIGNED_BYTE,
+          effects.dust,
+        );
+      }
+      gl.uniform1i(drawU.dust, 2);
+      gl.activeTexture(gl.TEXTURE3);
+      gl.bindTexture(gl.TEXTURE_2D, dustAtlasTexture);
+      gl.uniform1i(drawU.dustAtlas, 3);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
       gl.bindVertexArray(null);
     },
