@@ -42,6 +42,13 @@
   --color-ribbon-mid: #a9b2c2;
   --color-ribbon-far: #4a5468;
 
+  /* The black hole, inked by heat: the inner disk and the photon ring burn
+     white, the gas glows warm, faint light and stars stay cool. Follows the
+     theme through the tokens it borrows. */
+  --color-hole-hot: var(--color-flare);
+  --color-hole-warm: var(--color-term-yellow);
+  --color-hole-cool: var(--color-ribbon-far);
+
   /* Radii */
   --radius-sm: 2px;
   --radius-md: 4px;
@@ -378,350 +385,124 @@
   }
 }
 
-/* "Drag to turn", worded for the input at hand. */
-.ribbon-hint {
+/* "Drag to turn", worded for the input at hand (ribbon, black hole). */
+.stage-hint {
   color: var(--color-smoke);
   font-family: var(--font-mono);
   font-size: 0.75rem;
 }
 
-.ribbon-hint::before {
+.stage-hint::before {
   content: "[ ↔ ";
   color: var(--color-term-green);
 }
 
-.ribbon-hint::after {
+.stage-hint::after {
   content: " ]";
   color: var(--color-term-green);
 }
 
-.ribbon-hint__touch {
+.stage-hint__touch {
   display: none;
 }
 
 @media (pointer: coarse) {
-  .ribbon-hint__mouse {
+  .stage-hint__mouse {
     display: none;
   }
 
-  .ribbon-hint__touch {
+  .stage-hint__touch {
     display: inline;
   }
 }
 
-/* The hero's face (components/face). Each variant is a box shaped like its
-   frames; the dots are 1-bit PNG masks over the theme's ink, and the pixel
-   stream, the log, the scan line and the eyes are stacked layers in the
-   same proportions. Everything that moves animates opacity or transform on
-   its own small layer, so the run and the idle life after it never
-   repaint. */
-.face {
-  display: flex;
+/* The hero's black hole (components/three). Like the ribbon, the stage is
+   a size container and the poster's font size derives from its width, so
+   `cols` characters fill it exactly and the grid lines up with the canvas
+   that later replaces it. Three layers inked by heat, hot → cool; the canvas
+   reads the same colours. The whole disk always fits: on phones the stage
+   bleeds to the screen's edges; on wide screens it reaches back under the
+   copy (which stays on top and clickable — its column is z-10). */
+.hole {
   min-width: 0;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.face__art {
-  position: relative;
   width: 100%;
 }
 
-.face__variant {
-  position: relative;
+.hole-stage {
+  --hole-width: min(100vw, 36rem);
   container-type: inline-size;
-  width: 100%;
-  aspect-ratio: var(--aspect);
+  width: var(--hole-width);
+  margin-inline: calc((100% - var(--hole-width)) / 2);
+  aspect-ratio: 57.6 / 36; /* narrow: 96 × 0.6 by 30 × 1.2 */
+  -webkit-touch-callout: none;
 }
 
-.face__variant[data-variant="wide"] {
-  display: none;
-}
-
-.face__frame {
-  position: absolute;
-  inset: 0;
-  background-color: var(--color-bone);
-  -webkit-mask-size: 100% 100%;
-  mask-size: 100% 100%;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-}
-
-/* Each epoch exists only around its slot, crossfading with its neighbours. */
-.face__frame--early {
-  opacity: 0;
-  animation-name: face-pass;
-  animation-timing-function: linear;
-}
-
-.face__final {
-  position: absolute;
-  inset: 0;
-  animation: face-on 0.8s ease-out both;
-}
-
-.face__band {
-  animation: face-glitch 7.4s steps(1) infinite;
-}
-
-.face__debris {
-  position: absolute;
-  overflow: visible;
-  fill: var(--color-bone);
-}
-
-.face__log,
-.face__eyes {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-
-.face__log text {
-  fill: color-mix(in oklab, var(--color-bone) 82%, transparent);
-  font-family: var(--font-mono);
-  animation: face-on 0.35s both;
-}
-
-.face__log text.is-mark {
-  fill: var(--color-term-green);
-}
-
-/* A faint line sweeping down the portrait, like a capture rig. */
-.face__scan {
+.hole-art {
   position: absolute;
   inset: 0;
   overflow: hidden;
-  pointer-events: none;
-  /* Static, so it stays on the compositor: fades the sweep out toward the
-     empty left of the box, where the head is not. */
-  mask-image: linear-gradient(to right, transparent 25%, #000 60%);
+  font-family: var(--font-mono);
+  font-size: calc(100cqw / (var(--cols) * 0.6));
+  font-weight: 500;
+  line-height: 1.2em;
 }
 
-.face__scan::before {
-  content: "";
+.hole-art pre {
   position: absolute;
-  inset-inline: 0;
-  top: 0;
-  height: 7%;
-  background: linear-gradient(
-    to bottom,
-    transparent,
-    color-mix(in oklab, var(--color-term-green) 3%, transparent) 75%,
-    color-mix(in oklab, var(--color-term-green) 12%, transparent) 97%,
+  inset: 0;
+  margin: 0;
+  font: inherit;
+  font-kerning: none;
+  font-variant-ligatures: none;
+  letter-spacing: 0;
+  white-space: pre;
+}
+
+.hole-art pre[data-ink="hot"] {
+  color: var(--color-hole-hot);
+  text-shadow: 0 0 0.6em
+    color-mix(in oklab, var(--color-hole-hot) 50%, transparent);
+}
+
+.hole-art pre[data-ink="warm"] {
+  color: var(--color-hole-warm);
+}
+
+.hole-art pre[data-ink="cool"] {
+  color: var(--color-hole-cool);
+}
+
+.hole-art[data-layout="wide"] {
+  display: none;
+}
+
+/* Released after a full hold: the light of everything it swallowed. */
+.hole-flash {
+  position: absolute;
+  inset: -15%;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in oklab, var(--color-hole-hot) 75%, transparent),
+    color-mix(in oklab, var(--color-hole-warm) 18%, transparent) 55%,
     transparent
   );
-  transform: translateY(-100%);
-  animation: face-scan 5.5s linear 0.3s infinite;
-}
-
-/* The eye lights up when training is done, then breathes. A dark outline
-   keeps it apart from the lit face around it. The glow is a static filter;
-   only the layer's opacity animates. */
-.face__eyes {
-  fill: var(--color-flare);
-  stroke: var(--color-abyss);
-  stroke-width: 4;
-  stroke-linejoin: round;
-  paint-order: stroke;
-  filter: drop-shadow(0 0 1.5px var(--color-flare));
-  animation:
-    face-ignite 0.9s ease-out var(--done) both,
-    face-breathe 3.4s ease-in-out calc(var(--done) + 0.9s) infinite;
-}
-
-/* `$ ./psycho --train [█████████] done` under the portrait. */
-.face__caption {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  color: var(--color-smoke);
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-}
-
-.face__prompt {
-  color: var(--color-term-green);
-}
-
-.face__bar {
-  display: inline-block;
-  width: 5.5rem;
-  height: 0.55rem;
-  padding: 1px;
-  border: 1px solid var(--color-ash);
-}
-
-.face__bar > span {
-  display: block;
-  height: 100%;
-  background: var(--color-term-green);
-  transform-origin: left;
-  animation: face-progress var(--train) steps(9, end) var(--start) both;
-}
-
-.face__status {
-  color: var(--color-term-green);
-  animation: face-on 0.3s var(--done) both;
-}
-
-@keyframes face-pass {
-  0% {
-    opacity: 0;
-  }
-  22%,
-  62% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-
-@keyframes face-on {
-  from {
-    opacity: 0;
-  }
-}
-
-@keyframes face-glitch {
-  0%,
-  90% {
-    transform: none;
-  }
-  91% {
-    transform: translateX(-2.6%);
-  }
-  93% {
-    transform: translateX(1.6%);
-  }
-  95% {
-    transform: translateX(-0.9%);
-  }
-  96%,
-  100% {
-    transform: none;
-  }
-}
-
-@keyframes face-twinkle {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  40% {
-    opacity: 0.35;
-  }
-  70% {
-    opacity: 0.85;
-  }
-}
-
-/* Drift left about eight cells and fade, then snap back in from the right. */
-@keyframes face-flow {
-  0% {
-    transform: none;
-    opacity: 1;
-  }
-  82% {
-    transform: translateX(calc(-7.7 * 100cqw / var(--cols)));
-    opacity: 0;
-  }
-  83% {
-    transform: translateX(calc(2.3 * 100cqw / var(--cols)));
-    opacity: 0;
-  }
-  100% {
-    transform: none;
-    opacity: 1;
-  }
-}
-
-@keyframes face-scan {
-  0% {
-    transform: translateY(-100%);
-  }
-  70%,
-  100% {
-    transform: translateY(1450%);
-  }
-}
-
-@keyframes face-ignite {
-  0% {
-    opacity: 0;
-  }
-  30% {
-    opacity: 1;
-  }
-  45% {
-    opacity: 0.2;
-  }
-  60%,
-  100% {
-    opacity: 1;
-  }
-}
-
-@keyframes face-breathe {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.6;
-  }
-}
-
-@keyframes face-progress {
-  from {
-    transform: scaleX(0);
-  }
-  to {
-    transform: scaleX(1);
-  }
-}
-
-/* Phones: full width, capped so the copy still starts on the first screen. */
-@media (max-width: 63.999rem) {
-  .face {
-    align-items: center;
-  }
-
-  .face__variant {
-    max-width: 24rem;
-    margin-inline: auto;
-  }
 }
 
 @media (min-width: 64rem) {
-  .face__variant[data-variant="wide"] {
+  .hole-stage {
+    --hole-width: 116%;
+    margin-inline: -16% 0;
+    aspect-ratio: 90 / 50.4; /* wide: 150 × 0.6 by 42 × 1.2 */
+  }
+
+  .hole-art[data-layout="wide"] {
     display: block;
   }
 
-  .face__variant[data-variant="narrow"] {
+  .hole-art[data-layout="narrow"] {
     display: none;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .face__frame--early,
-  .face__scan {
-    display: none;
-  }
-
-  .face__final,
-  .face__band,
-  .face__debris,
-  .face__log text,
-  .face__eyes,
-  .face__status,
-  .face__bar > span {
-    animation: none;
   }
 }
 

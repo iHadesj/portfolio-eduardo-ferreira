@@ -74,6 +74,8 @@ export const en = {
     availabilityAria: "Professional availability",
     ribbonHintMouse: "drag with your mouse to turn it",
     ribbonHintTouch: "drag with your finger to turn it",
+    holeHintMouse: "drag to orbit · hold to pull it all in",
+    holeHintTouch: "swipe to orbit · hold to pull it all in",
   },
 
   about: {

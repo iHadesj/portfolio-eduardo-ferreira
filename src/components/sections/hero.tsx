@@ -2,7 +2,8 @@ import { buttonVariants } from "@/components/ui/button";
 import { SmoothLink } from "@/components/ui/smooth-link";
 import { TransitionLink } from "@/components/ui/transition-link";
 import { AvailabilityPill } from "@/components/ui/availability-pill";
-import { AsciiFace } from "@/components/face/ascii-face";
+import { BlackHoleStage } from "@/components/three/black-hole-stage";
+import { BlackHolePoster } from "@/components/three/black-hole-poster";
 import { RibbonStage } from "@/components/three/ribbon-stage";
 import { RibbonPoster } from "@/components/three/ribbon-poster";
 import { siteConfig } from "@/lib/site-config";
@@ -42,21 +43,45 @@ const socials = [
   { label: "email", href: siteConfig.links.email, external: false },
 ];
 
+/** The name, one letter per box, so the black hole can pull them apart. */
+function NameLetters({ name }: { name: string }) {
+  return name.split(" ").map((word, w) => (
+    <span key={word}>
+      {w > 0 ? " " : null}
+      {[...word].map((letter, i) => (
+        <span key={i} data-pull data-pull-decode className="inline-block">
+          {letter}
+        </span>
+      ))}
+    </span>
+  ));
+}
+
 /**
  * The first screen is a terminal readout, not a poster: who, what stack, what
  * shipped — everything a recruiter scans for — fits above the fold at
  * 1366×768 and 390×844, rendered on the server with no JS in the way. The
- * sculpture sits beside it and loads after idle.
+ * black hole sits beside it and goes live after idle; held down, it pulls
+ * the pieces marked `data-pull` into it (see three/gravity.ts).
  */
 export function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
   const { availability } = siteConfig;
   const t = dict.hero;
 
   return (
-    <ScrollSection id="hero" className="relative isolate" flowStrength={18}>
+    <ScrollSection
+      id="hero"
+      data-gravity-root
+      className="relative isolate"
+      flowStrength={18}
+    >
       <div className="container-hades relative grid grid-cols-1 items-center gap-4 pt-18 sm:gap-6 sm:pt-24 lg:min-h-[calc(100dvh-7rem)] lg:grid-cols-12 lg:gap-8">
         <div className="relative z-10 flex min-w-0 flex-col gap-5 lg:col-span-6">
-          <p className="text-smoke font-mono text-sm">
+          <p
+            data-pull
+            data-pull-decode
+            className="text-smoke font-mono text-sm"
+          >
             <span aria-hidden>
               <span className="text-term-green">hades@grajau</span>:
               <span className="text-term-blue">~</span>${" "}
@@ -65,46 +90,68 @@ export function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
           </p>
 
           <div className="flex flex-col gap-3">
-            <h1 className="font-display text-hero text-bone whitespace-nowrap">
-              Edu Ferreira
-              <span aria-hidden className="hero-caret">
+            <h1
+              aria-label="Edu Ferreira"
+              className="font-display text-hero text-bone whitespace-nowrap"
+            >
+              <NameLetters name="Edu Ferreira" />
+              <span aria-hidden data-pull className="hero-caret inline-block">
                 _
               </span>
             </h1>
-            <p className="text-bone/90 font-body sm:text-lead max-w-[44ch] text-base">
+            <p
+              data-pull
+              className="text-bone/90 font-body sm:text-lead max-w-[44ch] text-base"
+            >
               {t.role}
             </p>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-              <AvailabilityPill
-                open={availability.open}
-                label={
-                  availability.open ? t.availabilityOpen : t.availabilityClosed
-                }
-                ariaLabel={t.availabilityAria}
-              />
-              <span className="text-smoke font-mono text-xs">{t.location}</span>
+              <span data-pull className="inline-flex">
+                <AvailabilityPill
+                  open={availability.open}
+                  label={
+                    availability.open
+                      ? t.availabilityOpen
+                      : t.availabilityClosed
+                  }
+                  ariaLabel={t.availabilityAria}
+                />
+              </span>
+              <span
+                data-pull
+                data-pull-decode
+                className="text-smoke font-mono text-xs"
+              >
+                {t.location}
+              </span>
             </div>
           </div>
 
           <dl className="hero-readout">
             <div>
-              <dt>{t.stackLabel}</dt>
+              <dt data-pull data-pull-decode>
+                {t.stackLabel}
+              </dt>
               <dd>
                 <ul className="hero-readout__stack">
                   {STACK.map((name) => (
-                    <li key={name}>{name}</li>
+                    <li key={name} data-pull data-pull-decode>
+                      {name}
+                    </li>
                   ))}
                 </ul>
               </dd>
             </div>
             <div>
-              <dt>{t.deliveriesLabel}</dt>
+              <dt data-pull data-pull-decode>
+                {t.deliveriesLabel}
+              </dt>
               <dd>
                 <ul className="hero-readout__deliveries">
                   {t.deliveries.map((item) => {
                     const href = deliveryHref(item.id, locale);
                     return (
-                      <li key={item.id}>
+                      <li key={item.id} data-pull data-pull-decode>
                         {href.startsWith("#") ? (
                           <SmoothLink href={href}>{item.name}</SmoothLink>
                         ) : (
@@ -123,12 +170,16 @@ export function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
 
           <div className="flex flex-wrap items-center gap-3">
             <SmoothLink
+              data-pull
+              data-pull-decode
               href="#projetos"
               className={buttonVariants({ variant: "primary", size: "md" })}
             >
               {`> ${t.ctaProjects}`}
             </SmoothLink>
             <a
+              data-pull
+              data-pull-decode
               href={siteConfig.cvUrl}
               download={siteConfig.cvFileName}
               type="application/pdf"
@@ -139,7 +190,7 @@ export function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
             </a>
             <ul className="text-smoke flex items-center gap-3 font-mono text-xs sm:ml-2">
               {socials.map(({ label, href, external }) => (
-                <li key={label}>
+                <li key={label} data-pull data-pull-decode>
                   <a
                     href={href}
                     target={external ? "_blank" : undefined}
@@ -154,8 +205,14 @@ export function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
           </div>
         </div>
 
-        {/* Phones: the face crowns the copy. Wide screens: beside it. */}
-        <AsciiFace className="-order-1 lg:order-none lg:col-span-6" />
+        {/* Phones: the black hole crowns the copy. Wide screens: beside it. */}
+        <BlackHoleStage
+          className="-order-1 lg:order-none lg:col-span-6"
+          hintMouse={t.holeHintMouse}
+          hintTouch={t.holeHintTouch}
+        >
+          <BlackHolePoster />
+        </BlackHoleStage>
       </div>
 
       {/* The ∞ ribbon gets the full width right under the fold line, so on a

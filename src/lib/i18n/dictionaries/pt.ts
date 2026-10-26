@@ -87,6 +87,8 @@ export const pt = {
     availabilityAria: "Disponibilidade profissional",
     ribbonHintMouse: "arraste com o mouse para girar",
     ribbonHintTouch: "arraste com o dedo para girar",
+    holeHintMouse: "arraste para orbitar · segure para sugar",
+    holeHintTouch: "deslize para orbitar · segure para sugar",
   },
 
   about: {

@@ -19,6 +19,15 @@ import {
   type AsciiLayout,
   type Pose,
 } from "./ascii-ribbon";
+import {
+  FULLSCREEN_VS,
+  allocateTexture,
+  compile,
+  uploadGlyphAtlas,
+  type Rgba,
+} from "./gl-utils";
+
+export type { Rgba };
 
 /**
  * Live ASCII renderer, raw WebGL2. Three passes per frame, all tiny except
@@ -78,12 +87,6 @@ void main() {
   float lum = min(0.3 + 0.62 * lambert + 0.55 * spec + 0.35 * rim, 1.15);
   float near = clamp((uCamera + 1.0 + vView.z) / 2.0, 0.0, 1.0);
   outColor = vec4(lum / ${LUM_SCALE.toFixed(2)}, near, 0.0, 1.0);
-}`;
-
-const FULLSCREEN_VS = `#version 300 es
-void main() {
-  vec2 p = vec2(float((gl_VertexID << 1) & 2), float(gl_VertexID & 2));
-  gl_Position = vec4(p * 2.0 - 1.0, 0.0, 1.0);
 }`;
 
 const GLYPH_COUNT = GLYPH_SHAPES.length;
@@ -171,31 +174,6 @@ void main() {
     : mix(uFar, uMid, near * 2.0);
   outColor = vec4(color.rgb * color.a, color.a) * ink;
 }`;
-
-function compile(
-  gl: WebGL2RenderingContext,
-  vs: string,
-  fs: string,
-): WebGLProgram {
-  const program = gl.createProgram();
-  for (const [type, source] of [
-    [gl.VERTEX_SHADER, vs],
-    [gl.FRAGMENT_SHADER, fs],
-  ] as const) {
-    const shader = gl.createShader(type);
-    if (!shader) throw new Error("shader");
-    gl.shaderSource(shader, source);
-    gl.compileShader(shader);
-    gl.attachShader(program, shader);
-  }
-  gl.linkProgram(program);
-  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    throw new Error(gl.getProgramInfoLog(program) ?? "link");
-  }
-  return program;
-}
-
-export type Rgba = [number, number, number, number];
 
 /** Ink by depth: near strands bright, far strands sink into the page. */
 export interface RibbonInks {
@@ -303,24 +281,8 @@ export function createAsciiRenderer(
   let aspect = 1;
   let inks = options.inks;
 
-  const allocate = (texture: WebGLTexture, w: number, h: number) => {
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texImage2D(
-      gl.TEXTURE_2D,
-      0,
-      gl.RGBA8,
-      w,
-      h,
-      0,
-      gl.RGBA,
-      gl.UNSIGNED_BYTE,
-      null,
-    );
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-  };
+  const allocate = (texture: WebGLTexture, w: number, h: number) =>
+    allocateTexture(gl, texture, w, h);
 
   const buildTargets = () => {
     const sw = layout.cols * SUB_X;
@@ -354,31 +316,15 @@ export function createAsciiRenderer(
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
   };
 
-  const buildAtlas = (cellWidth: number, cellHeight: number) => {
-    const cw = Math.max(1, Math.ceil(cellWidth));
-    const ch = Math.max(1, Math.ceil(cellHeight));
-    const atlas = document.createElement("canvas");
-    atlas.width = cw * GLYPHS.length;
-    atlas.height = ch;
-    const ctx = atlas.getContext("2d");
-    if (!ctx) return;
-    // Advance is 0.6em in Geist Mono, so the cell width fixes the font size.
-    ctx.font = `500 ${cw / 0.6}px ${options.fontFamily}`;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillStyle = "#fff";
-    for (let i = 0; i < GLYPHS.length; i += 1) {
-      ctx.fillText(GLYPHS[i]!, i * cw + cw / 2, ch / 2);
-    }
-    gl.bindTexture(gl.TEXTURE_2D, atlasTexture);
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, atlas);
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-  };
+  const buildAtlas = (cellWidth: number, cellHeight: number) =>
+    uploadGlyphAtlas(
+      gl,
+      atlasTexture,
+      GLYPHS,
+      options.fontFamily,
+      cellWidth,
+      cellHeight,
+    );
 
   return {
     resize(nextLayout, width, height) {

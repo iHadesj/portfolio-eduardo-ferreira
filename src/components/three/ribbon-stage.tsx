@@ -10,32 +10,14 @@ import {
   idlePose,
   type AsciiLayout,
 } from "./ascii-ribbon";
-import type { RibbonInks, Rgba } from "./ascii-gl";
+import type { RibbonInks } from "./ascii-gl";
+import { parseRgb, useIdleStart } from "./stage-utils";
 
 /**
  * `"use client"`: the live scene needs the DOM (canvas, observers, pointer
  * input). The poster passed as `children` is a Server Component, so the
  * first frame still arrives as HTML.
  */
-
-/** Never spend the user's data against their wishes. */
-function allowedToRun(): boolean {
-  const nav = navigator as Navigator & {
-    connection?: { saveData?: boolean; effectiveType?: string };
-  };
-  if (nav.connection?.saveData === true) return false;
-  return !/(^|-)2g$/.test(nav.connection?.effectiveType ?? "");
-}
-
-function parseRgb(value: string): Rgba {
-  const parts = value.match(/[\d.]+/g)?.map(Number) ?? [];
-  return [
-    (parts[0] ?? 255) / 255,
-    (parts[1] ?? 255) / 255,
-    (parts[2] ?? 255) / 255,
-    parts[3] ?? 1,
-  ];
-}
 
 /** The live scene inks depth with the poster's own layer colours. */
 function readInks(stage: HTMLElement): RibbonInks {
@@ -79,41 +61,8 @@ export function RibbonStage({
   const reduced = useReducedMotionSafe();
   const stageRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [enabled, setEnabled] = useState(false);
+  const enabled = useIdleStart(reduced);
   const [live, setLive] = useState(false);
-
-  // Start after idle, and only once the reader has stopped scrolling — the
-  // shader compile must never land on the first paint or a scroll.
-  useEffect(() => {
-    if (reduced || !allowedToRun()) return;
-    const win = window as Window & {
-      requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number;
-      cancelIdleCallback?: (handle: number) => void;
-    };
-    let idle = 0;
-    let timer = 0;
-    const start = () => setEnabled(true);
-    const schedule = () => {
-      if (win.cancelIdleCallback && idle) win.cancelIdleCallback(idle);
-      window.clearTimeout(timer);
-      if (win.requestIdleCallback) {
-        idle = win.requestIdleCallback(start, { timeout: 2500 });
-      } else {
-        timer = window.setTimeout(start, 1200);
-      }
-    };
-    const onScroll = () => {
-      window.clearTimeout(timer);
-      timer = window.setTimeout(schedule, 260);
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    schedule();
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      if (win.cancelIdleCallback && idle) win.cancelIdleCallback(idle);
-      window.clearTimeout(timer);
-    };
-  }, [reduced]);
 
   useEffect(() => {
     if (!enabled) return;
@@ -331,12 +280,12 @@ export function RibbonStage({
       <p
         aria-hidden
         className={cn(
-          "ribbon-hint transition-opacity duration-500",
+          "stage-hint transition-opacity duration-500",
           live ? "opacity-100" : "opacity-0",
         )}
       >
-        <span className="ribbon-hint__mouse">{hintMouse}</span>
-        <span className="ribbon-hint__touch">{hintTouch}</span>
+        <span className="stage-hint__mouse">{hintMouse}</span>
+        <span className="stage-hint__touch">{hintTouch}</span>
       </p>
     </div>
   );
