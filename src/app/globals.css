@@ -420,27 +420,22 @@
    a size container and the poster's font size derives from its width, so
    `cols` characters fill it exactly and the grid lines up with the canvas
    that later replaces it. Three layers inked by heat, hot → cool; the canvas
-   reads the same colours. Phones: capped so the copy still starts on the
-   first screen. */
+   reads the same colours. The whole disk always fits: on phones the stage
+   bleeds to the screen's edges; on wide screens it grows past its column —
+   into the page margin on the right as far as there is room, the rest back
+   under the copy (which stays on top and clickable: its column is z-10). */
 .hole {
   min-width: 0;
   width: 100%;
 }
 
 .hole-stage {
+  --hole-width: min(100vw, 36rem);
   container-type: inline-size;
-  max-width: 24rem;
-  margin-inline: auto;
-  aspect-ratio: 57.6 / 43.2; /* narrow: 96 × 0.6 by 36 × 1.2 */
+  width: var(--hole-width);
+  margin-inline: calc((100% - var(--hole-width)) / 2);
+  aspect-ratio: 66 / 44.4; /* narrow: 110 × 0.6 by 37 × 1.2 */
   -webkit-touch-callout: none;
-  /* The disk runs off the frame: let it fade out rather than be cut. */
-  mask-image: linear-gradient(
-    to right,
-    transparent,
-    #000 9%,
-    #000 91%,
-    transparent
-  );
 }
 
 .hole-art {
@@ -498,8 +493,18 @@
 
 @media (min-width: 64rem) {
   .hole-stage {
-    max-width: none;
-    aspect-ratio: 79.2 / 68.4; /* wide: 132 × 0.6 by 57 × 1.2 */
+    /* 31.8% wider than the column (174 / 132 cells at the column's scale);
+       up to half of that goes right, into the gutter beside the container
+       (72rem max, padded), the rest reaches left. */
+    --hole-reach: 31.8%;
+    --hole-right: min(
+      15.9%,
+      max(0px, (100vw - 72rem) / 2) + clamp(1.25rem, 4vw, 2.5rem) - 1.5rem
+    );
+    width: calc(100% + var(--hole-reach));
+    margin-inline: calc(var(--hole-right) - var(--hole-reach))
+      calc(-1 * var(--hole-right));
+    aspect-ratio: 104.4 / 68.4; /* wide: 174 × 0.6 by 57 × 1.2 */
   }
 
   .hole-art[data-layout="wide"] {

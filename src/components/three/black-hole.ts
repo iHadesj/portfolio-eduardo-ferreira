@@ -27,10 +27,11 @@ export interface HoleLayout {
   rows: number;
 }
 
-/** Character grids, one per breakpoint: dense enough to read as an image. */
+/** Character grids, one per breakpoint: dense enough to read as an image,
+    and wide enough that the whole disk fits, out to its faded rim. */
 export const HOLE_LAYOUTS = {
-  wide: { cols: 132, rows: 57 },
-  narrow: { cols: 96, rows: 36 },
+  wide: { cols: 174, rows: 57 },
+  narrow: { cols: 110, rows: 37 },
 } as const satisfies Record<string, HoleLayout>;
 
 export type HoleLayoutName = keyof typeof HOLE_LAYOUTS;
@@ -48,7 +49,7 @@ export const DISK_INNER = 2.6;
 export const DISK_OUTER = 11;
 export const CAMERA_DISTANCE = 24;
 /** tan of half the horizontal field of view: the whole disk fits across. */
-export const TAN_HALF_FOV = 0.38;
+export const TAN_HALF_FOV = 0.5;
 
 /** Integration: steps grow with distance from the hole. */
 export const MAX_STEPS = 200;

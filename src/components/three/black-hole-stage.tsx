@@ -156,9 +156,16 @@ export function BlackHoleStage({
       let pulling = false;
       let lastPulse = -NO_PULSE;
 
+      // Rows follow the box's real shape, so the scene can never be drawn
+      // stretched — even if the CSS and this layout ever disagree.
       const resize = () => {
         const { width, height } = stage.getBoundingClientRect();
-        renderer.resize(layoutFor(), width, height);
+        const { cols } = layoutFor();
+        const rows = Math.max(
+          8,
+          Math.round((cols * 0.6 * height) / (Math.max(width, 1) * 1.2)),
+        );
+        renderer.resize({ cols, rows }, width, height);
       };
       resize();
 
@@ -380,7 +387,7 @@ export function BlackHoleStage({
         ref={stageRef}
         aria-hidden
         className={cn(
-          "hole-stage relative w-full select-none",
+          "hole-stage relative select-none",
           showCanvas && "cursor-grab touch-pan-y active:cursor-grabbing",
         )}
       >
