@@ -22,6 +22,7 @@ import { navItems, siteConfig } from "@/lib/site-config";
 import { useSmoothScroll } from "@/hooks/use-smooth-scroll";
 import { downloadFile } from "@/lib/utils";
 import { useToast } from "@/components/ui/toast";
+import { discover } from "@/lib/anomalies";
 import { useI18n } from "@/lib/i18n/locale-provider";
 import { defaultLocale, type Locale } from "@/lib/i18n/config";
 import { sectionPath, switchLocalePath } from "@/lib/i18n/routes";
@@ -78,6 +79,10 @@ function CommandMenu() {
   const { locale, dict } = useI18n();
   const [search, setSearch] = useState("");
   const showSecret = search.toLowerCase().includes("hades");
+
+  useEffect(() => {
+    if (showSecret) discover("secret");
+  }, [showSecret]);
 
   const t = dict.commandMenu;
   const target: Locale = locale === defaultLocale ? "en" : defaultLocale;

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useReducedMotionSafe } from "@/hooks/use-reduced-motion-safe";
 import { cn } from "@/lib/utils";
+import { discover } from "@/lib/anomalies";
 import {
   HEAT_INKS,
   HOLE_LAYOUTS,
@@ -285,6 +286,7 @@ export function BlackHoleStage({
         keyHeld = false;
         gravity.collapse();
         announce(copyRef.current.statusCollapsing);
+        discover("collapse");
       };
 
       /** The countdown line, written straight to the DOM (no re-render). */
@@ -490,6 +492,7 @@ export function BlackHoleStage({
         if (press === "pending") {
           if (moved < MOVE_TOLERANCE) return;
           press = "drag";
+          discover("orbit");
         }
         const now = performance.now();
         const dx = event.clientX - lastX;

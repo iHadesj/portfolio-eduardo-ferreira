@@ -329,6 +329,32 @@ export const en = {
     cta: "Back to the surface",
   },
 
+  boot: {
+    title: "hades-os v2.6 · boot",
+    lines: [
+      "mounting ~/projects",
+      "loading stack: react · next.js · java · spring",
+      "opening the delivery log",
+      "calibrating the event horizon",
+      "7 uncatalogued anomalies",
+    ],
+    ready: "system ready. welcome.",
+    skip: "any key to skip",
+  },
+
+  anomalies: {
+    found: "// anomaly {count}/{total} — {name}",
+    names: {
+      collapse: "system collapse",
+      orbit: "manual orbit",
+      ribbon: "infinite loop",
+      underworld: "the underworld",
+      secret: "the secret name",
+      terminal: "shell opened",
+      sudo: "root privileges",
+    },
+  },
+
   easterEggs: {
     consoleHint: "// hunting for easter eggs? say hi: {email}  ·  ↑↑↓↓←→←→ B A",
     tabTitle: "👁 the underworld awaits…",

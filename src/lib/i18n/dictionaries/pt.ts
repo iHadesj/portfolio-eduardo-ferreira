@@ -346,6 +346,35 @@ export const pt = {
     cta: "Voltar à superfície",
   },
 
+  // The first visit's terminal boot (layout/boot-sequence.tsx). Each line
+  // is "status · text"; the last one is the system coming up.
+  boot: {
+    title: "hades-os v2.6 · boot",
+    lines: [
+      "montando ~/projetos",
+      "carregando stack: react · next.js · java · spring",
+      "abrindo o histórico de entregas",
+      "calibrando o horizonte de eventos",
+      "7 anomalias não catalogadas",
+    ],
+    ready: "sistema pronto. bem-vindo.",
+    skip: "qualquer tecla para pular",
+  },
+
+  // Hidden interactions to find (lib/anomalies.ts).
+  anomalies: {
+    found: "// anomalia {count}/{total} — {name}",
+    names: {
+      collapse: "colapso do sistema",
+      orbit: "órbita manual",
+      ribbon: "laço infinito",
+      underworld: "o submundo",
+      secret: "o nome secreto",
+      terminal: "shell aberto",
+      sudo: "privilégios de root",
+    },
+  },
+
   easterEggs: {
     consoleHint:
       "// procurando easter eggs? manda um oi: {email}  ·  ↑↑↓↓←→←→ B A",

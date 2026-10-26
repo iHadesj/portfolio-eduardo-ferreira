@@ -2,7 +2,8 @@ import { fontVariables } from "@/lib/fonts";
 import { Providers } from "@/components/providers";
 import { SiteChrome } from "@/components/layout/site-chrome";
 import { htmlLang, type Locale } from "@/lib/i18n/config";
-import { getClientDictionary } from "@/lib/i18n/dictionaries";
+import { BootSequence } from "@/components/layout/boot-sequence";
+import { getClientDictionary, getDictionary } from "@/lib/i18n/dictionaries";
 import { LocaleProvider } from "@/lib/i18n/locale-provider";
 
 /**
@@ -27,6 +28,7 @@ export function RootDocument({
       className={fontVariables}
     >
       <body className="bg-abyss font-body text-bone min-h-dvh antialiased">
+        <BootSequence copy={getDictionary(locale).boot} />
         <LocaleProvider locale={locale} dict={getClientDictionary(locale)}>
           <Providers>
             <SiteChrome>{children}</SiteChrome>

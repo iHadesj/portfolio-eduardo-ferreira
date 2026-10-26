@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useReducedMotionSafe } from "@/hooks/use-reduced-motion-safe";
 import { cn } from "@/lib/utils";
+import { discover } from "@/lib/anomalies";
 import {
   LAYOUTS,
   TURN_LIMIT,
@@ -108,6 +109,8 @@ export function RibbonStage({
       let velYaw = 0;
       let velPitch = 0;
       let dragging = false;
+      // Pixels dragged in all: a real spin is an anomaly found.
+      let travel = 0;
       let pointerX = 0;
       let pointerY = 0;
       let leanYaw = 0;
@@ -199,6 +202,8 @@ export function RibbonStage({
         pointerX = event.clientX;
         pointerY = event.clientY;
         dragYaw += dx * 0.009;
+        travel += Math.abs(dx);
+        if (travel > 600) discover("ribbon");
         // Touch keeps vertical swipes for scrolling the page.
         if (event.pointerType !== "touch") dragPitch += dy * 0.007;
       };
