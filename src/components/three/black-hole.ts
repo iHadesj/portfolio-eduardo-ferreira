@@ -28,10 +28,11 @@ export interface HoleLayout {
 }
 
 /** Character grids, one per breakpoint: dense enough to read as an image,
-    and wide enough that the whole disk fits, out to its faded rim. */
+    and wide enough that the whole disk fits with room to spare — it grows
+    when the hole is held and stretches when it is tilted. */
 export const HOLE_LAYOUTS = {
-  wide: { cols: 174, rows: 57 },
-  narrow: { cols: 110, rows: 37 },
+  wide: { cols: 195, rows: 57 },
+  narrow: { cols: 120, rows: 40 },
 } as const satisfies Record<string, HoleLayout>;
 
 export type HoleLayoutName = keyof typeof HOLE_LAYOUTS;
@@ -49,7 +50,7 @@ export const DISK_INNER = 2.6;
 export const DISK_OUTER = 11;
 export const CAMERA_DISTANCE = 24;
 /** tan of half the horizontal field of view: the whole disk fits across. */
-export const TAN_HALF_FOV = 0.5;
+export const TAN_HALF_FOV = 0.56;
 
 /** Integration: steps grow with distance from the hole. */
 export const MAX_STEPS = 200;
@@ -450,6 +451,21 @@ export function inkLayer(tone: number): 0 | 1 | 2 {
   return 2;
 }
 
+/* ── Frame ───────────────────────────────────────────────────────────────── */
+
+/** Share of the frame, from each side, over which the scene fades out, so
+    nothing is ever cut by the edge of its box. */
+export const EDGE_FADE_X = 0.07;
+export const EDGE_FADE_Y = 0.1;
+
+/** Tone multiplier for a cell centred at `(u, v)` (0–1 across the frame). */
+export function edgeFade(u: number, v: number): number {
+  return (
+    smoothstep(0, EDGE_FADE_X, Math.min(u, 1 - u)) *
+    smoothstep(0, EDGE_FADE_Y, Math.min(v, 1 - v))
+  );
+}
+
 /* ── Poster ──────────────────────────────────────────────────────────────── */
 
 /** Every ray of one frame, top row first: `cols·SUB × rows·SUB` lights. */
@@ -494,7 +510,9 @@ export function rasterizeHole(layout: HoleLayout, view: HoleView): string[] {
           sum += lights[(r * SUB + dy) * w + c * SUB + dx] ?? 0;
         }
       }
-      const tone = toneOf(sum / (SUB * SUB));
+      const tone =
+        toneOf(sum / (SUB * SUB)) *
+        edgeFade((c + 0.5) / layout.cols, (r + 0.5) / layout.rows);
       const glyph = GLYPHS[TONE_LUT[Math.round(tone * 63)] ?? 0] ?? " ";
       if (glyph === " ") continue;
       const row = layers[inkLayer(tone)]?.[r];

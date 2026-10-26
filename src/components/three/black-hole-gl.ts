@@ -2,6 +2,8 @@ import {
   BEAMING,
   DISK_INNER,
   DISK_OUTER,
+  EDGE_FADE_X,
+  EDGE_FADE_Y,
   ESCAPE_RADIUS,
   EXPOSURE,
   FALLOFF,
@@ -200,8 +202,13 @@ vec4 inkFor(float tone) {
 void main() {
   vec2 g = gl_FragCoord.xy / uResolution * uGrid;
   vec2 cell = floor(g);
-  float light = texture(uLights, (cell + 0.5) / uGrid).r;
-  float tone = pow(light, ${f(TONE_GAMMA)});
+  vec2 centre = (cell + 0.5) / uGrid;
+  float light = texture(uLights, centre).r;
+  // Mirrors edgeFade: nothing is ever cut by the edge of the box.
+  vec2 side = min(centre, 1.0 - centre);
+  float fade = smoothstep(0.0, ${f(EDGE_FADE_X)}, side.x)
+    * smoothstep(0.0, ${f(EDGE_FADE_Y)}, side.y);
+  float tone = pow(light, ${f(TONE_GAMMA)}) * fade;
   float index = uLut[int(floor(tone * 63.0 + 0.5))];
   vec4 glyph = vec4(0.0);
   if (index > 0.0) {
@@ -222,7 +229,7 @@ void main() {
     blur += inside ? texture(uLights, p).r : 0.0;
   }
   blur /= 8.0;
-  float halo = blur * blur * blur * uHalo;
+  float halo = blur * blur * blur * uHalo * fade;
   vec4 bloom = vec4(uHot.rgb * uHot.a, uHot.a) * halo;
   outColor = glyph + bloom * (1.0 - glyph.a);
 }`;

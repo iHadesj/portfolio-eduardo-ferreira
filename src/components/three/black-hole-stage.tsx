@@ -35,8 +35,10 @@ const layoutFor = (): HoleLayout =>
 /** Bounded offsets: the further you push, the harder it pushes back. */
 const elastic = (x: number, limit: number) => limit * Math.tanh(x / limit);
 
-/** Inclination: how far a drag can tilt the view, and its return spring. */
-const TILT_LIMIT = 0.7;
+/** Inclination: how far a drag can tilt the view — little enough that the
+    disk, seen from above or below, still fits the box — and its return
+    spring. */
+const TILT_LIMIT = 0.35;
 const SPRING = 60;
 const DAMPING = 2 * Math.sqrt(SPRING) * 0.75;
 /** Orbit: a flick keeps the camera going, slowed by this friction (1/s). */
@@ -235,7 +237,7 @@ export function BlackHoleStage({
           ...idle,
           azimuth: idle.azimuth + orbit + leanOrbit,
           inclination: idle.inclination + elastic(tilt + leanTilt, TILT_LIMIT),
-          zoom: 1 - 0.24 * pull,
+          zoom: 1 - 0.15 * pull,
           diskTime,
           pulse: Math.min(auto, clock - lastPulse),
           gain: 1 + 0.7 * pull,
