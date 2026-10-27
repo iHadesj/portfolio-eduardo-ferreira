@@ -98,12 +98,19 @@ export const pt = {
       idle: "segure para colapsar",
       holding: "horizonte de eventos",
       collapsing: "colapso",
+      rebooting: "reiniciando o sistema",
       cancelled: "colapso cancelado",
       restored: "sistema restaurado",
       keyLabel:
         "Efeito visual: segure Espaço ou Enter por 3 segundos para colapsar o topo da página. Solte antes para cancelar.",
       statusCollapsing: "Colapso em andamento.",
       statusRestored: "Sistema restaurado.",
+      // The kernel log the hero reboots from; "source:" leads each line.
+      console: {
+        absorbed: "singularidade: {count} objetos absorvidos",
+        stable: "horizonte de eventos: estável",
+        restoring: "reconstruindo ~/hero a partir do log",
+      },
     },
   },
 

@@ -12,7 +12,9 @@ import {
   type HoleLayout,
 } from "./black-hole";
 import type { HoleInks } from "./black-hole-gl";
+import type { CollapseFx } from "./collapse-fx";
 import type { Gravity } from "./gravity";
+import type { RebootCopy } from "./reboot";
 import { parseRgb, useIdleStart } from "./stage-utils";
 
 /**
@@ -31,11 +33,14 @@ export interface HoleCopy {
   idle: string;
   holding: string;
   collapsing: string;
+  rebooting: string;
   cancelled: string;
   restored: string;
   keyLabel: string;
   statusCollapsing: string;
   statusRestored: string;
+  /** The kernel log the hero reboots from. */
+  console: RebootCopy;
 }
 
 /** The live scene inks with the poster's own layer colours. */
@@ -73,13 +78,24 @@ const MOVE_TOLERANCE = 6;
 const HOLD_FULL = 3;
 /** How long "aborted" / "restored" stay on the countdown line (s). */
 const NOTICE = 1.6;
+/** The last stretch of the hold, when the countdown turns red (s). */
+const CRITICAL = 1;
+/** The screen around the hole: how dark it gets while held, while the hero
+    falls in, and in the dark beat after (0–1). */
+const DIM_HOLD = 0.45;
+const DIM_COLLAPSE = 0.78;
+const DIM_VOID = 0.9;
+/** The shake: the hold's last stretch, the collapse, the impact (px). */
+const SHAKE_HOLD = 1.4;
+const SHAKE_COLLAPSE = 3.5;
+const SHAKE_IMPACT = 11;
 
 /** The disk sends out a ring of light now and then on its own. */
 const AUTO_PULSE_FROM = 5;
 const AUTO_PULSE_EVERY = 9;
 
 type Press = "none" | "pending" | "drag" | "hold";
-type Phase = "idle" | "holding" | "collapsing" | "restoring";
+type Phase = "idle" | "holding" | "collapsing" | "rebooting";
 
 /** The countdown at rest: whole seconds, as the readout promises. */
 const AT_REST = `00:0${HOLD_FULL}`;
@@ -103,13 +119,18 @@ function countdown(seconds: number): string {
  * it, springing back; a tap sends a ring of light out.
  *
  * Holding the hole — pointer, or Space / Enter on the countdown button —
- * is a small event in three acts: for three seconds the pull builds (the
- * characters swirl in, the dust speeds up, the page leans toward it, the
- * countdown runs down and its horizon line closes); letting go before the
- * end aborts it; at zero the hero collapses into the hole in waves and is
- * thrown back out (see gravity.ts). Paused off screen and in background
- * tabs, 30 fps on touch devices. On reduced motion or any failure the
- * poster stays, and with it none of this.
+ * is a small event. For three seconds the pull builds: the characters
+ * swirl in, the dust speeds up, the page leans toward the hole and, in the
+ * last stretch, trembles and glitches while the screen darkens around it
+ * and the countdown turns red. Letting go before the end aborts it. At zero
+ * the hero is torn apart in waves, its text streaming into the hole as
+ * loose characters; the hole flares as it eats, and when the last piece is
+ * in it flashes, a shockwave crosses the screen and everything shakes.
+ * After a dark beat the hero reboots like a terminal (see gravity.ts,
+ * debris.ts, reboot.ts, collapse-fx.ts); a tap or a key prints the rest at
+ * once. Paused off screen and in background tabs, 30 fps on touch devices.
+ * On reduced motion or any failure the poster stays, and with it none of
+ * this.
  */
 export function BlackHoleStage({
   className,
@@ -150,12 +171,10 @@ export function BlackHoleStage({
     let cleanup = () => {};
 
     void (async () => {
-      const [{ createHoleRenderer }, { createGravity }, dustModule] =
-        await Promise.all([
-          import("./black-hole-gl"),
-          import("./gravity"),
-          import("./black-hole-dust"),
-        ]);
+      const [{ createHoleRenderer }, dustModule] = await Promise.all([
+        import("./black-hole-gl"),
+        import("./black-hole-dust"),
+      ]);
       const { createDust, shadowRadius } = dustModule;
       const poster = stage.querySelector<HTMLElement>(".hole-art pre");
       if (!poster || disposed) return;
@@ -179,6 +198,8 @@ export function BlackHoleStage({
       }
       const root =
         stage.closest<HTMLElement>("[data-gravity-root]") ?? document.body;
+      // The name warms as the pull builds; only it reads --pull.
+      const name = root.querySelector<HTMLElement>(".hero-name");
       const minFrame = fine ? 0 : 1000 / 30;
       const dust = createDust(fine ? 46 : 26, fine ? 90 : 48);
 
@@ -217,9 +238,13 @@ export function BlackHoleStage({
       let keyHeld = false;
       let phase: Phase = "idle";
       let holdFrom = 0;
-      let collapseFrom = 0;
       let pull = 0;
       let surge = 0;
+      // The collapse's aftershocks: the impact's flare and quake, and how
+      // dark the screen is.
+      let flare = 0;
+      let quake = 0;
+      let dim = 0;
       let shownPull = -1;
       let lastPulse = -NO_PULSE;
       let notice = "";
@@ -256,15 +281,51 @@ export function BlackHoleStage({
         if (statusRef.current) statusRef.current.textContent = text;
       };
 
-      const gravity: Gravity = createGravity(root, stage, () => {
-        // The last of the hero just crossed the horizon.
-        flash();
-        pulse();
-        phase = "restoring";
-      });
+      // The collapse's machinery (gravity.ts and what it drives) is only
+      // fetched once someone comes near or reaches for the hole: most
+      // visitors never hold it, and the scene starts lighter without it.
+      let gravity: Gravity | null = null;
+      let fx: CollapseFx | null = null;
+      let arming: Promise<void> | null = null;
+      const arm = () => {
+        arming ??= Promise.all([
+          import("./gravity"),
+          import("./collapse-fx"),
+        ]).then(([{ createGravity }, { createCollapseFx }]) => {
+          if (disposed) return;
+          const screen = createCollapseFx(root, stage);
+          fx = screen;
+          gravity = createGravity(
+            root,
+            stage,
+            {
+              onSwallowed: () => {
+                // The last of the hero just crossed the horizon.
+                flash();
+                pulse();
+                screen.shock();
+                flare = 1;
+                quake = SHAKE_IMPACT;
+              },
+              onReboot: () => {
+                phase = "rebooting";
+              },
+              onRestored: () => {
+                phase = "idle";
+                notice = copyRef.current.restored;
+                noticeUntil = clock + NOTICE;
+                announce(copyRef.current.statusRestored);
+              },
+            },
+            () => copyRef.current.console,
+            minFrame,
+          );
+        });
+      };
 
       const beginHold = () => {
-        if (phase === "holding" || phase === "collapsing") return;
+        if (phase !== "idle") return;
+        arm();
         phase = "holding";
         holdFrom = clock;
         notice = "";
@@ -273,7 +334,7 @@ export function BlackHoleStage({
       const endHold = () => {
         if (phase !== "holding") return;
         phase = "idle";
-        gravity.release();
+        gravity?.release();
         pulse();
         notice = copyRef.current.cancelled;
         noticeUntil = clock + NOTICE;
@@ -281,10 +342,9 @@ export function BlackHoleStage({
 
       const collapse = () => {
         phase = "collapsing";
-        collapseFrom = clock;
         press = "none";
         keyHeld = false;
-        gravity.collapse();
+        gravity?.collapse();
         announce(copyRef.current.statusCollapsing);
         discover("collapse");
       };
@@ -299,9 +359,13 @@ export function BlackHoleStage({
           label = text.holding;
           time = countdown(HOLD_FULL * (1 - pull));
           horizon = 1 - pull;
-        } else if (phase !== "idle") {
+        } else if (phase === "collapsing") {
           label = text.collapsing;
           time = countdown(0);
+          horizon = 0;
+        } else if (phase === "rebooting") {
+          label = text.rebooting;
+          time = "";
           horizon = 0;
         } else if (notice && clock < noticeUntil) {
           label = notice;
@@ -311,6 +375,12 @@ export function BlackHoleStage({
         if (shown.phase !== phase) {
           shown.phase = phase;
           hole.dataset.phase = phase;
+        }
+        const critical =
+          phase === "holding" && HOLD_FULL * (1 - pull) < CRITICAL;
+        if (critical !== (hole.dataset.critical === "on")) {
+          hole.dataset.critical = critical ? "on" : "off";
+          root.dataset.holeCritical = critical ? "on" : "off";
         }
         if (shown.label !== label && labelRef.current) {
           shown.label = label;
@@ -326,9 +396,9 @@ export function BlackHoleStage({
           horizonRef.current.style.transform = `scaleX(${scale})`;
         }
         const glow = Math.max(pull, surge);
-        if (Math.abs(glow - shownPull) > 0.004) {
+        if (Math.abs(glow - shownPull) > 0.01 || (!glow && shownPull)) {
           shownPull = glow;
-          root.style.setProperty("--pull", glow.toFixed(3));
+          name?.style.setProperty("--pull", glow.toFixed(2));
         }
         if (Math.abs(near - shownNear) > 0.01) {
           shownNear = near;
@@ -347,38 +417,57 @@ export function BlackHoleStage({
           press = "hold";
           beginHold();
         }
-        if (phase === "holding") {
-          pull = Math.min(1, (clock - holdFrom) / HOLD_FULL);
-          // Front-loaded, so the page starts to give the moment you hold.
-          gravity.attract(Math.pow(pull, 0.8));
-          if (pull >= 1) collapse();
-        } else if (phase === "collapsing") {
-          pull = 1;
-          surge = smoothstep(0, 1.6, clock - collapseFrom);
-        } else {
-          pull = Math.max(0, pull - dt * 1.4);
-          surge = Math.max(0, surge - dt * 1.8);
-        }
-        const moving = gravity.step(dt);
-        if (phase === "restoring" && !moving) {
-          phase = "idle";
-          notice = copyRef.current.restored;
-          noticeUntil = clock + NOTICE;
-          announce(copyRef.current.statusRestored);
-        }
-        paint();
-
+        // Everything below — the page's DOM included — runs at the scene's
+        // pace (on touch devices, every other frame), integrating over the
+        // time since the last drawn frame.
         if (now - lastDrawn < minFrame) return;
-        // Integrate over the time since the last drawn frame: on touch,
-        // that is every other one.
         const step = Math.min(
           (now - (lastDrawn || now - dt * 1000)) / 1000,
           0.05,
         );
         lastDrawn = now;
 
+        if (phase === "holding") {
+          pull = Math.min(1, (clock - holdFrom) / HOLD_FULL);
+          // Front-loaded, so the page starts to give the moment you hold.
+          gravity?.attract(Math.pow(pull, 0.8));
+          // Should the machinery still be on its way, zero waits for it.
+          if (pull >= 1) {
+            if (gravity) collapse();
+            else pull = 0.999;
+          }
+        } else if (phase === "collapsing") {
+          pull = 1;
+        } else {
+          pull = Math.max(0, pull - step * 1.4);
+        }
+        const { absorbed } = gravity?.step(step) ?? { absorbed: 0 };
+        // The hole burns brighter the more it has eaten.
+        surge =
+          phase === "collapsing"
+            ? Math.max(surge, absorbed)
+            : Math.max(0, surge - step * 1.2);
+        flare *= Math.exp(-step * 2.6);
+        quake *= Math.exp(-step * 5.5);
+
+        // The screen: darker and shakier as it builds, black for a beat
+        // after the impact, then the light comes back as it reboots.
+        let dimTarget = 0;
+        let shake = 0;
+        if (phase === "holding") {
+          dimTarget = DIM_HOLD * pull * pull;
+          shake = SHAKE_HOLD * smoothstep(0.5, 1, pull);
+        } else if (phase === "collapsing") {
+          dimTarget = flare > 0.01 ? DIM_VOID : DIM_COLLAPSE;
+          shake = SHAKE_HOLD + (SHAKE_COLLAPSE - SHAKE_HOLD) * absorbed;
+        }
+        const rate = dimTarget > dim ? 9 : 3.2;
+        dim += (dimTarget - dim) * (1 - Math.exp(-step * rate));
+        fx?.frame(dim, Math.max(shake, quake));
+        paint();
+
         const strength = Math.max(pull, surge);
-        diskTime += step * (1 + 3.5 * pull + 3 * surge);
+        diskTime += step * (1 + 3.5 * pull + 3 * surge + 4 * flare);
         if (press !== "drag") {
           tiltVelocity += (-SPRING * tilt - DAMPING * tiltVelocity) * step;
           tilt += tiltVelocity * step;
@@ -404,10 +493,10 @@ export function BlackHoleStage({
             zoom,
             diskTime,
             pulse: Math.min(auto, clock - lastPulse),
-            gain: 1 + 0.7 * pull + 0.8 * surge,
+            gain: 1 + 0.7 * pull + 0.9 * surge + 1.6 * flare,
           },
           {
-            warp: 0.8 * Math.pow(pull, 1.4) + 0.5 * surge,
+            warp: 0.8 * Math.pow(pull, 1.4) + 0.6 * surge,
             shadow: shadowRadius(layout.cols, zoom),
             dust: dust.step(step, {
               pull: strength,
@@ -431,8 +520,12 @@ export function BlackHoleStage({
         phase = "idle";
         pull = 0;
         surge = 0;
+        flare = 0;
+        quake = 0;
+        dim = 0;
         notice = "";
-        gravity.reset();
+        gravity?.reset();
+        fx?.dispose();
         paint();
       };
 
@@ -474,6 +567,9 @@ export function BlackHoleStage({
 
       const onDown = (event: PointerEvent) => {
         if (event.button !== 0) return;
+        // Mid-reboot, a tap is "any key": print the rest now.
+        if (phase === "rebooting") gravity?.skip();
+        arm();
         press = "pending";
         pressAt = clock;
         pressX = lastX = event.clientX;
@@ -533,6 +629,7 @@ export function BlackHoleStage({
         const reach = Math.hypot(box.width, box.height) / 2;
         const distance = Math.hypot(event.clientX - cx, event.clientY - cy);
         near = 1 - smoothstep(0.3, 1.05, distance / reach);
+        if (near > 0.5) arm();
         const em = (layout.cols * 0.6) / Math.max(box.width, 1);
         cursor =
           distance < reach * 1.2
@@ -548,6 +645,10 @@ export function BlackHoleStage({
       const isHoldKey = (event: KeyboardEvent) =>
         event.key === " " || event.key === "Enter";
       const onKeyDown = (event: KeyboardEvent) => {
+        if (phase === "rebooting") {
+          gravity?.skip();
+          return;
+        }
         if (event.key === "Escape") {
           keyHeld = false;
           endHold();
@@ -572,6 +673,7 @@ export function BlackHoleStage({
       // Pressing the button itself holds at once (no drag to tell apart).
       const onTriggerDown = (event: PointerEvent) => {
         if (event.button !== 0) return;
+        arm();
         trigger.setPointerCapture(event.pointerId);
         press = "hold";
         beginHold();
@@ -602,8 +704,9 @@ export function BlackHoleStage({
 
       cleanup = () => {
         cancelAnimationFrame(frame);
-        gravity.reset();
-        root.style.removeProperty("--pull");
+        gravity?.reset();
+        fx?.dispose();
+        name?.style.removeProperty("--pull");
         io.disconnect();
         ro.disconnect();
         mo.disconnect();

@@ -83,12 +83,18 @@ export const en = {
       idle: "hold to collapse",
       holding: "event horizon",
       collapsing: "collapse",
+      rebooting: "rebooting the system",
       cancelled: "collapse aborted",
       restored: "system restored",
       keyLabel:
         "Visual effect: hold Space or Enter for 3 seconds to collapse the top of the page. Let go early to cancel.",
       statusCollapsing: "Collapse in progress.",
       statusRestored: "System restored.",
+      console: {
+        absorbed: "singularity: {count} objects absorbed",
+        stable: "event horizon: stable",
+        restoring: "rebuilding ~/hero from the log",
+      },
     },
   },
 

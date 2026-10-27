@@ -65,7 +65,11 @@ function NameLetters({ name }: { name: string }) {
  * black hole sits beside it and goes live after idle; held down, it pulls
  * the pieces marked `data-pull` into it (see three/gravity.ts) in waves:
  * metadata first (bare `data-pull`), then the content (`"2"`), the name
- * last (`"3"`).
+ * last (`"3"`). Text is torn into characters; `data-pull-box` pieces fall
+ * in whole. Then the hero reboots like a terminal: a log prints in the
+ * column marked `data-gravity-console`, and `whoami` is typed into the
+ * prompt (`data-pull-command`, its `data-pull-instant` part shown at once)
+ * before the rest prints back as its output.
  */
 export function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
   const { availability } = siteConfig;
@@ -79,13 +83,17 @@ export function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
       flowStrength={18}
     >
       <div className="container-hades relative grid grid-cols-1 items-center gap-4 pt-18 sm:gap-6 sm:pt-24 lg:min-h-[calc(100dvh-7rem)] lg:grid-cols-12 lg:gap-8">
-        <div className="relative z-10 flex min-w-0 flex-col gap-5 lg:col-span-6">
+        <div
+          data-gravity-console
+          className="relative z-10 flex min-w-0 flex-col gap-5 lg:col-span-6"
+        >
           <p
             data-pull
             data-pull-decode
+            data-pull-command
             className="text-smoke font-mono text-sm"
           >
-            <span aria-hidden>
+            <span aria-hidden data-pull-instant>
               <span className="text-term-green">hades@grajau</span>:
               <span className="text-term-blue">~</span>${" "}
             </span>
@@ -113,7 +121,7 @@ export function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
               {t.role}
             </p>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-              <span data-pull className="inline-flex">
+              <span data-pull data-pull-box className="inline-flex">
                 <AvailabilityPill
                   open={availability.open}
                   label={
@@ -136,7 +144,12 @@ export function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
 
           <div className="relative">
             {/* The rule is its own piece, so the collapse takes it too. */}
-            <span aria-hidden data-pull className="hero-readout__rule" />
+            <span
+              aria-hidden
+              data-pull
+              data-pull-box
+              className="hero-readout__rule"
+            />
             <dl className="hero-readout">
               <div>
                 <dt data-pull data-pull-decode>
@@ -182,6 +195,7 @@ export function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
           <div className="flex flex-wrap items-center gap-3">
             <SmoothLink
               data-pull="2"
+              data-pull-box
               data-pull-decode
               href="#projetos"
               className={buttonVariants({ variant: "primary", size: "md" })}
@@ -190,6 +204,7 @@ export function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
             </SmoothLink>
             <a
               data-pull="2"
+              data-pull-box
               data-pull-decode
               href={siteConfig.cvUrl}
               download={siteConfig.cvFileName}

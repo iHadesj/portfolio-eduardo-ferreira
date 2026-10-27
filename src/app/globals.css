@@ -107,6 +107,7 @@
   --z-palette: 60;
   --z-toast: 80;
   --z-boot: 90;
+  --z-debris: 45;
 
   /* Ambient backdrop — the fixed texture field painted behind every page.
      Themes override these values rather than the rules that consume them. */
@@ -747,6 +748,138 @@ html[data-theme="light"] .hole-stage::before {
   transition: none;
 }
 
+/* The last second of the hold: the countdown goes red and blinks. */
+.hole[data-critical="on"] .hole-trigger__time {
+  color: var(--color-term-red);
+  animation: caret-blink 0.36s steps(1) infinite;
+}
+
+.hole[data-critical="on"] .hole-trigger__horizon > span {
+  background: var(--color-term-red);
+}
+
+/* ...and the hero's text breaks up like a failing signal: its colour
+   channels split and jitter. */
+[data-gravity-root][data-hole-critical="on"] [data-pull] {
+  animation: hole-split 0.16s steps(2) infinite;
+}
+
+@keyframes hole-split {
+  0% {
+    text-shadow:
+      0.07em 0 color-mix(in oklab, var(--color-term-red) 60%, transparent),
+      -0.07em 0 color-mix(in oklab, var(--color-term-blue) 60%, transparent);
+  }
+
+  50% {
+    text-shadow:
+      -0.05em 0.03em color-mix(in oklab, var(--color-term-red) 60%, transparent),
+      0.06em -0.02em
+        color-mix(in oklab, var(--color-term-blue) 60%, transparent);
+  }
+
+  100% {
+    text-shadow:
+      0.04em -0.03em color-mix(in oklab, var(--color-term-red) 60%, transparent),
+      -0.04em 0.02em
+        color-mix(in oklab, var(--color-term-blue) 60%, transparent);
+  }
+}
+
+/* The collapse's overlays (three/collapse-fx.ts, debris.ts, reboot.ts),
+   all on <body>, all inert. The veil darkens the page from the edges in,
+   clear around the hole (--hx/--hy); the debris canvas carries the torn
+   text; the shockwave is one ring thrown across the screen at impact; the
+   block cursor rides the hero while it prints back. */
+.hole-veil {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-debris);
+  pointer-events: none;
+  will-change: opacity;
+  background: radial-gradient(
+    circle at var(--hx, 50%) var(--hy, 50%),
+    transparent 0,
+    transparent 14vmax,
+    color-mix(in oklab, var(--color-void) 70%, transparent) 34vmax,
+    color-mix(in oklab, var(--color-void) 96%, transparent) 75vmax
+  );
+}
+
+.hole-debris {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-debris);
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.hole-shock {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: var(--z-debris);
+  width: 120vmax;
+  height: 120vmax;
+  margin: -60vmax 0 0 -60vmax;
+  border-radius: 50%;
+  pointer-events: none;
+  box-shadow:
+    0 0 0 3px color-mix(in oklab, var(--color-hole-white) 85%, transparent),
+    0 0 3vmax 0.6vmax
+      color-mix(in oklab, var(--color-hole-flame) 55%, transparent),
+    inset 0 0 4vmax 0.4vmax
+      color-mix(in oklab, var(--color-hole-flame) 30%, transparent);
+  will-change: transform, opacity;
+}
+
+.hole-type-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: var(--z-debris);
+  pointer-events: none;
+  background: var(--color-term-green);
+  box-shadow: 0 0 0.6em
+    color-mix(in oklab, var(--color-term-green) 55%, transparent);
+}
+
+.hole-type-cursor[data-idle] {
+  animation: caret-blink 0.7s steps(1) infinite;
+}
+
+/* The kernel log the hero reboots from, printed where the hero was. */
+.hole-console {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  pointer-events: none;
+  color: var(--color-smoke);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  line-height: 1.75;
+  white-space: pre-wrap;
+}
+
+@media (max-width: 40rem) {
+  .hole-console {
+    font-size: 0.6875rem;
+  }
+}
+
+.hole-console__time {
+  color: var(--color-signal-deep);
+}
+
+.hole-console__source {
+  color: var(--color-hole-flame);
+}
+
+.hole-console__ok {
+  color: var(--color-term-green);
+}
+
 @media (pointer: coarse) {
   .hole-readout--live {
     opacity: 0.6;
@@ -758,7 +891,7 @@ html[data-theme="light"] .hole-stage::before {
 }
 
 /* The name warms toward the hole's colour as the pull builds (--pull,
-   0–1, written on the hero by the stage while it holds). */
+   0–1, written on it by the stage while it holds). */
 .hero-name {
   text-shadow: 0 0 calc(var(--pull, 0) * 0.45em)
     color-mix(
