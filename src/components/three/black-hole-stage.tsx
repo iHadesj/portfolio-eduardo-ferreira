@@ -10,6 +10,7 @@ import {
   NO_PULSE,
   idleView,
   type HoleLayout,
+  type HoleLayoutName,
 } from "./black-hole";
 import type { HoleInks } from "./black-hole-gl";
 import type { CollapseFx } from "./collapse-fx";
@@ -52,8 +53,9 @@ function readInks(stage: HTMLElement): HoleInks {
 }
 
 const WIDE = "(min-width: 64rem)";
-const layoutFor = (): HoleLayout =>
-  window.matchMedia(WIDE).matches ? HOLE_LAYOUTS.wide : HOLE_LAYOUTS.narrow;
+const framingFor = (): HoleLayoutName =>
+  window.matchMedia(WIDE).matches ? "wide" : "narrow";
+const layoutFor = (): HoleLayout => HOLE_LAYOUTS[framingFor()];
 
 /** Bounded offsets: the further you push, the harder it pushes back. */
 const elastic = (x: number, limit: number) => limit * Math.tanh(x / limit);
@@ -89,6 +91,11 @@ const DIM_VOID = 0.9;
 const SHAKE_HOLD = 1.4;
 const SHAKE_COLLAPSE = 3.5;
 const SHAKE_IMPACT = 11;
+/** The hole's weight on top of 1: what a full hold adds, what eating the
+    whole hero adds, and the impact's spike. Its horizon grows in step. */
+const MASS_HOLD = 0.6;
+const MASS_FEED = 0.35;
+const MASS_FLARE = 0.2;
 
 /** The disk sends out a ring of light now and then on its own. */
 const AUTO_PULSE_FROM = 5;
@@ -119,10 +126,12 @@ function countdown(seconds: number): string {
  * it, springing back; a tap sends a ring of light out.
  *
  * Holding the hole — pointer, or Space / Enter on the countdown button —
- * is a small event. For three seconds the pull builds: the characters
- * swirl in, the dust speeds up, the page leans toward the hole and, in the
- * last stretch, trembles and glitches while the screen darkens around it
- * and the countdown turns red. Letting go before the end aborts it. At zero
+ * is a small event. For three seconds the pull builds, and nothing bends:
+ * the hole grows heavier (its shadow widens and eats the inner disk, the
+ * gas spins faster and burns brighter), rings of dust fall in at a quicker
+ * and quicker pulse, the page leans toward the hole and, in the last
+ * stretch, trembles and glitches while the screen darkens around it and
+ * the countdown turns red. Letting go before the end aborts it. At zero
  * the hero is torn apart in waves, its text streaming into the hole as
  * loose characters; the hole flares as it eats, and when the last piece is
  * in it flashes, a shockwave crosses the screen and everything shakes.
@@ -175,7 +184,7 @@ export function BlackHoleStage({
         import("./black-hole-gl"),
         import("./black-hole-dust"),
       ]);
-      const { createDust, shadowRadius } = dustModule;
+      const { createDust } = dustModule;
       const poster = stage.querySelector<HTMLElement>(".hole-art pre");
       if (!poster || disposed) return;
       const fontFamily = getComputedStyle(poster).fontFamily;
@@ -212,6 +221,7 @@ export function BlackHoleStage({
       let diskTime = 0;
       let first = true;
       let layout = layoutFor();
+      let framing = framingFor();
 
       // Camera offsets: orbit (with inertia), tilt (springs back), lean.
       let orbit = 0;
@@ -261,6 +271,7 @@ export function BlackHoleStage({
           Math.round((cols * 0.6 * height) / (Math.max(width, 1) * 1.2)),
         );
         layout = { cols, rows };
+        framing = framingFor();
         renderer.resize(layout, width, height);
         dust.resize(layout);
       };
@@ -478,32 +489,40 @@ export function BlackHoleStage({
         leanOrbit += (leanTargetOrbit - leanOrbit) * ease;
         leanTilt += (leanTargetTilt - leanTilt) * ease;
 
-        const idle = idleView(clock);
+        const idle = idleView(clock, framing);
         const auto =
           clock < AUTO_PULSE_FROM
             ? NO_PULSE
             : (clock - AUTO_PULSE_FROM) % AUTO_PULSE_EVERY;
-        const zoom = 1 - 0.15 * pull;
+        // Gravity rising, without bending anything: the hole grows heavier
+        // as the hold builds and as it eats — a wider shadow, light bent
+        // harder, the inner disk swallowed and the rest spun faster — then
+        // lets the weight go as it settles. The framing never moves, so the
+        // whole disk stays on screen.
+        const mass =
+          1 +
+          MASS_HOLD * Math.pow(pull, 1.4) +
+          MASS_FEED * surge +
+          MASS_FLARE * flare;
         renderer.render(
           {
             ...idle,
             azimuth: idle.azimuth + orbit + leanOrbit,
             inclination:
               idle.inclination + elastic(tilt + leanTilt, TILT_LIMIT),
-            zoom,
             diskTime,
             pulse: Math.min(auto, clock - lastPulse),
             gain: 1 + 0.7 * pull + 0.9 * surge + 1.6 * flare,
+            mass,
           },
           {
-            warp: 0.8 * Math.pow(pull, 1.4) + 0.6 * surge,
-            shadow: shadowRadius(layout.cols, zoom),
             dust: dust.step(step, {
               pull: strength,
               near,
               cursor,
-              zoom,
+              zoom: 1,
               roll: idle.roll,
+              mass,
             }),
           },
         );

@@ -1075,9 +1075,11 @@ html[data-theme="light"] .hole-stage::before {
   color: var(--color-term-green);
 }
 
+/* Touch has no pointer to come near with, so the readout would just sit on
+   the art; the countdown line under it says what to do. */
 @media (pointer: coarse) {
-  .hole-readout--live {
-    opacity: 0.6;
+  .hole-readout {
+    display: none;
   }
 
   .hole-trigger--live {

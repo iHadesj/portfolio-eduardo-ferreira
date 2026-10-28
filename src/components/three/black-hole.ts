@@ -104,23 +104,51 @@ export interface HoleView {
   pulse: number;
   /** Light multiplier. */
   gain: number;
+  /**
+   * The hole's mass, as its horizon radius (1 at rest). Heavier, its shadow
+   * and photon ring grow, light bends harder, the disk's inner edge is
+   * swallowed and the gas orbits faster: gravity rising, told by the physics
+   * rather than by bending the picture.
+   */
+  mass: number;
+  /** Starlight multiplier: fainter where a dense grid would turn every
+      star into a speck of punctuation. */
+  stars: number;
 }
 
 export const REST_INCLINATION = 0.15;
 export const REST_ROLL = 0.11;
 export const NO_PULSE = 1e3;
 
+/**
+ * Framing per layout. On a phone the hole is an emblem over the name: it
+ * sits level, and its stars stay faint — at that density a bright star
+ * reads as a stray `!` or `;`, noise rather than sky.
+ */
+export const HOLE_FRAMING: Record<
+  HoleLayoutName,
+  { roll: number; stars: number }
+> = {
+  wide: { roll: REST_ROLL, stars: 1 },
+  narrow: { roll: 0, stars: 0.4 },
+};
+
 /** The scene on its own: a slow orbit, a gentle nod, the disk turning. */
-export function idleView(time: number): HoleView {
+export function idleView(
+  time: number,
+  layout: HoleLayoutName = "wide",
+): HoleView {
   return {
     azimuth: 0.035 * time,
     inclination: REST_INCLINATION + 0.035 * Math.sin(0.23 * time),
-    roll: REST_ROLL,
+    roll: HOLE_FRAMING[layout].roll,
     zoom: 1,
     diskTime: time,
     time,
     pulse: NO_PULSE,
     gain: 1,
+    mass: 1,
+    stars: HOLE_FRAMING[layout].stars,
   };
 }
 
@@ -251,7 +279,8 @@ export const FALLOFF = 1.25;
  * with the ray travelling along `(vx, vy, vz)` (from the camera). Heat is
  * the observed temperature, ~0.25 (red rim) to ~1.2 (blue-white): the
  * thin-disk profile T ∝ r^-3/4, times the Doppler factor and the
- * gravitational redshift.
+ * gravitational redshift. A heavier hole (`mass` > 1) moves the inner edge
+ * out — the innermost gas is gone — and spins the rest faster.
  */
 export function diskAt(
   x: number,
@@ -261,11 +290,13 @@ export function diskAt(
   vz: number,
   diskTime: number,
   pulse: number,
+  mass = 1,
 ): [number, number, number] {
   const r = Math.hypot(x, z);
-  if (r < DISK_INNER || r > DISK_OUTER) return [0, 0, 0];
+  const inner = DISK_INNER * mass;
+  if (r < inner || r > DISK_OUTER) return [0, 0, 0];
   const phi = Math.atan2(z, x);
-  const omega = SPIN / (r * Math.sqrt(r));
+  const omega = (SPIN * Math.sqrt(mass)) / (r * Math.sqrt(r));
 
   // Turbulence in the gas's own frame: a cylinder of noise (seamless round
   // the hole), stretched along the orbit so it reads as streaks.
@@ -284,21 +315,21 @@ export function diskAt(
       );
   }
 
-  const falloff = Math.pow(DISK_INNER / r, FALLOFF);
+  const falloff = Math.pow(inner / r, FALLOFF);
   const edges =
-    smoothstep(DISK_INNER, DISK_INNER + 0.8, r) *
+    smoothstep(inner, inner + 0.8, r) *
     (1 - smoothstep(DISK_OUTER * 0.6, DISK_OUTER, r));
 
   // Doppler: the gas orbits at sqrt(0.5 / r) of light speed; its approaching
   // side is beamed brighter, and climbing out of the well dims it all.
-  const speed = Math.sqrt(0.5 / r);
+  const speed = Math.sqrt((0.5 * mass) / r);
   const vl = Math.hypot(vx, vy, vz) || 1;
   const toward = (Math.sin(phi) * vx - Math.cos(phi) * vz) / vl;
   const gamma = 1 / Math.sqrt(1 - speed * speed);
   const g = 1 / (gamma * (1 - speed * toward));
-  const redshift = Math.sqrt(1 - 1 / r);
+  const redshift = Math.sqrt(1 - mass / r);
 
-  const ring = (r - (DISK_INNER + PULSE_SPEED * pulse)) / 1.4;
+  const ring = (r - (inner + PULSE_SPEED * pulse)) / 1.4;
   const flash = PULSE_GAIN * Math.exp(-ring * ring) * Math.exp(-pulse * 0.5);
 
   const light =
@@ -307,7 +338,7 @@ export function diskAt(
     Math.pow(g, BEAMING) *
     redshift;
   const opacity = edges * (0.55 + 0.4 * grain);
-  const heat = Math.pow(DISK_INNER / r, 0.75) * g * redshift;
+  const heat = Math.pow(inner / r, 0.75) * g * redshift;
   return [light, opacity, heat];
 }
 
@@ -334,7 +365,10 @@ export function starAt(x: number, y: number, z: number, time: number): number {
 export function traceRay(
   eye: Vec3,
   dir: Vec3,
-  view: Pick<HoleView, "diskTime" | "time" | "pulse" | "gain">,
+  view: Pick<
+    HoleView,
+    "diskTime" | "time" | "pulse" | "gain" | "mass" | "stars"
+  >,
 ): [number, number] {
   let [px, py, pz] = eye;
   let [vx, vy, vz] = dir;
@@ -349,15 +383,15 @@ export function traceRay(
   for (let i = 0; i < MAX_STEPS; i += 1) {
     const r2 = px * px + py * py + pz * pz;
     const r = Math.sqrt(r2);
-    if (r < 1) break;
+    if (r < view.mass) break;
     if (r > ESCAPE_RADIUS && px * vx + py * vy + pz * vz > 0) {
-      const star = (1 - alpha) * starAt(vx, vy, vz, view.time);
+      const star = (1 - alpha) * view.stars * starAt(vx, vy, vz, view.time);
       light += star;
       heat += star * STAR_HEAT;
       break;
     }
     const dt = clamp(STEP * r, STEP_MIN, STEP_MAX);
-    const pull = (-1.5 * h2) / (r2 * r2 * r);
+    const pull = (-1.5 * view.mass * h2) / (r2 * r2 * r);
     vx += pull * px * dt;
     vy += pull * py * dt;
     vz += pull * pz * dt;
@@ -377,6 +411,7 @@ export function traceRay(
         vz,
         view.diskTime,
         view.pulse,
+        view.mass,
       );
       light += (1 - alpha) * glow;
       heat += (1 - alpha) * glow * warmth;

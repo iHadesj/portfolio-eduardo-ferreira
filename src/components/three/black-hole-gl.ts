@@ -52,9 +52,9 @@ import {
  *    single bilinear fetch at the centre of its 2×2 rays — picks the glyph
  *    from the same tone table as the poster, inks it by heat on the
  *    blackbody ramp, and adds a soft halo from the blurred light around it.
- *    Under a hold, the cell reads its light from a point swirled round and
- *    drawn in from further out, so the characters themselves are dragged
- *    toward the hole. Dust (black-hole-dust.ts) fills the empty cells.
+ *    Nothing bends the picture: under a hold the rays themselves feel a
+ *    heavier hole (`uMass`). Dust (black-hole-dust.ts) fills the empty
+ *    cells.
  *
  * The main-thread cost of a frame is a few uniforms, one small texture
  * upload (the dust) and two draw calls.
@@ -76,6 +76,8 @@ uniform float uDiskTime;
 uniform float uTime;
 uniform float uPulse;
 uniform float uGain;
+uniform float uMass;
+uniform float uStars;
 out vec4 outColor;
 
 uint hash3(uvec3 v) {
@@ -118,9 +120,10 @@ float fbm(vec3 p) {
 
 vec3 diskAt(vec2 xz, vec3 v) {
   float r = length(xz);
-  if (r < ${f(DISK_INNER)} || r > ${f(DISK_OUTER)}) return vec3(0.0);
+  float inner = ${f(DISK_INNER)} * uMass;
+  if (r < inner || r > ${f(DISK_OUTER)}) return vec3(0.0);
   float phi = atan(xz.y, xz.x);
-  float omega = ${f(SPIN)} / (r * sqrt(r));
+  float omega = ${f(SPIN)} * sqrt(uMass) / (r * sqrt(r));
   float flow = uDiskTime / ${f(FLOW_PERIOD)};
   float grain = 0.0;
   for (int k = 0; k < 2; k++) {
@@ -129,19 +132,19 @@ vec3 diskAt(vec2 xz, vec3 v) {
     float a = phi - omega * phase * ${f(FLOW_PERIOD)};
     grain += weight * fbm(vec3(cos(a) * ${f(TANGENTIAL)} + 9.7 * float(k), sin(a) * ${f(TANGENTIAL)}, r * ${f(RADIAL)}));
   }
-  float falloff = pow(${f(DISK_INNER)} / r, ${f(FALLOFF)});
-  float edges = smoothstep(${f(DISK_INNER)}, ${f(DISK_INNER + 0.8)}, r)
+  float falloff = pow(inner / r, ${f(FALLOFF)});
+  float edges = smoothstep(inner, inner + 0.8, r)
     * (1.0 - smoothstep(${f(DISK_OUTER * 0.6)}, ${f(DISK_OUTER)}, r));
-  float speed = sqrt(0.5 / r);
+  float speed = sqrt(0.5 * uMass / r);
   float toward = (sin(phi) * v.x - cos(phi) * v.z) / max(length(v), 1e-6);
   float gamma = 1.0 / sqrt(1.0 - speed * speed);
   float g = 1.0 / (gamma * (1.0 - speed * toward));
-  float redshift = sqrt(1.0 - 1.0 / r);
-  float ring = (r - (${f(DISK_INNER)} + ${f(PULSE_SPEED)} * uPulse)) / 1.4;
+  float redshift = sqrt(1.0 - uMass / r);
+  float ring = (r - (inner + ${f(PULSE_SPEED)} * uPulse)) / 1.4;
   float flash = ${f(PULSE_GAIN)} * exp(-ring * ring) * exp(-uPulse * 0.5);
   float light = (falloff * (0.18 + 1.25 * smoothstep(0.28, 0.75, grain)) + flash)
     * edges * pow(g, ${f(BEAMING)}) * redshift;
-  float heat = pow(${f(DISK_INNER)} / r, 0.75) * g * redshift;
+  float heat = pow(inner / r, 0.75) * g * redshift;
   return vec3(light, edges * (0.55 + 0.4 * grain), heat);
 }
 
@@ -167,15 +170,15 @@ void main() {
   for (int i = 0; i < ${MAX_STEPS}; i++) {
     float r2 = dot(p, p);
     float r = sqrt(r2);
-    if (r < 1.0) break;
+    if (r < uMass) break;
     if (r > ${f(ESCAPE_RADIUS)} && dot(p, v) > 0.0) {
-      float star = (1.0 - alpha) * starAt(v);
+      float star = (1.0 - alpha) * uStars * starAt(v);
       light += star;
       heat += star * ${f(STAR_HEAT)};
       break;
     }
     float dt = clamp(${f(STEP)} * r, ${f(STEP_MIN)}, ${f(STEP_MAX)});
-    v += (-1.5 * h2 / (r2 * r2 * r)) * p * dt;
+    v += (-1.5 * uMass * h2 / (r2 * r2 * r)) * p * dt;
     vec3 q = p;
     p += v * dt;
     if (q.y * p.y < 0.0) {
@@ -200,8 +203,6 @@ uniform sampler2D uLights;
 uniform sampler2D uAtlas;
 uniform sampler2D uDust;
 uniform sampler2D uDustAtlas;
-uniform float uWarp;
-uniform float uShadow;
 uniform vec2 uGrid;
 uniform vec2 uResolution;
 uniform float uLut[64];
@@ -230,17 +231,7 @@ void main() {
   vec2 g = gl_FragCoord.xy / uResolution * uGrid;
   vec2 cell = floor(g);
   vec2 centre = (cell + 0.5) / uGrid;
-  // The pull: each cell shows the light from a point swirled round (as the
-  // disk turns) and further out, so the picture is dragged in — strongest
-  // near the shadow, nothing far out.
-  vec2 em = uGrid * vec2(0.6, 1.2);
-  vec2 q = (centre - 0.5) * em;
-  float near = exp(-length(q) / (uShadow * 2.6));
-  float twist = uWarp * 0.9 * near;
-  float pinch = 1.0 + uWarp * 0.35 * near;
-  vec2 from = mat2(cos(twist), sin(twist), -sin(twist), cos(twist)) * q * pinch / em + 0.5;
-  bool within = all(greaterThanEqual(from, vec2(0.0))) && all(lessThanEqual(from, vec2(1.0)));
-  vec4 rays = within ? texture(uLights, from) : vec4(0.0);
+  vec4 rays = texture(uLights, centre);
   float light = rays.r;
   // Mirrors edgeFade: nothing is ever cut by the edge of the box.
   vec2 side = min(centre, 1.0 - centre);
@@ -293,12 +284,9 @@ export interface HoleRendererOptions {
   halo: number;
 }
 
-/** What the hold adds on top of the scene itself. */
+/** What sits on top of the scene itself. (The hold's gravity is in the
+    view: `mass`.) */
 export interface HoleEffects {
-  /** 0 = none; around 1 = the characters swirl hard into the hole. */
-  warp: number;
-  /** Shadow radius on screen, em (for the warp's reach). */
-  shadow: number;
   /** One RGBA texel per cell (black-hole-dust.ts), or null for none. */
   dust: Uint8Array | null;
 }
@@ -349,6 +337,8 @@ export async function createHoleRenderer(
     time: gl.getUniformLocation(rayProgram, "uTime"),
     pulse: gl.getUniformLocation(rayProgram, "uPulse"),
     gain: gl.getUniformLocation(rayProgram, "uGain"),
+    mass: gl.getUniformLocation(rayProgram, "uMass"),
+    stars: gl.getUniformLocation(rayProgram, "uStars"),
   };
   const drawU = {
     lights: gl.getUniformLocation(drawProgram, "uLights"),
@@ -359,8 +349,6 @@ export async function createHoleRenderer(
     halo: gl.getUniformLocation(drawProgram, "uHalo"),
     dust: gl.getUniformLocation(drawProgram, "uDust"),
     dustAtlas: gl.getUniformLocation(drawProgram, "uDustAtlas"),
-    warp: gl.getUniformLocation(drawProgram, "uWarp"),
-    shadow: gl.getUniformLocation(drawProgram, "uShadow"),
   };
 
   // The tone table never changes: upload it once.
@@ -450,6 +438,8 @@ export async function createHoleRenderer(
       gl.uniform1f(rayU.time, view.time);
       gl.uniform1f(rayU.pulse, view.pulse);
       gl.uniform1f(rayU.gain, view.gain);
+      gl.uniform1f(rayU.mass, view.mass);
+      gl.uniform1f(rayU.stars, view.stars);
       gl.bindVertexArray(emptyVao);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
 
@@ -469,8 +459,6 @@ export async function createHoleRenderer(
       gl.uniform2f(drawU.resolution, canvas.width, canvas.height);
       gl.uniform4fv(drawU.inks, new Float32Array(inks.flat()));
       gl.uniform1f(drawU.halo, options.halo);
-      gl.uniform1f(drawU.warp, effects.warp);
-      gl.uniform1f(drawU.shadow, Math.max(effects.shadow, 1));
       gl.activeTexture(gl.TEXTURE2);
       gl.bindTexture(gl.TEXTURE_2D, dustTexture);
       if (effects.dust?.length === layout.cols * layout.rows * 4) {

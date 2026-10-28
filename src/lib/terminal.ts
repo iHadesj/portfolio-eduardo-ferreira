@@ -73,8 +73,8 @@ function wrap(text: string, indent = ""): string[] {
 function holeArt(): string[] {
   const cols = 72;
   const rows = 24;
-  const layers = rasterizeHole({ cols, rows }, idleView(0)).map((layer) =>
-    layer.split("\n"),
+  const layers = rasterizeHole({ cols, rows }, idleView(0, "narrow")).map(
+    (layer) => layer.split("\n"),
   );
   const lines: { text: string; inked: boolean }[] = [];
   for (let r = 0; r < rows; r += 1) {

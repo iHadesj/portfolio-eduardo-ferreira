@@ -12,7 +12,7 @@ const frames = new Map<HoleLayoutName, string[]>();
 function frame(name: HoleLayoutName): string[] {
   let layers = frames.get(name);
   if (!layers) {
-    layers = rasterizeHole(HOLE_LAYOUTS[name], idleView(0));
+    layers = rasterizeHole(HOLE_LAYOUTS[name], idleView(0, name));
     frames.set(name, layers);
   }
   return layers;

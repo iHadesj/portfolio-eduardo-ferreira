@@ -11,7 +11,9 @@ import { CAMERA_DISTANCE, TAN_HALF_FOV, type HoleLayout } from "./black-hole";
  *
  * The pointer stirs them: specks it passes near drop inward faster, and the
  * whole cloud falls a little faster while it is close to the hole. Holding
- * the hole multiplies all of it. Simulated on the CPU (a few dozen points)
+ * the hole multiplies all of it, and sends rings of dust falling in — a
+ * pulse that quickens as the pull builds, so the gravity reads as rising.
+ * As the hole grows heavier its shadow grows, and specks go under sooner. Simulated on the CPU (a few dozen points)
  * and handed to the GPU as one small texture per frame, one texel per cell.
  */
 
@@ -38,6 +40,12 @@ const STREAK_SPEED = 9;
 /** The pointer's reach (em) and how much faster specks it touches fall. */
 const STIR_RADIUS = 13;
 const STIR = 2.6;
+/** The hold's rings: they start this many (resting) shadow radii out, one
+    every RING_EVERY[0] s as a hold begins and every RING_EVERY[1] s at its
+    peak, falling in at RING_FALL shadow radii a second (r^-½ law). */
+const RING_FROM = 4.4;
+const RING_EVERY = [1.1, 0.3] as const;
+const RING_FALL = 1.5;
 
 /** The shadow's radius on screen, in em (a cell is 0.6 × 1.2 em). */
 export function shadowRadius(cols: number, zoom: number): number {
@@ -66,6 +74,8 @@ export interface DustField {
   cursor: readonly [number, number] | null;
   zoom: number;
   roll: number;
+  /** The hole's mass (1 at rest): its shadow grows with it. */
+  mass: number;
 }
 
 export interface Dust {
@@ -81,6 +91,9 @@ export function createDust(base: number, extra: number): Dust {
   let rows = 0;
   let cells = new Uint8Array(0);
   let shadow = 1;
+  /** Radii of the rings in flight; time since the last one. */
+  const rings: number[] = [];
+  let ringClock = 0;
 
   const spawn = (speck: Speck, anywhere: boolean) => {
     const far = SPAWN_FROM + SPAWN_SPAN * Math.random();
@@ -120,7 +133,8 @@ export function createDust(base: number, extra: number): Dust {
     step(dt, field) {
       cells.fill(0);
       if (!cols) return cells;
-      shadow = shadowRadius(cols, field.zoom);
+      const rest = shadowRadius(cols, field.zoom);
+      shadow = rest * field.mass;
       const active = Math.round(base + extra * field.pull);
       while (specks.length < base + extra) {
         const speck: Speck = {
@@ -139,6 +153,49 @@ export function createDust(base: number, extra: number): Dust {
       const lean = -field.roll;
       const c = Math.cos(lean);
       const s = Math.sin(lean);
+      // The hold's pulse: a ring of dust starts far out and falls in,
+      // each one sooner after the last as the pull builds.
+      if (field.pull > 0.02) {
+        ringClock += dt;
+        const every =
+          RING_EVERY[0] + (RING_EVERY[1] - RING_EVERY[0]) * field.pull;
+        if (ringClock >= every) {
+          ringClock = 0;
+          rings.push(rest * RING_FROM);
+        }
+      } else {
+        // The first ring comes right after a hold starts.
+        ringClock = RING_EVERY[0] * 0.7;
+      }
+      const ringFall = RING_FALL * rest * (1 + 2.5 * field.pull);
+      for (let i = rings.length - 1; i >= 0; i -= 1) {
+        const r = rings[i]!;
+        const u = Math.min(1, shadow / r);
+        const next = r - ringFall * Math.sqrt(u) * dt;
+        if (next < shadow * 1.08) {
+          rings.splice(i, 1);
+          continue;
+        }
+        rings[i] = next;
+        // A dotted ellipse on the screen plane, brightening as it nears.
+        const points = Math.min(
+          220,
+          Math.max(28, Math.round((next * (1 + FLAT) * Math.PI) / 0.7)),
+        );
+        for (let k = 0; k < points; k += 1) {
+          const a = (k / points) * Math.PI * 2;
+          const ex = next * Math.cos(a);
+          const ey = next * Math.sin(a) * FLAT;
+          plot(
+            ex * c - ey * s,
+            ex * s + ey * c,
+            u > 0.55 ? STAR : DOT,
+            0.2 + 0.7 * u,
+            0.35 + 0.6 * u,
+          );
+        }
+      }
+
       const fall = FALL * shadow * (1 + 0.5 * field.near + 4.5 * field.pull);
       const spin = ORBIT * (1 + 1.4 * field.pull);
 
