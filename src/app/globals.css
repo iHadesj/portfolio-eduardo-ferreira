@@ -2467,6 +2467,12 @@ html[data-theme="light"] .portrait {
   .decision__row {
     grid-template-columns: minmax(0, 1fr);
   }
+
+  /* One column here: the quoted code stays in it rather than opening a
+     second, which squeezed the index to nothing on top of the text. */
+  .decision__code {
+    grid-column: auto;
+  }
 }
 
 @media (hover: hover) and (pointer: fine) {
