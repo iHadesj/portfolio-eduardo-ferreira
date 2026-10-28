@@ -4,8 +4,6 @@ import { TransitionLink } from "@/components/ui/transition-link";
 import { AvailabilityPill } from "@/components/ui/availability-pill";
 import { BlackHoleStage } from "@/components/three/black-hole-stage";
 import { BlackHolePoster } from "@/components/three/black-hole-poster";
-import { RibbonStage } from "@/components/three/ribbon-stage";
-import { RibbonPoster } from "@/components/three/ribbon-poster";
 import { siteConfig } from "@/lib/site-config";
 import { ScrollSection } from "@/components/layout/scroll-flow";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
@@ -59,10 +57,12 @@ function NameLetters({ name }: { name: string }) {
 }
 
 /**
- * The first screen is a terminal readout, not a poster: who, what stack, what
- * shipped — everything a recruiter scans for — fits above the fold at
- * 1366×768 and 390×844, rendered on the server with no JS in the way. The
- * black hole sits beside it and goes live after idle; held down, it pulls
+ * The first screen is a terminal readout, not a poster: who, what it is and
+ * the two ways forward come first — on a phone the name, the role and both
+ * buttons fit the first screen under the black hole — then the stack and
+ * what shipped, rendered on the server with no JS in the way. The black
+ * hole sits beside the copy (above it on phones) and goes live after idle;
+ * held down, it pulls
  * the pieces marked `data-pull` into it (see three/gravity.ts) in waves:
  * metadata first (bare `data-pull`), then the content (`"2"`), the name
  * last (`"3"`). Text is torn into characters; `data-pull-box` pieces fall
@@ -82,7 +82,7 @@ export function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
       className="relative isolate"
       flowStrength={18}
     >
-      <div className="container-hades relative grid grid-cols-1 items-center gap-4 pt-18 sm:gap-6 sm:pt-24 lg:min-h-[calc(100dvh-7rem)] lg:grid-cols-12 lg:gap-8">
+      <div className="container-hades relative grid grid-cols-1 items-center gap-4 pt-18 pb-8 sm:gap-6 sm:pt-24 sm:pb-12 lg:min-h-[calc(100dvh-7rem)] lg:grid-cols-12 lg:gap-8">
         <div
           data-gravity-console
           className="relative z-10 flex min-w-0 flex-col gap-5 lg:col-span-6"
@@ -142,6 +142,44 @@ export function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
             </div>
           </div>
 
+          <div className="flex flex-wrap items-center gap-3">
+            <SmoothLink
+              data-pull="2"
+              data-pull-box
+              data-pull-decode
+              href="#projetos"
+              className={buttonVariants({ variant: "primary", size: "md" })}
+            >
+              {`> ${t.ctaProjects}`}
+            </SmoothLink>
+            <a
+              data-pull="2"
+              data-pull-box
+              data-pull-decode
+              href={siteConfig.cvUrl}
+              download={siteConfig.cvFileName}
+              type="application/pdf"
+              aria-label={t.ctaCvAria}
+              className={buttonVariants({ variant: "ghost", size: "md" })}
+            >
+              {`> ${t.ctaCv}`}
+            </a>
+            <ul className="text-smoke flex items-center gap-3 font-mono text-xs sm:ml-2">
+              {socials.map(({ label, href, external }) => (
+                <li key={label} data-pull data-pull-decode>
+                  <a
+                    href={href}
+                    target={external ? "_blank" : undefined}
+                    rel={external ? "noopener noreferrer" : undefined}
+                    className="hover:text-bone transition-colors"
+                  >
+                    {`[${label}]`}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
           <div className="relative">
             {/* The rule is its own piece, so the collapse takes it too. */}
             <span
@@ -191,44 +229,6 @@ export function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
               </div>
             </dl>
           </div>
-
-          <div className="flex flex-wrap items-center gap-3">
-            <SmoothLink
-              data-pull="2"
-              data-pull-box
-              data-pull-decode
-              href="#projetos"
-              className={buttonVariants({ variant: "primary", size: "md" })}
-            >
-              {`> ${t.ctaProjects}`}
-            </SmoothLink>
-            <a
-              data-pull="2"
-              data-pull-box
-              data-pull-decode
-              href={siteConfig.cvUrl}
-              download={siteConfig.cvFileName}
-              type="application/pdf"
-              aria-label={t.ctaCvAria}
-              className={buttonVariants({ variant: "ghost", size: "md" })}
-            >
-              {`> ${t.ctaCv}`}
-            </a>
-            <ul className="text-smoke flex items-center gap-3 font-mono text-xs sm:ml-2">
-              {socials.map(({ label, href, external }) => (
-                <li key={label} data-pull data-pull-decode>
-                  <a
-                    href={href}
-                    target={external ? "_blank" : undefined}
-                    rel={external ? "noopener noreferrer" : undefined}
-                    className="hover:text-bone transition-colors"
-                  >
-                    {`[${label}]`}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
         </div>
 
         {/* Phones: the black hole crowns the copy. Wide screens: beside it. */}
@@ -238,17 +238,6 @@ export function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
         >
           <BlackHolePoster />
         </BlackHoleStage>
-      </div>
-
-      {/* The ∞ ribbon gets the full width right under the fold line, so on a
-          desktop its top already peeks into the first screen. */}
-      <div className="container-hades pt-10 pb-4 sm:pt-14 sm:pb-10 lg:pt-4">
-        <RibbonStage
-          hintMouse={t.ribbonHintMouse}
-          hintTouch={t.ribbonHintTouch}
-        >
-          <RibbonPoster />
-        </RibbonStage>
       </div>
     </ScrollSection>
   );

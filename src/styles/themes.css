@@ -23,9 +23,6 @@ html[data-theme="light"] {
   --color-term-blue: #0969da;
   --color-term-yellow: #9a6700;
   --color-term-red: #cf222e;
-  --color-ribbon-near: #0a0a0c;
-  --color-ribbon-mid: #4d5563;
-  --color-ribbon-far: #a7afbd;
   /* On paper the ramp runs dark: the hottest gas is the deepest ink. */
   --color-hole-ember: #c2410c;
   --color-hole-flame: #b45309;
@@ -70,9 +67,6 @@ html[data-theme="underworld"] {
   --color-term-blue: #7dffa8;
   --color-term-yellow: #c8ffd9;
   --color-term-red: #c8ffd9;
-  --color-ribbon-near: #b8ffd0;
-  --color-ribbon-mid: #4fd57f;
-  --color-ribbon-far: #1d6b3b;
   /* Phosphor has one colour: heat is just intensity. */
   --color-hole-ember: #1d6b3b;
   --color-hole-flame: #34a35c;

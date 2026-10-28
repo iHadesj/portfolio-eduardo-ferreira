@@ -48,6 +48,19 @@ export const siteConfig = {
    */
   portrait: "/minha-foto.webp" as string | null,
 
+  /**
+   * why.txt — the README of the GitHub profile, one entry per line. Quoted,
+   * never translated: it is the same file in every locale (the About opens
+   * on it, the shell `cat`s it, the curl résumé prints it).
+   */
+  why: [
+    "code got cheap. reading it never did.",
+    "the crowd hands its thinking to a prompt and ships whatever comes back.",
+    "i stay in the editor, line by line, learning how things are meant to stand.",
+    "to me code was always a kind of art, and art was never meant to be outsourced.",
+    "every repo here is my taste in syntax. the judgment is mine too.",
+  ],
+
   links: {
     github: "https://github.com/iHadesj",
     linkedin: "https://www.linkedin.com/in/eduardoalexandre-java/",
@@ -63,7 +76,6 @@ export const navItems: NavItem[] = [
     label: { pt: "projetos", en: "projects" },
   },
   { id: "trajetoria", href: "#trajetoria", label: { pt: "xp", en: "xp" } },
-  { id: "stack", href: "#stack", label: { pt: "stack", en: "stack" } },
   { id: "sobre", href: "#sobre", label: { pt: "sobre", en: "about" } },
   {
     id: "contato",

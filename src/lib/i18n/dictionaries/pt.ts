@@ -85,8 +85,6 @@ export const pt = {
     availabilityOpen: "Aberto a oportunidades",
     availabilityClosed: "Sem disponibilidade no momento",
     availabilityAria: "Disponibilidade profissional",
-    ribbonHintMouse: "arraste com o mouse para girar",
-    ribbonHintTouch: "arraste com o dedo para girar",
     // The black hole's microcopy: a system readout, revealed as the pointer
     // nears it, and the hold's countdown.
     hole: {
@@ -116,7 +114,8 @@ export const pt = {
 
   about: {
     eyebrow: "sobre",
-    title: "Interessado desde o primeiro CRUD.",
+    // Spoken label for why.txt, which is quoted in English on every locale.
+    whyLabel: "why.txt, o README do meu GitHub",
     paragraphs: [
       [
         "Comecei pelo back-end, com Java, Spring e banco de dados, porque queria entender o que acontece ",
@@ -137,55 +136,6 @@ export const pt = {
     statusLabel: "status",
     portraitAlt: "Retrato de Edu Ferreira",
     portraitPending: "foto a caminho",
-  },
-
-  stack: {
-    eyebrow: "stack",
-    title: "Ferramentas que viraram produto.",
-    description:
-      "Organizadas pelo problema que resolvem e ligadas aos projetos em que eu usei cada uma.",
-    proofTitle: "Stack validada no código",
-    proofLink: "ver repositórios no GitHub ↗",
-    proofAria: "Ver os repositórios de Edu Ferreira no GitHub",
-    toolsAria: "Tecnologias de {title}",
-    whereUsed: "onde aparece",
-    groups: [
-      {
-        label: "stack principal",
-        title: "Frontend & produto",
-        description:
-          "Interfaces tipadas, responsivas e pensadas como produto — da arquitetura ao último estado de interação.",
-        projects: "Levva · DevTrack · Portfólio",
-      },
-      {
-        label: "servidor & realtime",
-        title: "Backend & APIs",
-        description:
-          "APIs REST, autenticação, validação de contratos e experiências multiplayer orientadas a eventos.",
-        projects: "Portal VTT · StudyQuest · API Java",
-      },
-      {
-        label: "estado & persistência",
-        title: "Dados",
-        description:
-          "Estado previsível no cliente e persistência escolhida de acordo com o domínio do produto.",
-        projects: "Levva · LIFE/MAINTENANCE · Um abraço, Bernardo",
-      },
-      {
-        label: "interface avançada",
-        title: "Motion & experiência",
-        description:
-          "Movimento, áudio e 3D usados para explicar ações e criar experiências que ficam na memória.",
-        projects: "Portfólio · Um abraço, Bernardo · Change",
-      },
-      {
-        label: "confiança & entrega",
-        title: "Qualidade",
-        description:
-          "Testes e ferramentas de entrega aplicados onde uma regressão realmente custa confiança.",
-        projects: "Levva · LIFE/MAINTENANCE · API Java",
-      },
-    ],
   },
 
   projects: {
@@ -374,10 +324,10 @@ export const pt = {
     names: {
       collapse: "colapso do sistema",
       orbit: "órbita manual",
-      ribbon: "laço infinito",
       underworld: "o submundo",
       secret: "o nome secreto",
       terminal: "shell aberto",
+      why: "cat why.txt",
       sudo: "privilégios de root",
     },
   },

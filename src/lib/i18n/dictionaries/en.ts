@@ -72,8 +72,6 @@ export const en = {
     availabilityOpen: "Open to opportunities",
     availabilityClosed: "Not available right now",
     availabilityAria: "Professional availability",
-    ribbonHintMouse: "drag with your mouse to turn it",
-    ribbonHintTouch: "drag with your finger to turn it",
     hole: {
       tag: "interactive anomaly",
       detected: "event horizon detected.",
@@ -100,7 +98,7 @@ export const en = {
 
   about: {
     eyebrow: "about",
-    title: "Hooked since the first CRUD.",
+    whyLabel: "why.txt, the README of my GitHub profile",
     paragraphs: [
       [
         "I started on the back end — Java, Spring, databases — because I wanted to understand what happens ",
@@ -121,55 +119,6 @@ export const en = {
     statusLabel: "status",
     portraitAlt: "Portrait of Edu Ferreira",
     portraitPending: "photo coming soon",
-  },
-
-  stack: {
-    eyebrow: "stack",
-    title: "Tools that turned into products.",
-    description:
-      "Grouped by the problem they solve and linked to the projects where I used each one.",
-    proofTitle: "Stack proven in code",
-    proofLink: "browse the repositories on GitHub ↗",
-    proofAria: "Browse Edu Ferreira's repositories on GitHub",
-    toolsAria: "{title} technologies",
-    whereUsed: "where it shows up",
-    groups: [
-      {
-        label: "core stack",
-        title: "Frontend & product",
-        description:
-          "Typed, responsive interfaces designed as product — from architecture down to the last interaction state.",
-        projects: "Levva · DevTrack · Portfolio",
-      },
-      {
-        label: "server & realtime",
-        title: "Backend & APIs",
-        description:
-          "REST APIs, authentication, contract validation and event-driven multiplayer experiences.",
-        projects: "VTT Portal · StudyQuest · Java API",
-      },
-      {
-        label: "state & persistence",
-        title: "Data",
-        description:
-          "Predictable client state and persistence picked to fit the product's domain.",
-        projects: "Levva · LIFE/MAINTENANCE · Um abraço, Bernardo",
-      },
-      {
-        label: "advanced interface",
-        title: "Motion & experience",
-        description:
-          "Movement, audio and 3D used to explain actions and build experiences that stick.",
-        projects: "Portfolio · Um abraço, Bernardo · Change",
-      },
-      {
-        label: "confidence & delivery",
-        title: "Quality",
-        description:
-          "Tests and delivery tooling applied where a regression actually costs trust.",
-        projects: "Levva · LIFE/MAINTENANCE · Java API",
-      },
-    ],
   },
 
   projects: {
@@ -353,10 +302,10 @@ export const en = {
     names: {
       collapse: "system collapse",
       orbit: "manual orbit",
-      ribbon: "infinite loop",
       underworld: "the underworld",
       secret: "the secret name",
       terminal: "shell opened",
+      why: "cat why.txt",
       sudo: "root privileges",
     },
   },

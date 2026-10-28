@@ -8,8 +8,10 @@ import { useI18n } from "@/lib/i18n/locale-provider";
 
 /**
  * Cycles dark ↔ light (the secret "underworld" theme is driven by the Fase 7
- * easter egg, not this toggle). No hydration flash: a fixed-size placeholder
- * renders until mounted, then the icon swaps in.
+ * easter egg, not this toggle). Both icons come from the server and CSS shows
+ * the one for the theme next-themes already wrote on <html> before paint
+ * (`.theme-toggle__*` in globals.css), so the button is never an empty box
+ * while the page hydrates. Only the label waits for the mount.
  */
 export function ThemeToggle({ className }: { className?: string }) {
   const { setTheme, resolvedTheme } = useTheme();
@@ -34,15 +36,18 @@ export function ThemeToggle({ className }: { className?: string }) {
         className,
       )}
     >
-      {mounted ? (
-        isLight ? (
-          <Moon size={18} strokeWidth={1.5} />
-        ) : (
-          <Sun size={18} strokeWidth={1.5} />
-        )
-      ) : (
-        <span className="size-[18px]" aria-hidden />
-      )}
+      <Sun
+        aria-hidden
+        size={18}
+        strokeWidth={1.5}
+        className="theme-toggle__sun"
+      />
+      <Moon
+        aria-hidden
+        size={18}
+        strokeWidth={1.5}
+        className="theme-toggle__moon"
+      />
     </button>
   );
 }

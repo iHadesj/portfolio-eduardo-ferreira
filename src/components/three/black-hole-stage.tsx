@@ -776,41 +776,45 @@ export function BlackHoleStage({
         <div ref={flashRef} className="hole-flash" />
       </div>
       {showCanvas ? (
-        <>
-          {/* The system readout: near-invisible until the pointer nears
-              the hole, so the curious find the mechanic and nobody else is
-              interrupted. */}
-          <div
-            aria-hidden
-            className={cn("hole-readout", live && "hole-readout--live")}
-          >
-            <p className="hole-readout__tag">{copy.tag}</p>
-            <p className="hole-readout__more">{copy.detected}</p>
-            <p className="hole-readout__more">{copy.how}</p>
-            <p className="hole-readout__orbit">
-              <span className="stage-hint__mouse">{copy.orbitMouse}</span>
-              <span className="stage-hint__touch">{copy.orbitTouch}</span>
-            </p>
-          </div>
-          <button
-            ref={triggerRef}
-            type="button"
-            aria-label={copy.keyLabel}
-            className={cn("hole-trigger", live && "hole-trigger--live")}
-          >
-            <span aria-hidden className="hole-trigger__text">
-              <span ref={labelRef}>{copy.idle}</span>
-              <span className="hole-trigger__time">
-                {" // "}
-                <span ref={timeRef}>{AT_REST}</span>
-              </span>
-            </span>
-            <span aria-hidden className="hole-trigger__horizon">
-              <span ref={horizonRef} />
-            </span>
-          </button>
-          <p ref={statusRef} aria-live="polite" className="sr-only" />
-        </>
+        // The system readout: near-invisible until the pointer nears the
+        // hole, so the curious find the mechanic and nobody else is
+        // interrupted.
+        <div
+          aria-hidden
+          className={cn("hole-readout", live && "hole-readout--live")}
+        >
+          <p className="hole-readout__tag">{copy.tag}</p>
+          <p className="hole-readout__more">{copy.detected}</p>
+          <p className="hole-readout__more">{copy.how}</p>
+          <p className="hole-readout__orbit">
+            <span className="stage-hint__mouse">{copy.orbitMouse}</span>
+            <span className="stage-hint__touch">{copy.orbitTouch}</span>
+          </p>
+        </div>
+      ) : null}
+      {/* Rendered from the server on, so its line is already taken when the
+          scene comes alive and the copy under it never jumps. CSS keeps it
+          hidden (and out of the tab order) until then, and drops it — space
+          included — under reduced motion, where there is no hold. */}
+      <button
+        ref={triggerRef}
+        type="button"
+        aria-label={copy.keyLabel}
+        className={cn("hole-trigger", live && "hole-trigger--live")}
+      >
+        <span aria-hidden className="hole-trigger__text">
+          <span ref={labelRef}>{copy.idle}</span>
+          <span className="hole-trigger__time">
+            {" // "}
+            <span ref={timeRef}>{AT_REST}</span>
+          </span>
+        </span>
+        <span aria-hidden className="hole-trigger__horizon">
+          <span ref={horizonRef} />
+        </span>
+      </button>
+      {showCanvas ? (
+        <p ref={statusRef} aria-live="polite" className="sr-only" />
       ) : null}
     </div>
   );

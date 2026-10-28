@@ -36,12 +36,6 @@
   --color-term-yellow: #f3f99d; /* in progress, warnings (16:1) */
   --color-term-red: #ff5c57; /* errors (6.1:1) */
 
-  /* The ∞ ribbon, inked by depth: near strands bright, far ones cool and
-     sunk into the page (atmospheric perspective). */
-  --color-ribbon-near: #f2f4f8;
-  --color-ribbon-mid: #a9b2c2;
-  --color-ribbon-far: #4a5468;
-
   /* The black hole's disk, inked by its observed temperature — the
      blackbody ramp from the red rim to the blue-white inner edge (stars sit
      at the hot end). */
@@ -328,67 +322,6 @@
   }
 }
 
-/* The ∞ ribbon (components/three). The stage is a size container so the
-   poster's font size derives from its width: Geist Mono advances 0.6em and
-   lines are 1.2em, so `cols` characters fill the width exactly and the grid
-   lines up with the canvas that later replaces it. The poster is three
-   stacked layers, inked near → far; the canvas reads the same colours. */
-.ribbon-stage {
-  container-type: inline-size;
-  aspect-ratio: 9 / 5;
-}
-
-.ribbon-art {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  font-family: var(--font-mono);
-  font-size: calc(100cqw / (var(--cols) * 0.6));
-  font-weight: 500;
-  line-height: 1.2em;
-}
-
-.ribbon-art pre {
-  position: absolute;
-  inset: 0;
-  margin: 0;
-  font: inherit;
-  font-kerning: none;
-  font-variant-ligatures: none;
-  letter-spacing: 0;
-  white-space: pre;
-}
-
-.ribbon-art pre[data-depth="0"] {
-  color: var(--color-ribbon-near);
-}
-
-.ribbon-art pre[data-depth="1"] {
-  color: var(--color-ribbon-mid);
-}
-
-.ribbon-art pre[data-depth="2"] {
-  color: var(--color-ribbon-far);
-}
-
-.ribbon-art[data-layout="band"] {
-  display: none;
-}
-
-@media (min-width: 48rem) {
-  .ribbon-stage {
-    aspect-ratio: 5 / 2;
-  }
-
-  .ribbon-art[data-layout="band"] {
-    display: block;
-  }
-
-  .ribbon-art[data-layout="compact"] {
-    display: none;
-  }
-}
-
 /* The first visit's terminal boot (layout/boot-sequence.tsx): lines come
    up one by one over a veil the page shows through, then it all fades.
    `html[data-boot]` is set by its gate before paint: "off" on later visits,
@@ -465,23 +398,7 @@ html[data-boot="skip"] .boot {
   }
 }
 
-/* "Drag to turn", worded for the input at hand (ribbon, black hole). */
-.stage-hint {
-  color: var(--color-smoke);
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-}
-
-.stage-hint::before {
-  content: "[ ↔ ";
-  color: var(--color-term-green);
-}
-
-.stage-hint::after {
-  content: " ]";
-  color: var(--color-term-green);
-}
-
+/* "Drag to orbit", worded for the input at hand (the black hole's readout). */
 .stage-hint__touch {
   display: none;
 }
@@ -496,8 +413,8 @@ html[data-boot="skip"] .boot {
   }
 }
 
-/* The hero's black hole (components/three). Like the ribbon, the stage is
-   a size container and the poster's font size derives from its width, so
+/* The hero's black hole (components/three). The stage is a size
+   container and the poster's font size derives from its width, so
    `cols` characters fill it exactly and the grid lines up with the canvas
    that later replaces it. Three layers inked by heat, hot → cool; the canvas
    reads the same colours. The whole disk always fits: on phones the stage
@@ -682,6 +599,14 @@ html[data-theme="light"] .hole-stage::before {
 .hole-trigger--live {
   visibility: visible;
   opacity: calc(0.55 + 0.45 * var(--near, 0));
+}
+
+/* Reduced motion keeps the poster and has no hold, so the trigger gives its
+   line back. (Everywhere else it holds the line from the first paint.) */
+@media (prefers-reduced-motion: reduce) {
+  .hole-trigger {
+    display: none;
+  }
 }
 
 .hole-trigger:hover,
@@ -1371,6 +1296,35 @@ html[data-theme="light"] .hole-stage::before {
   min-width: 0;
 }
 
+/* why.txt opens the About: the command, the file's first line as the
+   section heading, the rest as its lines — the last one, the punchline, in
+   full ink. */
+.about-why {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.about-why__command {
+  color: var(--color-smoke);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+}
+
+.about-why__lines {
+  display: grid;
+  gap: 0.4rem;
+  max-width: 62ch;
+  color: var(--color-smoke);
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.65;
+}
+
+.about-why__lines p:last-child {
+  color: var(--color-bone);
+}
+
 .about-story {
   position: relative;
   display: grid;
@@ -1504,436 +1458,6 @@ html[data-theme="light"] .hole-stage::before {
   }
 }
 
-/* Capability map: namespaced styles keep each discipline visually distinct.
-   Motion uses compositor-only transforms; the track is the sole continuous
-   scroll-linked value. */
-.tech-stack {
-  overflow: hidden;
-}
-
-.tech-stack__intro {
-  display: grid;
-  gap: 1.75rem;
-  align-items: end;
-}
-
-.tech-stack__github-proof {
-  display: flex;
-  width: fit-content;
-  align-items: center;
-  gap: 0.8rem;
-  padding: 0.75rem 0.9rem;
-  color: var(--color-smoke);
-  border: 1px solid color-mix(in oklab, var(--color-ash) 82%, transparent);
-  border-radius: var(--radius-md);
-  background: color-mix(in oklab, var(--color-basalt) 72%, transparent);
-  transition:
-    color 180ms var(--ease-out-soft),
-    border-color 180ms var(--ease-out-soft),
-    background-color 180ms var(--ease-out-soft);
-}
-
-.tech-stack__github-proof strong,
-.tech-stack__github-proof small {
-  display: block;
-}
-
-.tech-stack__github-proof strong {
-  color: var(--color-bone);
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.tech-stack__github-proof small {
-  margin-top: 0.18rem;
-  font-size: 0.75rem;
-}
-
-.tech-stack__proof-dot {
-  width: 0.55rem;
-  height: 0.55rem;
-  flex: 0 0 auto;
-  border-radius: 999px;
-  background: var(--color-signal);
-  box-shadow: 0 0 1.2rem
-    color-mix(in oklab, var(--color-signal) 58%, transparent);
-}
-
-.tech-stack__grid {
-  position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: clamp(0.8rem, 1.6vw, 1.15rem);
-  margin-top: clamp(2.5rem, 6vw, 4.5rem);
-}
-
-.tech-stack__scroll-track {
-  position: absolute;
-  z-index: 2;
-  top: 0.75rem;
-  bottom: 0.75rem;
-  left: -1.15rem;
-  width: 1.45rem;
-  height: calc(100% - 1.5rem);
-  overflow: visible;
-  pointer-events: none;
-}
-
-.tech-stack__scroll-path {
-  fill: none;
-  stroke-linecap: round;
-}
-
-.tech-stack__scroll-path--base {
-  stroke: color-mix(in oklab, var(--color-ash) 72%, transparent);
-  stroke-width: 1;
-}
-
-.tech-stack__scroll-path--active {
-  stroke: var(--color-signal);
-  stroke-width: 2;
-  filter: drop-shadow(
-    0 0 0.36rem color-mix(in oklab, var(--color-signal) 64%, transparent)
-  );
-}
-
-.tech-stack-card {
-  --stack-accent: var(--color-signal);
-  --stack-radius: var(--radius-md);
-
-  position: relative;
-  display: flex;
-  min-width: 0;
-  min-height: 19rem;
-  flex-direction: column;
-  padding: clamp(1.25rem, 4vw, 1.8rem);
-  overflow: hidden;
-  border: 1px solid
-    color-mix(in oklab, var(--stack-accent) 24%, var(--color-ash));
-  border-radius: var(--stack-radius);
-  background:
-    radial-gradient(
-      ellipse at 92% 3%,
-      color-mix(in oklab, var(--stack-accent) 10%, transparent),
-      transparent 42%
-    ),
-    linear-gradient(
-      145deg,
-      color-mix(in oklab, var(--stack-accent) 6%, var(--color-basalt)) 0%,
-      color-mix(in oklab, var(--color-basalt) 88%, transparent) 55%,
-      color-mix(in oklab, var(--color-abyss) 92%, transparent) 100%
-    );
-  box-shadow: inset 0 1px 0
-    color-mix(in oklab, var(--stack-accent) 12%, transparent);
-  isolation: isolate;
-}
-
-.tech-stack-card::before {
-  position: absolute;
-  top: 0;
-  right: 12%;
-  width: 42%;
-  height: 1px;
-  content: "";
-  background: linear-gradient(
-    90deg,
-    transparent,
-    color-mix(in oklab, var(--stack-accent) 82%, transparent),
-    transparent
-  );
-}
-
-.tech-stack-card::after {
-  position: absolute;
-  z-index: -1;
-  top: -5rem;
-  right: -4rem;
-  width: 13rem;
-  height: 11rem;
-  content: "";
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    color-mix(in oklab, var(--stack-accent) 15%, transparent),
-    transparent 67%
-  );
-  pointer-events: none;
-  transform: rotate(17deg);
-}
-
-.tech-stack-card__scan {
-  position: absolute;
-  z-index: 2;
-  top: -22%;
-  bottom: -22%;
-  left: -32%;
-  width: 34%;
-  opacity: 0;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    color-mix(in oklab, var(--stack-accent) 12%, transparent),
-    color-mix(in oklab, var(--color-bone) 9%, transparent),
-    transparent
-  );
-  transform: skewX(-13deg);
-  pointer-events: none;
-}
-
-.tech-stack-card--signal {
-  --stack-accent: var(--color-signal);
-}
-
-.tech-stack-card--steel {
-  --stack-accent: var(--color-steel);
-}
-
-.tech-stack-card--hybrid {
-  --stack-accent: color-mix(
-    in oklab,
-    var(--color-steel) 58%,
-    var(--color-signal)
-  );
-}
-
-.tech-stack-card--flare {
-  --stack-accent: var(--color-flare);
-}
-
-.tech-stack-card--bone {
-  --stack-accent: color-mix(
-    in oklab,
-    var(--color-bone) 56%,
-    var(--color-smoke)
-  );
-}
-
-.tech-stack-card__header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.tech-stack-card__code {
-  display: grid;
-  width: 2.85rem;
-  height: 2.85rem;
-  place-items: center;
-  color: var(--stack-accent);
-  border: 1px solid color-mix(in oklab, var(--stack-accent) 34%, transparent);
-  border-radius: var(--radius-sm);
-  background: color-mix(in oklab, var(--stack-accent) 8%, transparent);
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: -0.04em;
-}
-
-.tech-stack-card__meta {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  color: color-mix(in oklab, var(--stack-accent) 68%, var(--color-smoke));
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.tech-stack-card__meta span + span {
-  padding-left: 0.6rem;
-  border-left: 1px solid
-    color-mix(in oklab, var(--stack-accent) 28%, transparent);
-}
-
-.tech-stack-card__body {
-  margin-top: 1.65rem;
-}
-
-.tech-stack-card__body h3 {
-  color: var(--color-bone);
-  font-family: var(--font-display);
-  font-size: clamp(1.4rem, 3vw, 1.85rem);
-  font-weight: 600;
-  line-height: 1.05;
-  letter-spacing: -0.015em;
-}
-
-.tech-stack-card__body p {
-  max-width: 48ch;
-  margin-top: 0.7rem;
-  color: var(--color-smoke);
-  font-size: 0.9rem;
-  line-height: 1.55;
-}
-
-.tech-stack-card__tools {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-  margin-top: 1.4rem;
-  padding: 0;
-  list-style: none;
-}
-
-.tech-stack-card__tools li {
-  padding: 0.42rem 0.62rem;
-  color: color-mix(in oklab, var(--color-bone) 82%, var(--stack-accent));
-  border: 1px solid
-    color-mix(in oklab, var(--stack-accent) 18%, var(--color-ash));
-  border-radius: var(--radius-pill);
-  background: color-mix(in oklab, var(--color-abyss) 62%, transparent);
-  font-family: var(--font-mono);
-  font-size: 0.67rem;
-  line-height: 1;
-  white-space: nowrap;
-}
-
-.tech-stack-card__projects {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem 0.7rem;
-  margin-top: auto;
-  padding-top: 1.4rem;
-  color: color-mix(in oklab, var(--color-smoke) 78%, transparent);
-  border-top: 1px solid color-mix(in oklab, var(--color-ash) 65%, transparent);
-  font-size: 0.75rem;
-}
-
-.tech-stack-card__projects span {
-  color: var(--stack-accent);
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-}
-
-@media (min-width: 40rem) {
-  .tech-stack__intro {
-    grid-template-columns: minmax(0, 1fr) auto;
-  }
-
-  .tech-stack__github-proof {
-    justify-self: end;
-  }
-
-  .tech-stack__grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .tech-stack-card:last-of-type {
-    grid-column: 1 / -1;
-  }
-
-  .tech-stack__scroll-track {
-    left: -1rem;
-  }
-}
-
-@media (min-width: 64rem) {
-  .tech-stack__grid {
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-  }
-
-  .tech-stack-card:nth-of-type(1) {
-    grid-column: span 7;
-  }
-
-  .tech-stack-card:nth-of-type(2) {
-    grid-column: span 5;
-  }
-
-  .tech-stack-card:nth-of-type(n + 3) {
-    grid-column: span 4;
-    min-height: 21rem;
-  }
-
-  .tech-stack-card:nth-of-type(-n + 2) {
-    min-height: 20.5rem;
-  }
-
-  .tech-stack__scroll-track {
-    left: -1.5rem;
-  }
-
-  /* Staggered, not shelved: cards settle at different heights so the grid
-     reads as a scattered set rather than two ruled rows. */
-  .tech-stack__grid {
-    align-items: start;
-  }
-
-  .tech-stack-card:nth-of-type(2) {
-    margin-top: 2.75rem;
-  }
-
-  .tech-stack-card:nth-of-type(3) {
-    margin-top: -1.25rem;
-  }
-
-  .tech-stack-card:nth-of-type(4) {
-    margin-top: 1.5rem;
-  }
-
-  .tech-stack-card:nth-of-type(5) {
-    margin-top: -0.25rem;
-  }
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .tech-stack__github-proof:hover {
-    color: var(--color-bone);
-    border-color: color-mix(
-      in oklab,
-      var(--color-signal) 34%,
-      var(--color-ash)
-    );
-    background: color-mix(
-      in oklab,
-      var(--color-signal) 5%,
-      var(--color-basalt)
-    );
-  }
-
-  .tech-stack-card {
-    transition:
-      border-color 260ms var(--ease-out-soft),
-      box-shadow 260ms var(--ease-out-soft);
-  }
-
-  .tech-stack-card:hover {
-    z-index: 1;
-    border-color: color-mix(
-      in oklab,
-      var(--stack-accent) 48%,
-      var(--color-ash)
-    );
-    box-shadow:
-      inset 0 1px 0 color-mix(in oklab, var(--stack-accent) 18%, transparent),
-      0 1.4rem 4rem -2.4rem
-        color-mix(in oklab, var(--stack-accent) 38%, transparent);
-  }
-
-  .tech-stack-card__tools li {
-    transition:
-      color 180ms var(--ease-out-soft),
-      border-color 180ms var(--ease-out-soft),
-      background-color 180ms var(--ease-out-soft);
-  }
-
-  .tech-stack-card:hover .tech-stack-card__tools li {
-    border-color: color-mix(
-      in oklab,
-      var(--stack-accent) 28%,
-      var(--color-ash)
-    );
-    background: color-mix(in oklab, var(--stack-accent) 6%, var(--color-abyss));
-  }
-}
-
 /* ──────────────────────────────────────────────────────────────────────────
    View Transitions — project card → case study.
 
@@ -1965,6 +1489,20 @@ html[data-theme="light"] .hole-stage::before {
   from {
     opacity: 0;
   }
+}
+
+/* The theme toggle shows the theme it switches *to* — the sun on dark (and
+   the secret theme), the moon on paper. Both icons are in the markup. */
+.theme-toggle__moon {
+  display: none;
+}
+
+html[data-theme="light"] .theme-toggle__sun {
+  display: none;
+}
+
+html[data-theme="light"] .theme-toggle__moon {
+  display: block;
 }
 
 /* ──────────────────────────────────────────────────────────────────────────

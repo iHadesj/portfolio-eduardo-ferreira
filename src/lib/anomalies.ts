@@ -1,7 +1,7 @@
 /**
  * The site's hidden interactions, as a collection to find: the hero's
- * collapse, orbiting the black hole, spinning the ribbon, the underworld,
- * the secret in ⌘K, the terminal and its `sudo`. Each component that owns
+ * collapse, orbiting the black hole, the underworld, the secret in ⌘K,
+ * the shell, its `sudo` and reading why.txt in it. Each component that owns
  * one calls `discover(id)` when the reader finds it; the anomaly log
  * (components/anomaly-log.tsx) listens and reports progress.
  *
@@ -12,11 +12,11 @@
 export const ANOMALIES = [
   "collapse",
   "orbit",
-  "ribbon",
   "underworld",
   "secret",
   "terminal",
   "sudo",
+  "why",
 ] as const;
 
 export type AnomalyId = (typeof ANOMALIES)[number];

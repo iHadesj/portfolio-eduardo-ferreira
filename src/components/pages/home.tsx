@@ -1,6 +1,5 @@
 import { Hero } from "@/components/sections/hero";
 import { About } from "@/components/sections/about";
-import { TechStack } from "@/components/sections/tech-stack";
 import { Projects } from "@/components/sections/projects";
 import { Experience } from "@/components/sections/experience";
 import { GithubActivity } from "@/components/sections/github-activity";
@@ -24,7 +23,6 @@ export function HomePage({ locale }: { locale: Locale }) {
       <Hero locale={locale} dict={dict} />
       <Projects locale={locale} dict={dict} />
       <Experience dict={dict} />
-      <TechStack dict={dict} />
       <About dict={dict} />
       <GithubActivity locale={locale} dict={dict} />
       <Contact locale={locale} dict={dict} />
