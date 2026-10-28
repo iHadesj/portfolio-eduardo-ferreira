@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Mail } from "lucide-react";
 import { navItems, siteConfig } from "@/lib/site-config";
 import { GitHubIcon, LinkedInIcon } from "@/components/icons";
+import { useToast } from "@/components/ui/toast";
 import { useI18n } from "@/lib/i18n/locale-provider";
 import { fill } from "@/lib/i18n/format";
 import { sectionPath } from "@/lib/i18n/routes";
@@ -32,7 +33,10 @@ const socials = [
 
 export function Footer() {
   const { locale, dict } = useI18n();
+  const { toast } = useToast();
   const year = new Date().getFullYear();
+  // The site answers curl with a text résumé (lib/terminal.ts).
+  const host = new URL(siteConfig.url).host;
 
   return (
     <footer className="border-ash border-t">
@@ -76,6 +80,18 @@ export function Footer() {
 
       <div className="container-hades border-ash text-smoke flex flex-col gap-2 border-t py-6 font-mono text-xs sm:flex-row sm:items-center sm:justify-between">
         <p suppressHydrationWarning>{fill(dict.footer.copyright, { year })}</p>
+        <button
+          type="button"
+          aria-label={fill(dict.footer.curlCopy, { host })}
+          onClick={() => {
+            void navigator.clipboard?.writeText(`curl ${host}`);
+            toast(dict.footer.curlCopied);
+          }}
+          className="hover:text-bone w-fit text-left transition-colors"
+        >
+          <span className="text-smoke/70">{`${dict.footer.curlHint}: `}</span>
+          <span className="text-term-green">$</span> curl {host}
+        </button>
         <Link
           href={siteConfig.sourceUrl}
           target="_blank"

@@ -22,14 +22,26 @@ export const siteConfig = {
   // Public-facing contact e-mail. Doubles as the default CONTACT_EMAIL inbox
   // for the contact form (see src/lib/env.ts).
   email: "edualexandre2017@outlook.com",
-  // Canonical production URL — placeholder domain until Fase 11.
-  url: "https://edu-ferreira-zeta.vercel.app",
+  // Canonical production URL (the old placeholder, edu-ferreira-zeta, no
+  // longer resolves). Also the host the curl résumé tells people to use.
+  url: "https://edu-ferreira.vercel.app",
   // CV PDF served straight from /public.
   cvUrl: "/Curriculo-Eduardo-Ferreira-2026.pdf",
   // Name the browser saves the download as.
   cvFileName: "Curriculo-Eduardo-Ferreira-2026.pdf",
   // Repository (for the footer "view source" link). TODO_EDU: confirm name.
   sourceUrl: "https://github.com/iHadesj/EduardoFerreira",
+  /** The core stack, in the hero and the text résumé. Proper nouns: the
+   *  same in every locale. */
+  stack: [
+    "React",
+    "Next.js",
+    "TypeScript",
+    "Java",
+    "Spring",
+    "PostgreSQL",
+    "Three.js",
+  ],
   role: {
     pt: "Desenvolvedor Fullstack — Java & React/TypeScript",
     en: "Fullstack Developer — Java & React/TypeScript",

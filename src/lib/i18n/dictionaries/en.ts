@@ -263,12 +263,26 @@ export const en = {
     },
   },
 
+  terminal: {
+    projects: "projects",
+    experience: "experience",
+    education: "education",
+    stack: "stack",
+    cvHint: "the whole résumé, as text: curl {host}/en/cv",
+    pdf: "as a pdf: {url}",
+    shellHint: 'in a browser the site has a real shell: press ":".',
+    signoff: "written by hand, line by line · {host}",
+  },
+
   footer: {
     blurb:
       "Fullstack dev: Java on the back, React and TypeScript on the front. Learning a bit more every day.",
     copyright:
       "© {year} Edu Ferreira — built with Next.js, stubbornness and a lot of coffee 🙏.",
     viewSource: "view source ↗",
+    curlHint: "in a terminal",
+    curlCopy: "Copy the curl command {host}",
+    curlCopied: "Command copied",
   },
 
   commandMenu: {

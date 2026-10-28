@@ -288,12 +288,29 @@ export const pt = {
     },
   },
 
+  // The résumé a terminal gets from `curl` (lib/terminal.ts). Server
+  // only; {host} is the site's domain.
+  terminal: {
+    projects: "projetos",
+    experience: "experiência",
+    education: "formação",
+    stack: "stack",
+    cvHint: "o currículo inteiro, em texto: curl {host}/cv",
+    pdf: "em pdf: {url}",
+    shellHint: 'no navegador o site tem um shell de verdade: aperte ":".',
+    signoff: "escrito à mão, linha por linha · {host}",
+  },
+
   footer: {
     blurb:
       "Dev fullstack: Java no back, React e TypeScript no front. Aprendendo um pouco mais todo dia.",
     copyright:
       "© {year} Edu Ferreira — feito com Next.js, persistência e muito café 🙏.",
     viewSource: "ver código-fonte ↗",
+    // The curl line: the command is code, the same in every locale.
+    curlHint: "no terminal",
+    curlCopy: "Copiar o comando curl {host}",
+    curlCopied: "Comando copiado",
   },
 
   commandMenu: {

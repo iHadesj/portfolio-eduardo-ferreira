@@ -8,7 +8,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        // The design-system bench and the GitHub proxy are not content.
+        // The design-system bench and the terminal résumé are not content.
         disallow: ["/api/", "/dev/", "/en/dev/"],
       },
     ],

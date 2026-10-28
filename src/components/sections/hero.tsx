@@ -10,17 +10,6 @@ import type { Dictionary } from "@/lib/i18n/dictionaries";
 import type { Locale } from "@/lib/i18n/config";
 import { projectPath } from "@/lib/i18n/routes";
 
-/** Stack names are proper nouns: the same in every locale. */
-const STACK = [
-  "React",
-  "Next.js",
-  "TypeScript",
-  "Java",
-  "Spring",
-  "PostgreSQL",
-  "Three.js",
-] as const;
-
 /** Case study behind each delivery id; anything else is the job itself. */
 const DELIVERY_SLUG: Record<string, string> = {
   "api-java": "api-java-postgresql",
@@ -195,7 +184,7 @@ export function Hero({ dict, locale }: { dict: Dictionary; locale: Locale }) {
                 </dt>
                 <dd>
                   <ul className="hero-readout__stack">
-                    {STACK.map((name) => (
+                    {siteConfig.stack.map((name) => (
                       <li key={name} data-pull data-pull-decode>
                         {name}
                       </li>
