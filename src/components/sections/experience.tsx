@@ -1,22 +1,156 @@
 import { SectionHeading } from "@/components/ui/section-heading";
-import { Reveal } from "@/components/ui/reveal";
 import { Badge } from "@/components/ui/badge";
+import { TransitionLink } from "@/components/ui/transition-link";
 import { ScrollSection } from "@/components/layout/scroll-flow";
+import { localizedProjects } from "@/lib/projects";
+import {
+  LANES,
+  STORY_AT,
+  buildGraph,
+  laneSpans,
+  shortHash,
+  type GraphRow,
+  type Lane,
+  type Span,
+} from "@/lib/trajectory";
+import { intlLocale, type Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
+import { fill } from "@/lib/i18n/format";
+import { projectPath } from "@/lib/i18n/routes";
 
-/**
- * Indent (in rem) of each stop from md up. The timeline wanders instead of
- * running down a ruled border: every stop sits on a different step and a
- * curve joins it to the next one.
- */
-const STEPS = [0, 3.5, 1.5, 5, 2.5];
+/* Graph geometry, in px: lanes 14 apart, the node 14 down a 28-tall top. */
+const X0 = 7;
+const GAP = 14;
+const NODE_Y = 14;
+const TOP = 28;
+const WIDTH = X0 * 2 + (LANES.length - 1) * GAP;
 
-function stepAt(index: number) {
-  return STEPS[index % STEPS.length] ?? 0;
+const laneX = (lane: Lane) => X0 + LANES.indexOf(lane) * GAP;
+
+const curve = (x1: number, y1: number, x2: number, y2: number) => {
+  const mid = (y1 + y2) / 2;
+  return `M${x1} ${y1} C${x1} ${mid} ${x2} ${mid} ${x2} ${y2}`;
+};
+
+/** "out 2026" / "Oct 2026"; a bare year stays a year. */
+function monthYear(date: string, intl: string): string {
+  const [year, month] = date.split("-").map(Number);
+  if (!year || !month) return date;
+  const name = new Intl.DateTimeFormat(intl, {
+    month: "short",
+    timeZone: "UTC",
+  }).format(new Date(Date.UTC(year, month - 1, 1)));
+  return `${name.replace(".", "")} ${year}`;
 }
 
-export function Experience({ dict }: { dict: Dictionary }) {
-  const items = dict.experience.items;
+/**
+ * One row's slice of the graph: a fixed top holding the node and any curve
+ * into or out of it, and a line running on below for every lane still alive,
+ * so the row can grow (open its story) without breaking the graph.
+ */
+function RowGraph({
+  row,
+  index,
+  spans,
+}: {
+  row: GraphRow;
+  index: number;
+  spans: Record<Lane, Span>;
+}) {
+  const edges: { d: string; lane: Lane }[] = [];
+  const below: Lane[] = [];
+
+  for (const lane of LANES) {
+    const { top, bottom } = spans[lane];
+    if (index < top || index > bottom) continue;
+    const x = laneX(lane);
+
+    if (index !== top && index !== bottom) {
+      edges.push({ d: `M${x} 0 V${TOP}`, lane });
+      below.push(lane);
+      continue;
+    }
+    if (index === top && row.kind === "merge" && row.from === lane) {
+      // The merged lane rises into the node of the lane it joins.
+      edges.push({ d: curve(x, TOP, laneX(row.lane), NODE_Y), lane });
+      if (index !== bottom) below.push(lane);
+      continue;
+    }
+    if (index !== top) edges.push({ d: `M${x} 0 V${NODE_Y}`, lane });
+    if (index === bottom) {
+      // A lane's first commit leans back onto the lane it branched off.
+      if (row.kind === "branch" && row.parent) {
+        edges.push({ d: curve(x, NODE_Y, laneX(row.parent), TOP), lane });
+      }
+    } else {
+      edges.push({ d: `M${x} ${NODE_Y} V${TOP}`, lane });
+      below.push(lane);
+    }
+  }
+
+  const ring = row.kind === "merge" || row.kind === "head";
+
+  return (
+    <div aria-hidden className="graph-cell">
+      <svg
+        className="graph-top"
+        width={WIDTH}
+        height={TOP}
+        viewBox={`0 0 ${WIDTH} ${TOP}`}
+      >
+        {edges.map((edge, i) => (
+          <path
+            key={i}
+            d={edge.d}
+            pathLength={1}
+            className="graph-edge"
+            data-lane={edge.lane}
+          />
+        ))}
+        <circle
+          cx={laneX(row.lane)}
+          cy={NODE_Y}
+          r={ring ? 4.5 : 3.5}
+          className="graph-node"
+          data-lane={row.lane}
+          data-ring={ring ? "" : undefined}
+        />
+      </svg>
+      {below.map((lane) => (
+        <span
+          key={lane}
+          className="graph-line"
+          data-lane={lane}
+          style={{ left: laneX(lane) }}
+        />
+      ))}
+    </div>
+  );
+}
+
+/**
+ * The trajectory as `git log --graph`: the course, the degree, the internship
+ * and the personal projects are branches running side by side — which a
+ * single vertical timeline hides — and every case study is a commit on the
+ * lane it grew on, linking to it. Each lane tells its story (role, bullets,
+ * stack) at its newest row, open by default and collapsible. Server-rendered
+ * SVG and CSS: the lines draw themselves along a scroll timeline, and
+ * reduced motion simply shows them drawn.
+ */
+export function Experience({
+  locale,
+  dict,
+}: {
+  locale: Locale;
+  dict: Dictionary;
+}) {
+  const t = dict.experience;
+  const g = t.graph;
+  const intl = intlLocale[locale];
+  const projects = localizedProjects(locale);
+  const titles = new Map(projects.map((p) => [p.slug, p.title]));
+  const rows = buildGraph(projects);
+  const spans = laneSpans(rows);
 
   return (
     <ScrollSection
@@ -24,79 +158,89 @@ export function Experience({ dict }: { dict: Dictionary }) {
       className="container-hades section-pad scroll-mt-24"
     >
       <SectionHeading
-        eyebrow={dict.experience.eyebrow}
-        title={dict.experience.title}
+        eyebrow={t.eyebrow}
+        title={t.title}
+        description={t.description}
       />
+      <p aria-hidden className="graph-command">
+        <span className="text-term-green">$</span> {g.command}
+      </p>
 
-      <ol className="experience-path relative mt-10 flex flex-col gap-10 pl-8">
-        {items.map((item, index) => {
-          const step = stepAt(index);
-          const nextStep = stepAt(index + 1);
-          const isLast = index === items.length - 1;
-          return (
-            <li
-              key={`${item.role}-${index}`}
-              className="experience-stop group relative"
-              style={
-                {
-                  "--stop-indent": `${step}rem`,
-                  "--stop-span": `${Math.abs(nextStep - step)}rem`,
-                  "--stop-lead": `${Math.min(0, nextStep - step)}rem`,
-                } as React.CSSProperties
-              }
-            >
-              {isLast ? null : (
-                <svg
-                  aria-hidden
-                  className="experience-stop__curve"
-                  viewBox="0 0 100 100"
-                  preserveAspectRatio="none"
-                >
-                  {/* Straight on phones (no indent), an S-bend from md up. */}
-                  <path
-                    className="experience-stop__line"
-                    d="M50 0 C50 55 50 45 50 100"
-                  />
-                  <path
-                    className="experience-stop__bend"
-                    d={
-                      nextStep >= step
-                        ? "M0 0 C0 55 100 45 100 100"
-                        : "M100 0 C100 55 0 45 0 100"
-                    }
-                  />
-                </svg>
-              )}
-              <span
-                aria-hidden
-                className="border-abyss bg-ash group-hover:bg-signal absolute top-1.5 -left-[37px] size-2.5 rounded-full border-2 transition-colors"
-              />
-              <Reveal className="flex flex-col gap-2">
-                <span className="text-label text-smoke font-mono uppercase">
-                  {item.period}
+      <ol className="graph">
+        {rows.map((row, index) => {
+          const storyLane = row.kind === "merge" ? row.from : row.lane;
+          const story =
+            STORY_AT[storyLane] === row.kind
+              ? t.items.find((item) => item.id === storyLane)
+              : undefined;
+          const lane = g.lanes[storyLane];
+          const ref =
+            row.kind === "head"
+              ? fill(g.head, { lane })
+              : row.kind === "merge"
+                ? fill(g.merge, { lane })
+                : row.kind === "branch"
+                  ? fill(row.parent ? g.branch : g.init, { lane })
+                  : null;
+          const date = row.date ? monthYear(row.date, intl) : g.now;
+          const hash = shortHash(
+            `${row.kind}:${storyLane}:${row.kind === "commit" ? row.slug : (row.date ?? "")}`,
+          );
+
+          const head = (
+            <span className="graph-head">
+              <span aria-hidden className="graph-hash" data-lane={storyLane}>
+                {hash}
+              </span>
+              {ref ? (
+                <span className="graph-ref" data-lane={storyLane}>
+                  {`(${ref})`}
                 </span>
-                <h3 className="font-display text-h3 text-bone">
-                  {item.role}
-                  {item.org ? (
-                    <span className="text-smoke"> · {item.org}</span>
-                  ) : null}
-                </h3>
-                <ul className="text-smoke flex flex-col gap-1 text-sm">
-                  {item.bullets.map((bullet, bulletIndex) => (
-                    <li key={bulletIndex} className="flex gap-2">
-                      <span aria-hidden className="text-signal">
-                        —
-                      </span>
-                      <span>{bullet}</span>
-                    </li>
-                  ))}
-                </ul>
-                <div className="flex flex-wrap gap-2 pt-1">
-                  {item.stack.map((tech) => (
-                    <Badge key={tech}>{tech}</Badge>
-                  ))}
-                </div>
-              </Reveal>
+              ) : null}
+              {row.kind === "commit" ? (
+                <TransitionLink href={projectPath(locale, row.slug)}>
+                  {fill(g.commit, { title: titles.get(row.slug) ?? row.slug })}
+                </TransitionLink>
+              ) : null}
+            </span>
+          );
+
+          return (
+            <li key={hash} className="graph-row">
+              <RowGraph row={row} index={index} spans={spans} />
+              <div className="graph-text">
+                {story ? (
+                  <details open className="graph-story" data-lane={storyLane}>
+                    <summary>
+                      {head}
+                      <h3 className="graph-role">
+                        {story.role}
+                        {story.org ? (
+                          <span className="text-smoke"> · {story.org}</span>
+                        ) : null}
+                      </h3>
+                      <span className="graph-date">{story.period}</span>
+                    </summary>
+                    <div className="graph-story__body">
+                      <ul className="graph-story__bullets">
+                        {story.bullets.map((bullet, i) => (
+                          <li key={i}>{bullet}</li>
+                        ))}
+                      </ul>
+                      <div className="flex flex-wrap gap-2">
+                        {story.stack.map((tech) => (
+                          <Badge key={tech}>{tech}</Badge>
+                        ))}
+                      </div>
+                    </div>
+                  </details>
+                ) : (
+                  <>
+                    {head}
+                    <span className="graph-date">{date}</span>
+                  </>
+                )}
+              </div>
             </li>
           );
         })}

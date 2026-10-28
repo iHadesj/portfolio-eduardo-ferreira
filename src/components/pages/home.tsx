@@ -22,7 +22,7 @@ export function HomePage({ locale }: { locale: Locale }) {
     <ScrollFlow id="conteudo">
       <Hero locale={locale} dict={dict} />
       <Projects locale={locale} dict={dict} />
-      <Experience dict={dict} />
+      <Experience locale={locale} dict={dict} />
       <About dict={dict} />
       <StatusBoard locale={locale} dict={dict} />
       <Contact locale={locale} dict={dict} />

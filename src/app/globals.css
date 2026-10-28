@@ -1205,55 +1205,230 @@ html[data-theme="light"] .hole-stage::before {
   }
 }
 
-/* Experience: a wandering path instead of a ruled border. Each stop carries
-   its indent and the offset to the next one as custom properties; the curve
-   is an SVG stretched from this dot to the next (non-scaling stroke keeps it
-   a hairline whatever the stretch). */
-.experience-stop {
-  --stop-indent: 0rem;
-  --stop-span: 0rem;
-  --stop-lead: 0rem;
+/* Trajectory as `git log --graph` (sections/experience.tsx). Every row's
+   graph cell is a fixed 28px top (the node and its curves, in SVG) plus a
+   line running on below for each lane still alive, so a row can grow — open
+   or close its story — and the graph stays whole. Lanes carry their colour. */
+[data-lane="projetos"] {
+  --lane: var(--color-signal);
 }
 
-.experience-stop__curve {
-  position: absolute;
-  /* From this dot's centre (top-1.5 + 5px) to the next one's. */
-  top: calc(0.375rem + 5px);
-  /* Dot centre: -37px + half of the 10px dot. */
-  left: calc(-32px - 1px);
-  width: 2px;
-  height: calc(100% + 2.5rem);
+[data-lane="ebac"] {
+  --lane: var(--color-term-yellow);
+}
+
+[data-lane="vtt"] {
+  --lane: var(--color-term-blue);
+}
+
+[data-lane="estacio"] {
+  --lane: var(--color-term-green);
+}
+
+.graph-command {
+  margin-top: 1.25rem;
+  color: var(--color-smoke);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+}
+
+.graph {
+  margin-top: 1rem;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-mono);
+}
+
+.graph-row {
+  display: grid;
+  grid-template-columns: 3.5rem minmax(0, 1fr);
+  column-gap: 0.5rem;
+  view-timeline: --graph-row block;
+}
+
+.graph-cell {
+  position: relative;
+}
+
+.graph-top {
+  display: block;
   overflow: visible;
+}
+
+.graph-edge {
   fill: none;
+  stroke: var(--lane);
+  stroke-width: 1.5;
+  stroke-linecap: round;
 }
 
-.experience-stop__line,
-.experience-stop__bend {
-  stroke: color-mix(in oklab, var(--color-ash) 62%, var(--color-signal));
-  stroke-width: 1.25;
-  vector-effect: non-scaling-stroke;
+.graph-node {
+  fill: var(--lane);
 }
 
-.experience-stop__bend {
+.graph-node[data-ring] {
+  fill: var(--color-abyss);
+  stroke: var(--lane);
+  stroke-width: 2;
+}
+
+.graph-line {
+  position: absolute;
+  top: 28px;
+  bottom: 0;
+  width: 1.5px;
+  margin-left: -0.75px;
+  background: var(--lane);
+}
+
+.graph-text {
+  min-width: 0;
+  padding-bottom: 1rem;
+}
+
+/* The first line sits on the node: 20px of line box, 4px down. */
+.graph-head {
+  display: block;
+  padding-top: 0.25rem;
+  color: var(--color-bone);
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
+}
+
+.graph-hash,
+.graph-ref {
+  margin-right: 0.6ch;
+  color: var(--lane);
+}
+
+.graph-head a {
+  transition: color 160ms var(--ease-out-soft);
+}
+
+.graph-head a:hover,
+.graph-head a:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+.graph-date {
+  display: block;
+  color: var(--color-smoke);
+  font-size: 0.6875rem;
+  line-height: 1.5;
+}
+
+.graph-story summary {
+  cursor: pointer;
+  list-style: none;
+}
+
+.graph-story summary::-webkit-details-marker {
   display: none;
 }
 
-@media (min-width: 48rem) {
-  .experience-stop {
-    margin-left: var(--stop-indent);
-  }
+/* A terminal-style toggle after the ref: [-] open, [+] closed. */
+.graph-story summary .graph-head::after {
+  content: " [-]";
+  color: var(--color-smoke);
+}
 
-  .experience-stop__curve {
-    width: max(2px, var(--stop-span));
-    left: calc(-32px - 1px + var(--stop-lead));
-  }
+.graph-story:not([open]) summary .graph-head::after {
+  content: " [+]";
+}
 
-  .experience-stop__line {
-    display: none;
-  }
+.graph-story summary:focus-visible {
+  outline: 2px solid var(--color-term-green);
+  outline-offset: 2px;
+}
 
-  .experience-stop__bend {
-    display: inline;
+.graph-role {
+  margin-top: 0.15rem;
+  color: var(--color-bone);
+  font-family: var(--font-display);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.graph-story__body {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 0.65rem;
+  padding: 0.85rem 0.95rem;
+  border: 1px solid var(--color-ash);
+  border-left: 2px solid color-mix(in oklab, var(--lane) 55%, var(--color-ash));
+  border-radius: var(--radius-md);
+  background: color-mix(in oklab, var(--color-basalt) 74%, transparent);
+}
+
+.graph-story__bullets {
+  display: grid;
+  gap: 0.4rem;
+  padding: 0;
+  list-style: none;
+  color: var(--color-smoke);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.graph-story__bullets li {
+  position: relative;
+  padding-left: 1.1rem;
+}
+
+.graph-story__bullets li::before {
+  position: absolute;
+  left: 0;
+  content: "—";
+  color: var(--lane);
+}
+
+/* The lines draw themselves as each row crosses into view. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .graph-edge {
+      stroke-dasharray: 1;
+      stroke-dashoffset: 1;
+      animation: graph-draw linear both;
+      animation-timeline: --graph-row;
+      animation-range: entry 0% cover 22%;
+    }
+
+    .graph-node {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: graph-node linear both;
+      animation-timeline: --graph-row;
+      animation-range: entry 10% cover 24%;
+    }
+
+    .graph-line {
+      transform-origin: top;
+      animation: graph-grow linear both;
+      animation-timeline: --graph-row;
+      animation-range: entry 15% cover 45%;
+    }
+  }
+}
+
+@keyframes graph-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes graph-node {
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
+}
+
+@keyframes graph-grow {
+  from {
+    transform: scaleY(0);
   }
 }
 

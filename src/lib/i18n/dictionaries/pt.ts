@@ -167,8 +167,28 @@ export const pt = {
   experience: {
     eyebrow: "xp",
     title: "Como eu cheguei até aqui.",
+    description:
+      "Do jeito que o git contaria: curso, faculdade, estágio e projetos correndo em paralelo, cada um numa branch, cada projeto um commit.",
+    // The git log --graph (sections/experience.tsx). {lane} is a branch
+    // name from `lanes`.
+    graph: {
+      command: "git log --graph --oneline",
+      head: "HEAD → {lane}",
+      merge: "merge {lane}",
+      branch: "branch {lane}",
+      init: "init {lane}",
+      commit: "feat: {title}",
+      now: "agora",
+      lanes: {
+        projetos: "projetos",
+        ebac: "ebac",
+        vtt: "vtt",
+        estacio: "estacio",
+      },
+    },
     items: [
       {
+        id: "vtt",
         period: "fev 2025 — out 2026",
         role: "Estagiário de Desenvolvimento Web",
         org: "VTT",
@@ -181,6 +201,7 @@ export const pt = {
         stack: ["React", "TypeScript", "Three.js", "Java", "SVN"],
       },
       {
+        id: "estacio",
         period: "fev 2025 — jul 2027 (previsão)",
         role: "Análise e Desenvolvimento de Sistemas",
         org: "Estácio",
@@ -191,6 +212,7 @@ export const pt = {
         stack: ["Estruturas de dados", "POO", "SQL"],
       },
       {
+        id: "projetos",
         period: "2024 — agora",
         role: "Desenvolvedor Fullstack",
         org: "projetos próprios",
@@ -202,6 +224,7 @@ export const pt = {
         stack: ["React", "TypeScript", "Next.js", "IndexedDB", "PostgreSQL"],
       },
       {
+        id: "ebac",
         period: "set 2023 — out 2024",
         role: "Curso livre Back-End Java",
         org: "EBAC",

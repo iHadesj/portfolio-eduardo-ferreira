@@ -147,8 +147,26 @@ export const en = {
   experience: {
     eyebrow: "xp",
     title: "How I got here.",
+    description:
+      "The way git would tell it: a course, a degree, an internship and projects running side by side, each on its own branch, each project a commit.",
+    graph: {
+      command: "git log --graph --oneline",
+      head: "HEAD → {lane}",
+      merge: "merge {lane}",
+      branch: "branch {lane}",
+      init: "init {lane}",
+      commit: "feat: {title}",
+      now: "now",
+      lanes: {
+        projetos: "projects",
+        ebac: "ebac",
+        vtt: "vtt",
+        estacio: "estacio",
+      },
+    },
     items: [
       {
+        id: "vtt",
         period: "Feb 2025 — Oct 2026",
         role: "Web Development Intern",
         org: "VTT",
@@ -161,6 +179,7 @@ export const en = {
         stack: ["React", "TypeScript", "Three.js", "Java", "SVN"],
       },
       {
+        id: "estacio",
         period: "Feb 2025 — Jul 2027 (expected)",
         role: "Systems Analysis and Development",
         org: "Estácio",
@@ -171,6 +190,7 @@ export const en = {
         stack: ["Data structures", "OOP", "SQL"],
       },
       {
+        id: "projetos",
         period: "2024 — now",
         role: "Fullstack Developer",
         org: "personal projects",
@@ -182,6 +202,7 @@ export const en = {
         stack: ["React", "TypeScript", "Next.js", "IndexedDB", "PostgreSQL"],
       },
       {
+        id: "ebac",
         period: "Sep 2023 — Oct 2024",
         role: "Java Back-End course",
         org: "EBAC",
