@@ -26,11 +26,6 @@ import { parseRgb, useIdleStart } from "./stage-utils";
 
 /** The black hole's microcopy (dictionary `hero.hole`). */
 export interface HoleCopy {
-  tag: string;
-  detected: string;
-  how: string;
-  orbitMouse: string;
-  orbitTouch: string;
   idle: string;
   holding: string;
   collapsing: string;
@@ -120,8 +115,8 @@ function countdown(seconds: number): string {
  * with a crossfade and never stops moving: the disk turns, the camera
  * drifts round the hole and nods, stars twinkle, dust spirals in, and a
  * ring of light runs out through the disk now and then. With a mouse, the
- * view leans toward the pointer, dust near it falls in faster, and a small
- * system readout beside the hole fades in as the pointer nears it. A drag
+ * view leans toward the pointer, dust near it falls in faster, and the
+ * countdown under the hole brightens as the pointer nears it. A drag
  * orbits the camera (a flick keeps it spinning) and, with a mouse, tilts
  * it, springing back; a tap sends a ring of light out.
  *
@@ -637,7 +632,7 @@ export function BlackHoleStage({
       };
       const onContextMenu = (event: Event) => event.preventDefault();
       // Desktop: lean toward the pointer anywhere on the page, and track
-      // how near it is (the readout, the dust).
+      // how near it is (the countdown, the dust).
       const onHover = (event: PointerEvent) => {
         if (event.pointerType !== "mouse") return;
         const box = stage.getBoundingClientRect();
@@ -813,23 +808,6 @@ export function BlackHoleStage({
         ) : null}
         <div ref={flashRef} className="hole-flash" />
       </div>
-      {showCanvas ? (
-        // The system readout: near-invisible until the pointer nears the
-        // hole, so the curious find the mechanic and nobody else is
-        // interrupted.
-        <div
-          aria-hidden
-          className={cn("hole-readout", live && "hole-readout--live")}
-        >
-          <p className="hole-readout__tag">{copy.tag}</p>
-          <p className="hole-readout__more">{copy.detected}</p>
-          <p className="hole-readout__more">{copy.how}</p>
-          <p className="hole-readout__orbit">
-            <span className="stage-hint__mouse">{copy.orbitMouse}</span>
-            <span className="stage-hint__touch">{copy.orbitTouch}</span>
-          </p>
-        </div>
-      ) : null}
       {/* Rendered from the server on, so its line is already taken when the
           scene comes alive and the copy under it never jumps. CSS keeps it
           hidden (and out of the tab order) until then, and drops it — space

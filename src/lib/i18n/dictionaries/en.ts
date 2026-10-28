@@ -73,11 +73,6 @@ export const en = {
     availabilityClosed: "Not available right now",
     availabilityAria: "Professional availability",
     hole: {
-      tag: "interactive anomaly",
-      detected: "event horizon detected.",
-      how: "hold the singularity for 3 s to collapse the system.",
-      orbitMouse: "drag to orbit",
-      orbitTouch: "swipe to orbit",
       idle: "hold to collapse",
       holding: "event horizon",
       collapsing: "collapse",

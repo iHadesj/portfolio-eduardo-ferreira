@@ -85,14 +85,8 @@ export const pt = {
     availabilityOpen: "Aberto a oportunidades",
     availabilityClosed: "Sem disponibilidade no momento",
     availabilityAria: "Disponibilidade profissional",
-    // The black hole's microcopy: a system readout, revealed as the pointer
-    // nears it, and the hold's countdown.
+    // The black hole's microcopy: the hold's countdown.
     hole: {
-      tag: "anomalia interativa",
-      detected: "horizonte de eventos detectado.",
-      how: "segure a singularidade por 3 s para colapsar o sistema.",
-      orbitMouse: "arraste para orbitar",
-      orbitTouch: "deslize para orbitar",
       idle: "segure para colapsar",
       holding: "horizonte de eventos",
       collapsing: "colapso",

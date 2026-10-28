@@ -576,7 +576,7 @@ html[data-boot="skip"] .boot {
   }
 }
 
-/* "Drag to orbit", worded for the input at hand (the black hole's readout). */
+/* A hint worded for the input at hand (the status line's). */
 .stage-hint__touch {
   display: none;
 }
@@ -696,57 +696,6 @@ html[data-boot="skip"] .boot {
    of dark: there the disk stands on its own. */
 html[data-theme="light"] .hole-stage::before {
   display: none;
-}
-
-/* The system readout by the hole: near-invisible until the pointer comes
-   close (--near, 0–1, written by the stage), always faint on touch. Orange
-   is the singularity's colour, grey its metadata. Phones get only its tag
-   and the orbit hint, in the stage's corner, clear of the disk; wide
-   screens the whole of it, stacked over the countdown. */
-.hole-readout {
-  position: absolute;
-  top: 0.25rem;
-  left: 0;
-  max-width: 30ch;
-  pointer-events: none;
-  color: var(--color-smoke);
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  line-height: 1.5;
-  opacity: 0;
-  transition: opacity 400ms var(--ease-out-expo);
-}
-
-.hole-readout--live {
-  opacity: calc(0.07 + 0.93 * var(--near, 0));
-}
-
-/* While the hold runs, the countdown does the talking. */
-.hole:not([data-phase="idle"]) .hole-readout--live {
-  opacity: 0;
-}
-
-.hole-readout__tag {
-  margin-bottom: 0.15rem;
-  color: var(--color-hole-flame);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.hole-readout__tag::before {
-  content: "// ";
-}
-
-.hole-readout__orbit {
-  color: var(--color-signal-deep);
-}
-
-.hole-readout__more {
-  display: none;
-}
-
-.hole-readout__orbit::before {
-  content: "↔ ";
 }
 
 /* The hold's countdown: "hold to collapse // 00:03" over a hairline — the
@@ -983,13 +932,8 @@ html[data-theme="light"] .hole-stage::before {
   color: var(--color-term-green);
 }
 
-/* Touch has no pointer to come near with, so the readout would just sit on
-   the art; the countdown line under it says what to do. */
+/* Touch has no pointer to come near with: the countdown stays lit. */
 @media (pointer: coarse) {
-  .hole-readout {
-    display: none;
-  }
-
   .hole-trigger--live {
     opacity: 0.85;
   }
@@ -1007,24 +951,6 @@ html[data-theme="light"] .hole-stage::before {
 }
 
 @media (min-width: 64rem) {
-  .hole-readout {
-    top: auto;
-    bottom: 3rem;
-    left: 50%;
-    width: max-content;
-    max-width: 60ch;
-    text-align: center;
-    transform: translateX(-50%);
-  }
-
-  .hole-readout__more {
-    display: block;
-  }
-
-  .hole-readout__orbit {
-    margin-top: 0.15rem;
-  }
-
   .hole-stage {
     /* 47.7% wider than the column (195 / 132 cells at the column's
        scale); up to half of that goes right, into the gutter beside the
