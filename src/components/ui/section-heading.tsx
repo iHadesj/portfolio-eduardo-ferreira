@@ -35,7 +35,7 @@ export function SectionHeading({
       </p>
       <Heading
         className={cn(
-          "font-display text-bone",
+          "print-in font-display text-bone",
           Heading === "h2" ? "text-h2" : "text-h3",
         )}
       >

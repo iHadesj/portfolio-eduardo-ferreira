@@ -46,9 +46,9 @@
   --color-hole-blue: #cfe0ff;
 
   /* Radii */
-  --radius-sm: 2px;
-  --radius-md: 4px;
-  --radius-lg: 6px;
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
   --radius-pill: 9999px;
 
   /* Easings */
@@ -123,7 +123,7 @@
   width: 100%;
   max-width: 72rem;
   margin-inline: auto;
-  padding-inline: clamp(1.25rem, 4vw, 2.5rem);
+  padding-inline: clamp(1.5rem, 5vw, 2.5rem);
 }
 
 @utility section-pad {
@@ -1166,10 +1166,9 @@ html[data-theme="light"] .hole-stage::before {
 .service {
   display: grid;
   gap: 0.6rem;
-  padding: 0.9rem 1rem;
-  border: 1px solid var(--color-ash);
+  padding: 1rem 1.1rem;
   border-radius: var(--radius-md);
-  background: color-mix(in oklab, var(--color-basalt) 74%, transparent);
+  background: color-mix(in oklab, var(--color-basalt) 80%, transparent);
   font-size: 0.75rem;
 }
 
@@ -1627,11 +1626,8 @@ html[data-theme="light"] .hole-stage::before {
   display: grid;
   gap: 0.75rem;
   margin-top: 0.65rem;
-  padding: 0.85rem 0.95rem;
-  border: 1px solid var(--color-ash);
-  border-left: 2px solid color-mix(in oklab, var(--lane) 55%, var(--color-ash));
-  border-radius: var(--radius-md);
-  background: color-mix(in oklab, var(--color-basalt) 74%, transparent);
+  padding: 0.1rem 0 0.1rem 1rem;
+  border-left: 2px solid color-mix(in oklab, var(--lane) 60%, transparent);
 }
 
 .graph-story__bullets {
@@ -2250,10 +2246,9 @@ html[data-theme="light"] .portrait {
   z-index: 10;
   display: grid;
   gap: 0.75rem;
-  padding: 0.85rem 0.95rem 0.9rem;
-  border: 1px solid var(--color-ash);
+  padding: 1rem 1.05rem 1.05rem;
   border-radius: var(--radius-md);
-  background: color-mix(in oklab, var(--color-abyss) 55%, transparent);
+  background: color-mix(in oklab, var(--color-abyss) 62%, transparent);
 }
 
 .decision-flip__top {
@@ -2381,15 +2376,20 @@ html[data-theme="light"] .portrait {
 }
 
 @supports selector(:has(*)) {
+  .decision-flip__faces {
+    perspective: 900px;
+  }
+
   .decision-flip__face {
     grid-area: 1 / 1;
     visibility: hidden;
     opacity: 0;
-    transform: translateY(0.25rem);
+    transform: rotateX(-70deg);
+    transform-origin: 50% 0;
     transition:
-      opacity 180ms var(--ease-out-soft),
-      transform 240ms var(--ease-out-expo),
-      visibility 0s linear 240ms;
+      opacity 200ms var(--ease-out-soft),
+      transform 460ms var(--ease-out-expo),
+      visibility 0s linear 460ms;
   }
 
   .decision-flip:has(input[value="chose"]:checked) [data-side="chose"],
@@ -2411,6 +2411,8 @@ html[data-theme="light"] .portrait {
 
   .decision-flip:has(input[value="code"]:checked) .decision-flip__code {
     display: block;
+    transform-origin: 50% 0;
+    animation: flip-in 460ms var(--ease-out-expo);
   }
 }
 
@@ -2421,7 +2423,7 @@ html[data-theme="light"] .portrait {
   display: grid;
   min-width: 0;
   margin: 0;
-  border: 1px solid var(--color-ash);
+  overflow: hidden;
   border-radius: var(--radius-md);
   background: var(--color-void);
   font-family: var(--font-mono);
@@ -2760,10 +2762,118 @@ html[data-theme="light"] .portrait {
   }
 }
 
+/* ──────────────────────────────────────────────────────────────────────────
+   Motion — the page as a presentation. All of it rides scroll timelines
+   (the compositor's, no JavaScript): headings print across as they arrive,
+   cards come up out of the page and settle, covers drift against the
+   scroll, why.txt is cat'ed line by line, status units rise in one after
+   another and the live ones keep a heartbeat. Reduced motion, or a browser
+   without scroll-driven animations, simply shows everything in place.
+   ────────────────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .reveal--card {
+      transform-origin: 50% 100%;
+      animation-name: card-in;
+      animation-range: entry 0% cover 30%;
+    }
+
+    .print-in {
+      animation: print-in linear both;
+      animation-timeline: view();
+      animation-range: entry 20% cover 34%;
+    }
+
+    .project-card__cover-img {
+      animation: cover-drift linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 100%;
+    }
+
+    .about-why__lines p {
+      animation: line-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 100%;
+    }
+
+    .service,
+    .graph-story__bullets li {
+      animation: reveal-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 90%;
+    }
+  }
+
+  .service__dot {
+    position: relative;
+  }
+
+  [data-state="up"] > .service__dot::after,
+  [data-state="up"] .service__unit > .service__dot::after {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    content: "";
+    background: var(--color-term-green);
+    animation: ping 2.6s var(--ease-out-soft) infinite;
+  }
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: perspective(900px) translateY(2.75rem) rotateX(14deg) scale(0.96);
+  }
+}
+
+@keyframes print-in {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes cover-drift {
+  from {
+    translate: 0 -4%;
+  }
+  to {
+    translate: 0 4%;
+  }
+}
+
+@keyframes line-in {
+  from {
+    opacity: 0;
+    translate: -0.75rem 0;
+  }
+}
+
+@keyframes flip-in {
+  from {
+    opacity: 0;
+    transform: perspective(900px) rotateX(-60deg);
+  }
+}
+
+@keyframes ping {
+  0% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  70%,
+  100% {
+    opacity: 0;
+    transform: scale(3.2);
+  }
+}
+
 @keyframes reveal-in {
   from {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(1.5rem) scale(0.985);
   }
 }
 

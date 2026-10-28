@@ -10,6 +10,7 @@ import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { projectPath } from "@/lib/i18n/routes";
 import { fill } from "@/lib/i18n/format";
+import { cn } from "@/lib/utils";
 
 /**
  * How many case studies get a full card. The rest are listed one per line:
@@ -58,9 +59,10 @@ export async function Projects({
           return (
             <Reveal
               key={project.slug}
-              className={
-                flip ? "lg:ml-auto lg:w-[88%]" : "lg:mr-auto lg:w-[88%]"
-              }
+              className={cn(
+                "reveal--card",
+                flip ? "lg:ml-auto lg:w-[88%]" : "lg:mr-auto lg:w-[88%]",
+              )}
             >
               <ProjectCard
                 project={project}

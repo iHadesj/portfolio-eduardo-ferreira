@@ -32,7 +32,7 @@ export function About({ dict }: { dict: Dictionary }) {
             <p aria-hidden className="about-why__command">
               <span className="text-term-green">$</span> cat why.txt
             </p>
-            <h2 lang="en" className="font-display text-h2 text-bone">
+            <h2 lang="en" className="print-in font-display text-h2 text-bone">
               {headline}
             </h2>
             <div lang="en" className="about-why__lines">

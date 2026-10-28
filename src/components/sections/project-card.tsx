@@ -61,7 +61,7 @@ export function ProjectCard({
   return (
     <article
       className={cn(
-        "project-card group border-ash bg-basalt hover:border-signal/40 hover:glow-signal relative grid gap-6 border p-5 transition-colors duration-200 md:p-6",
+        "project-card group border-ash/60 bg-basalt/80 hover:border-signal/40 hover:glow-signal relative grid gap-6 rounded-lg border p-6 transition-colors duration-200 md:p-7",
         flip
           ? "project-card--flip md:grid-cols-[1fr_minmax(0,20rem)]"
           : "md:grid-cols-[minmax(0,20rem)_1fr]",
@@ -80,7 +80,7 @@ export function ProjectCard({
             alt={coverAlt}
             fill
             sizes="(min-width: 768px) 20rem, 100vw"
-            className="object-cover object-top transition duration-300 group-hover:scale-[1.03] group-hover:grayscale-0 [@media(hover:hover)]:grayscale"
+            className="project-card__cover-img scale-[1.1] object-cover object-top transition duration-300 group-hover:scale-[1.14] group-hover:grayscale-0 [@media(hover:hover)]:grayscale"
           />
         ) : (
           <div

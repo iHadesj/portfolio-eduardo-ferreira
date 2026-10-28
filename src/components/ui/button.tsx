@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
  * tailwind-merge tie-break (and `!` keeps them robust regardless).
  */
 const buttonVariants = cva(
-  "rounded-sm font-mono ease-out-expo inline-flex items-center justify-center gap-2 font-medium whitespace-nowrap transition duration-200 disabled:pointer-events-none disabled:opacity-50",
+  "rounded-md font-mono ease-out-expo inline-flex items-center justify-center gap-2 font-medium whitespace-nowrap transition duration-200 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       size: {
