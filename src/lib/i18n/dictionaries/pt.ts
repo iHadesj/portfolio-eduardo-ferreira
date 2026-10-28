@@ -144,7 +144,7 @@ export const pt = {
     // {decisions} and {projects} are counted from the case studies.
     description:
       "{decisions} decisões em {projects} projetos, cada uma com a alternativa que perdeu e o preço que cobrou.",
-    moreOnGithub: "Tem mais coisa no meu GitHub ↓",
+    moreOnGithub: "Tem mais coisa no meu GitHub ↗",
     indexLabel: "outros",
     caseStudy: "Case study →",
     repoAria: "Repositório de {title}",
@@ -214,25 +214,22 @@ export const pt = {
     ],
   },
 
-  github: {
-    eyebrow: "github",
-    title: "Meu GitHub, ao vivo.",
+  // The status board (sections/status-board.tsx): every case study as a
+  // running unit, checked by the server.
+  status: {
+    eyebrow: "status",
+    title: "O que está no ar agora.",
     description:
-      "Puxado direto da API, então é o que está lá de verdade — inclusive os dias em que eu não commitei nada.",
+      "O servidor bate em cada demo a cada 10 minutos e anota o código HTTP, o tempo de resposta e o último commit de cada projeto.",
+    checked: "última checagem às {time}, horário de Brasília",
+    rows: { state: "estado", commit: "commit" },
+    states: { up: "no ar", down: "fora do ar", none: "sem demo pública" },
+    noAnswer: "sem resposta",
+    noCommit: "sem commits públicos",
+    commitAgo: "commit {when}",
+    lineLabel: "status do demo agora:",
     contributionsSuffix: "contribuições no último ano",
     contributionsAria: "{total} contribuições no último ano",
-    feed: {
-      error: "O oráculo do GitHub não respondeu.",
-      retry: "Tentar de novo",
-      showArchive: "Ver repositórios anteriores",
-      loadMore: "Carregar mais",
-      loading: "Carregando…",
-      archiveLabel: "~/arquivo",
-      endOfArchive: "fim do arquivo — por enquanto.",
-      loadError: "não consegui carregar mais agora.",
-      emptyWindow: "nenhum repositório com push nos últimos {months} meses.",
-      noDescription: "Sem descrição.",
-    },
   },
 
   contact: {

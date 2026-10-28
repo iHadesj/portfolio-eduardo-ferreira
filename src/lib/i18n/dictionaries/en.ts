@@ -126,7 +126,7 @@ export const en = {
     title: "Things I've built.",
     description:
       "{decisions} decisions across {projects} projects, each with the alternative it beat and the price it charged.",
-    moreOnGithub: "There's more on my GitHub ↓",
+    moreOnGithub: "There's more on my GitHub ↗",
     indexLabel: "more",
     caseStudy: "Case study →",
     repoAria: "Repository for {title}",
@@ -194,25 +194,20 @@ export const en = {
     ],
   },
 
-  github: {
-    eyebrow: "github",
-    title: "My GitHub, live.",
+  status: {
+    eyebrow: "status",
+    title: "What's up right now.",
     description:
-      "Pulled straight from the API, so it's what's actually there — including the days I didn't commit anything.",
+      "Every 10 minutes the server knocks on each demo and writes down the HTTP status, the response time and each project's last commit.",
+    checked: "last checked at {time}, Brasília time",
+    rows: { state: "state", commit: "commit" },
+    states: { up: "up", down: "down", none: "no public demo" },
+    noAnswer: "no answer",
+    noCommit: "no public commits",
+    commitAgo: "commit {when}",
+    lineLabel: "demo status right now:",
     contributionsSuffix: "contributions in the last year",
     contributionsAria: "{total} contributions in the last year",
-    feed: {
-      error: "The GitHub oracle didn't answer.",
-      retry: "Try again",
-      showArchive: "See earlier repositories",
-      loadMore: "Load more",
-      loading: "Loading…",
-      archiveLabel: "~/archive",
-      endOfArchive: "end of the archive — for now.",
-      loadError: "couldn't load any more right now.",
-      emptyWindow: "no repository pushed in the last {months} months.",
-      noDescription: "No description.",
-    },
   },
 
   contact: {

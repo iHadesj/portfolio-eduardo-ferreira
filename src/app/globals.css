@@ -871,6 +871,124 @@ html[data-theme="light"] .hole-stage::before {
 
 /* GitHub contribution calendar as text: square cells (0.6em advance +
    0.4em tracking = 1em = line height), sized so every week fits the width. */
+/* Status board (sections/status-board.tsx): each case study as a running
+   unit, systemctl-style. The dot is the state at a glance — green when the
+   demo answers, red when it does not, grey when there is none — and the
+   rows say it in words. The card repeats it in one line (.service-line). */
+.status-board__checked {
+  margin-top: 1rem;
+  color: var(--color-smoke);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+}
+
+.status-board {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1.75rem;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-mono);
+}
+
+.service {
+  display: grid;
+  gap: 0.6rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--color-ash);
+  border-radius: var(--radius-md);
+  background: color-mix(in oklab, var(--color-basalt) 74%, transparent);
+  font-size: 0.75rem;
+}
+
+.service__unit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.2rem 0.6rem;
+  font-size: 0.8125rem;
+}
+
+.service__name {
+  color: var(--color-bone);
+}
+
+.service__unit:hover .service__name,
+.service__unit:focus-visible .service__name {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+.service__title {
+  color: var(--color-smoke);
+}
+
+.service__dot {
+  display: inline-block;
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--color-smoke);
+}
+
+[data-state="up"] > .service__dot,
+[data-state="up"] .service__unit > .service__dot {
+  background: var(--color-term-green);
+  box-shadow: 0 0 0.55rem
+    color-mix(in oklab, var(--color-term-green) 55%, transparent);
+}
+
+[data-state="down"] > .service__dot,
+[data-state="down"] .service__unit > .service__dot {
+  background: var(--color-term-red);
+}
+
+.service__rows {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.service__rows > div {
+  display: grid;
+  grid-template-columns: 7ch minmax(0, 1fr);
+  gap: 0.75rem;
+}
+
+.service__rows dt {
+  color: var(--color-smoke);
+}
+
+.service__rows dd {
+  color: var(--color-bone);
+  overflow-wrap: anywhere;
+}
+
+.service__rows a {
+  color: var(--color-smoke);
+  transition: color 160ms var(--ease-out-soft);
+}
+
+.service__rows a:hover,
+.service__rows a:focus-visible {
+  color: var(--color-bone);
+}
+
+.service-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-smoke);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+}
+
+@media (min-width: 48rem) {
+  .status-board {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 .heatmap-ascii {
   container-type: inline-size;
 }

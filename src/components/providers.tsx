@@ -1,25 +1,15 @@
 "use client";
 
-import { useState } from "react";
 import { ThemeProvider } from "next-themes";
 import { MotionConfig } from "motion/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { LenisProvider } from "@/components/layout/lenis-provider";
 
 /**
- * Global client providers, in the §F2 order:
- * ThemeProvider → QueryProvider → MotionConfig → Lenis → children.
+ * Global client providers: ThemeProvider → MotionConfig → Lenis → children.
+ * (React Query left with the repository feed: nothing on the page fetches
+ * from the client any more.)
  */
 export function Providers({ children }: { children: React.ReactNode }) {
-  const [queryClient] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: { staleTime: 60 * 60 * 1000, refetchOnWindowFocus: false },
-        },
-      }),
-  );
-
   return (
     <ThemeProvider
       attribute="data-theme"
@@ -27,11 +17,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
       enableSystem={false}
       themes={["dark", "light", "underworld"]}
     >
-      <QueryClientProvider client={queryClient}>
-        <MotionConfig reducedMotion="user">
-          <LenisProvider>{children}</LenisProvider>
-        </MotionConfig>
-      </QueryClientProvider>
+      <MotionConfig reducedMotion="user">
+        <LenisProvider>{children}</LenisProvider>
+      </MotionConfig>
     </ThemeProvider>
   );
 }

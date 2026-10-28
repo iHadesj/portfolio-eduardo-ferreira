@@ -40,14 +40,14 @@ export function ContributionsHeatmap({
       <div className="flex items-end gap-3">
         <span className="font-display text-bone text-3xl">{total}</span>
         <span className="text-smoke text-sm">
-          {dict.github.contributionsSuffix}
+          {dict.status.contributionsSuffix}
         </span>
       </div>
 
       <div className="heatmap-ascii">
         <pre
           role="img"
-          aria-label={fill(dict.github.contributionsAria, { total })}
+          aria-label={fill(dict.status.contributionsAria, { total })}
           style={{ "--cols": weeks } as CSSProperties}
         >
           {rows.join("\n")}

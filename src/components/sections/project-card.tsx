@@ -3,8 +3,10 @@ import { ArrowUpRight, Braces, Code, Coffee } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { TransitionLink } from "@/components/ui/transition-link";
 import { DecisionFlip } from "@/components/sections/decision-flip";
+import { ServiceLine } from "@/components/sections/status-board";
 import { GitHubIcon } from "@/components/icons";
 import type { LocalizedProject } from "@/lib/projects";
+import type { ServiceStatus } from "@/lib/status";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { fill } from "@/lib/i18n/format";
@@ -41,12 +43,15 @@ export function ProjectCard({
   locale,
   dict,
   flip = false,
+  status,
 }: {
   project: LocalizedProject;
   locale: Locale;
   dict: Dictionary;
   /** Puts the cover on the right from md up (alternating rows). */
   flip?: boolean;
+  /** What the status board saw: demo answer and last commit. */
+  status?: ServiceStatus;
 }) {
   const href = projectPath(locale, project.slug);
   const coverAlt =
@@ -96,18 +101,22 @@ export function ProjectCard({
       </div>
 
       <div className="flex flex-col gap-3">
-        <Badge
-          variant={
-            project.status === "in-progress"
-              ? "pending"
-              : project.status === "shipped"
-                ? "ok"
-                : "default"
-          }
-          className="self-start"
-        >
-          {dict.projects.statuses[project.status]}
-        </Badge>
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+          <Badge
+            variant={
+              project.status === "in-progress"
+                ? "pending"
+                : project.status === "shipped"
+                  ? "ok"
+                  : "default"
+            }
+          >
+            {dict.projects.statuses[project.status]}
+          </Badge>
+          {status ? (
+            <ServiceLine status={status} locale={locale} dict={dict} />
+          ) : null}
+        </div>
 
         <h3
           className="font-display text-h3 text-bone"

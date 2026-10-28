@@ -28,7 +28,6 @@ export function getClientDictionary(locale: Locale) {
     nav: dict.nav,
     commandMenu: dict.commandMenu,
     contactForm: dict.contact.form,
-    githubFeed: dict.github.feed,
     easterEggs: dict.easterEggs,
     anomalies: dict.anomalies,
     // The footer is rendered from inside `SiteChrome`, which is a client

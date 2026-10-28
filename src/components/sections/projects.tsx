@@ -1,9 +1,10 @@
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Reveal } from "@/components/ui/reveal";
 import { ProjectCard } from "@/components/sections/project-card";
-import { SmoothLink } from "@/components/ui/smooth-link";
 import { TransitionLink } from "@/components/ui/transition-link";
 import { localizedProjects } from "@/lib/projects";
+import { projectStatuses } from "@/lib/status";
+import { siteConfig } from "@/lib/site-config";
 import { ScrollSection } from "@/components/layout/scroll-flow";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
@@ -17,7 +18,7 @@ import { fill } from "@/lib/i18n/format";
  */
 const FULL_CARDS = 4;
 
-export function Projects({
+export async function Projects({
   locale,
   dict,
 }: {
@@ -25,6 +26,7 @@ export function Projects({
   dict: Dictionary;
 }) {
   const projects = localizedProjects(locale);
+  const statuses = await projectStatuses();
   const featured = projects.slice(0, FULL_CARDS);
   const rest = projects.slice(FULL_CARDS);
   const decisions = projects.reduce(
@@ -65,6 +67,7 @@ export function Projects({
                 locale={locale}
                 dict={dict}
                 flip={flip}
+                status={statuses[project.slug]}
               />
             </Reveal>
           );
@@ -100,12 +103,14 @@ export function Projects({
       ) : null}
 
       <div className="mt-8">
-        <SmoothLink
-          href="#github"
+        <a
+          href={siteConfig.links.github}
+          target="_blank"
+          rel="noopener noreferrer"
           className="link-underline text-smoke text-sm hover:bg-[length:100%_1px]"
         >
           {dict.projects.moreOnGithub}
-        </SmoothLink>
+        </a>
       </div>
     </ScrollSection>
   );

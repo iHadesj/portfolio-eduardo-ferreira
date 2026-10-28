@@ -117,7 +117,7 @@ function sampleRoute(cubics: Cubic[]): Sampled {
 }
 
 /** Sections whose crossing gets a loop instead of a plain swoop. */
-const LOOP_AT = new Set(["projetos", "github"]);
+const LOOP_AT = new Set(["projetos", "status"]);
 
 function buildRoute(host: HTMLElement): Route | null {
   const sections = Array.from(

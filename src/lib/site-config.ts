@@ -77,6 +77,7 @@ export const navItems: NavItem[] = [
   },
   { id: "trajetoria", href: "#trajetoria", label: { pt: "xp", en: "xp" } },
   { id: "sobre", href: "#sobre", label: { pt: "sobre", en: "about" } },
+  { id: "status", href: "#status", label: { pt: "status", en: "status" } },
   {
     id: "contato",
     href: "#contato",

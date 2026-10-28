@@ -2,7 +2,7 @@ import { Hero } from "@/components/sections/hero";
 import { About } from "@/components/sections/about";
 import { Projects } from "@/components/sections/projects";
 import { Experience } from "@/components/sections/experience";
-import { GithubActivity } from "@/components/sections/github-activity";
+import { StatusBoard } from "@/components/sections/status-board";
 import { Contact } from "@/components/sections/contact";
 import { ScrollFlow } from "@/components/layout/scroll-flow";
 import type { Locale } from "@/lib/i18n/config";
@@ -24,7 +24,7 @@ export function HomePage({ locale }: { locale: Locale }) {
       <Projects locale={locale} dict={dict} />
       <Experience dict={dict} />
       <About dict={dict} />
-      <GithubActivity locale={locale} dict={dict} />
+      <StatusBoard locale={locale} dict={dict} />
       <Contact locale={locale} dict={dict} />
     </ScrollFlow>
   );
