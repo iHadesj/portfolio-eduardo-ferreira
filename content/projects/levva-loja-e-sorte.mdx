@@ -28,6 +28,22 @@ decisions:
     instead: Ponto flutuante para valores em reais
     because: Toda entrada e saída passa por uma única operação de carteira que valida o valor, impede saldo negativo e registra o extrato — sem herdar erro de arredondamento binário.
     cost: Toda exibição precisa atravessar uma camada de formatação.
+    snippet:
+      file: src/shared/lib/money.ts
+      url: https://github.com/iHadesj/Levva-loja-e-sorte/blob/HEAD/src/shared/lib/money.ts#L1-L10
+      lang: ts
+      mark: [2, 9]
+      code: |
+        export function formatBRL(centavos: number): string {
+          if (!Number.isInteger(centavos)) {
+            throw new Error('Valores monetários devem ser inteiros em centavos.');
+          }
+
+          return new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+          }).format(centavos / 100);
+        }
   - choice: Checkout transacional com estorno automático
     instead: Debitar saldo, baixar estoque e gravar o pedido em passos soltos
     because: Saldo, estoque e pedido são gravados na mesma transação do IndexedDB, e qualquer falha no meio dispara estorno na carteira antes de o carrinho ser limpo.

@@ -141,14 +141,22 @@ export const pt = {
   projects: {
     eyebrow: "projetos",
     title: "Coisas que eu construí.",
+    // {decisions} and {projects} are counted from the case studies.
     description:
-      "Em cada um eu conto o que queria resolver, como resolvi e o que faria diferente hoje.",
+      "{decisions} decisões em {projects} projetos, cada uma com a alternativa que perdeu e o preço que cobrou.",
     moreOnGithub: "Tem mais coisa no meu GitHub ↓",
     indexLabel: "outros",
     caseStudy: "Case study →",
     repoAria: "Repositório de {title}",
     demoAria: "Demo de {title}",
     coverAlt: "Tela do projeto {title}",
+    // The decision each card leads with (sections/decision-flip.tsx); its
+    // terms ("custou", "porque") come from projectPage.
+    decision: {
+      legend: "decisão 1 de {total}",
+      sides: { chose: "escolhi", dropped: "descartei", code: "código" },
+      all: "ver as {total} decisões →",
+    },
     statuses: {
       shipped: "no ar",
       "in-progress": "em progresso",
@@ -367,6 +375,7 @@ export const pt = {
     instead: "em vez de",
     because: "porque",
     cost: "custou",
+    snippetAria: "Código de {file}",
     /**
      * Rendered above the MDX body when non-empty. The long-form case studies
      * are authored in PT, so only the EN dictionary fills this in — an empty

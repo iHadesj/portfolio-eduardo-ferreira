@@ -1065,6 +1065,28 @@ html[data-theme="light"] .hole-stage::before {
   }
 }
 
+/* The lead decision under each project in the index, signed like the
+   added line of a diff. */
+.project-index__decision {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  color: var(--color-bone);
+  font-size: 0.75rem;
+  line-height: 1.55;
+}
+
+.project-index__decision::before {
+  content: "+ ";
+  color: var(--color-term-green);
+}
+
+@media (min-width: 48rem) {
+  .project-index__decision {
+    grid-column: 2;
+    grid-row: 2;
+  }
+}
+
 /* Experience: a wandering path instead of a ruled border. Each stop carries
    its indent and the offset to the next one as custom properties; the curve
    is an SVG stretched from this dot to the next (non-scaling stroke keeps it
@@ -1650,6 +1672,272 @@ html[data-theme="light"] .portrait {
   font-size: 0.62rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Decision flip — the decision a project card leads with
+   (sections/decision-flip.tsx). A native radio group picks the side and
+   `:has()` shows it; without `:has()` every side shows, stacked. The two
+   prose sides share one grid cell so the card never changes height.
+   ────────────────────────────────────────────────────────────────────────── */
+.decision-flip {
+  position: relative;
+  z-index: 10;
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.85rem 0.95rem 0.9rem;
+  border: 1px solid var(--color-ash);
+  border-radius: var(--radius-md);
+  background: color-mix(in oklab, var(--color-abyss) 55%, transparent);
+}
+
+.decision-flip__top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+}
+
+.decision-flip__legend {
+  color: var(--color-smoke);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+}
+
+.decision-flip__tabs {
+  display: inline-flex;
+  border: 1px solid var(--color-ash);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+}
+
+.decision-flip__tab {
+  position: relative;
+  padding: 0.4rem 0.7rem;
+  color: var(--color-smoke);
+  cursor: pointer;
+  transition:
+    color 160ms var(--ease-out-soft),
+    background-color 160ms var(--ease-out-soft);
+}
+
+.decision-flip__tab + .decision-flip__tab {
+  border-left: 1px solid var(--color-ash);
+}
+
+/* The input covers its label: the whole tab is the target, and the native
+   radio keeps the keyboard and the screen reader. */
+.decision-flip__tab input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.decision-flip__tab:has(input:checked) {
+  color: var(--color-bone);
+  background: color-mix(in oklab, var(--color-signal) 12%, transparent);
+}
+
+.decision-flip__tab:has(input:focus-visible) {
+  outline: 2px solid var(--color-term-green);
+  outline-offset: 2px;
+}
+
+.decision-flip__faces {
+  display: grid;
+}
+
+.decision-flip__face {
+  display: grid;
+  align-content: start;
+  gap: 0.35rem;
+}
+
+.decision-flip__headline {
+  color: var(--color-bone);
+  font-family: var(--font-display);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.decision-flip__sign {
+  /* inline-block keeps the sign out of the strike-through on the dropped side */
+  display: inline-block;
+  margin-right: 0.6ch;
+  color: var(--color-term-green);
+}
+
+.decision-flip__headline--dropped {
+  color: var(--color-smoke);
+  text-decoration: line-through;
+  text-decoration-color: color-mix(
+    in oklab,
+    var(--color-term-red) 70%,
+    transparent
+  );
+  text-decoration-thickness: 1px;
+}
+
+.decision-flip__headline--dropped .decision-flip__sign {
+  color: var(--color-term-red);
+}
+
+.decision-flip__detail {
+  color: var(--color-smoke);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.decision-flip__term {
+  color: var(--color-bone);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.decision-flip__more {
+  justify-self: start;
+  color: var(--color-smoke);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  transition: color 160ms var(--ease-out-soft);
+}
+
+.decision-flip__more:hover,
+.decision-flip__more:focus-visible {
+  color: var(--color-bone);
+}
+
+@supports selector(:has(*)) {
+  .decision-flip__face {
+    grid-area: 1 / 1;
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(0.25rem);
+    transition:
+      opacity 180ms var(--ease-out-soft),
+      transform 240ms var(--ease-out-expo),
+      visibility 0s linear 240ms;
+  }
+
+  .decision-flip:has(input[value="chose"]:checked) [data-side="chose"],
+  .decision-flip:has(input[value="dropped"]:checked) [data-side="dropped"],
+  .decision-flip:not(:has(input)) [data-side="chose"] {
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+    transition-delay: 0s;
+  }
+
+  .decision-flip__code {
+    display: none;
+  }
+
+  .decision-flip:has(input[value="code"]:checked) .decision-flip__faces {
+    display: none;
+  }
+
+  .decision-flip:has(input[value="code"]:checked) .decision-flip__code {
+    display: block;
+  }
+}
+
+/* Quoted code (ui/code-snippet.tsx): numbered lines, the decisive ones
+   marked in the gutter and lifted to full ink. Paths are blue, as in the
+   prompt. */
+.snippet {
+  display: grid;
+  min-width: 0;
+  margin: 0;
+  border: 1px solid var(--color-ash);
+  border-radius: var(--radius-md);
+  background: var(--color-void);
+  font-family: var(--font-mono);
+}
+
+.snippet__file {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.45rem 0.75rem;
+  border-bottom: 1px solid var(--color-ash);
+  color: var(--color-smoke);
+  font-size: 0.6875rem;
+}
+
+.snippet__file a {
+  overflow-wrap: anywhere;
+  color: var(--color-term-blue);
+}
+
+.snippet__file a:hover,
+.snippet__file a:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.snippet__lang {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.snippet pre {
+  overflow-x: auto;
+  margin: 0;
+  padding: 0.6rem 0;
+  font: inherit;
+  font-size: 0.75rem;
+  line-height: 1.7;
+  counter-reset: snippet-line;
+}
+
+.snippet pre:focus-visible {
+  outline: 2px solid var(--color-term-green);
+  outline-offset: -2px;
+}
+
+.snippet__line {
+  display: block;
+  min-width: max-content;
+  padding-right: 1rem;
+  color: var(--color-smoke);
+  white-space: pre;
+  counter-increment: snippet-line;
+}
+
+.snippet__line::before {
+  display: inline-block;
+  box-sizing: content-box;
+  width: 2ch;
+  margin-right: 1.25ch;
+  padding-left: 0.75rem;
+  content: counter(snippet-line);
+  color: color-mix(in oklab, var(--color-smoke) 50%, transparent);
+  text-align: right;
+}
+
+.snippet__line[data-mark] {
+  color: var(--color-bone);
+  background: color-mix(in oklab, var(--color-term-green) 9%, transparent);
+  box-shadow: inset 2px 0 0 var(--color-term-green);
+}
+
+.snippet__line[data-mark]::before {
+  color: var(--color-term-green);
+}
+
+.decision__code {
+  grid-column: 2;
+  min-width: 0;
+  margin-top: 1rem;
 }
 
 /* ──────────────────────────────────────────────────────────────────────────

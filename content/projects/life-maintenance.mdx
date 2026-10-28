@@ -37,6 +37,22 @@ decisions:
     instead: Tarefa com data de vencimento
     because: Desgaste é contínuo. O app calcula o quanto do ciclo já passou e avisa antes de vencer, em vez de só gritar no dia.
     cost: Cadastrar algo pede um intervalo, não só uma data, e isso é mais um campo pra pessoa entender.
+    snippet:
+      file: src/services/cycle.ts
+      url: https://github.com/iHadesj/life-maintenance/blob/HEAD/src/services/cycle.ts#L77-L86
+      lang: ts
+      mark: [7, 8]
+      code: |
+        /**
+         * Health stays high for most of the cycle, reaches 60% on the due day and then
+         * decays exponentially — degraded, never instantly "dead".
+         */
+        export function healthFromProgress(progress: number): number {
+          const p = Math.max(0, progress);
+          if (p <= 1) return 100 * (1 - 0.4 * p * p);
+          const wear = 0.4 + 0.6 * (1 - Math.exp(-1.5 * (p - 1)));
+          return 100 * (1 - wear);
+        }
   - choice: Regras do ciclo em funções puras
     instead: Calcular estado dentro dos componentes
     because: cycle.ts e health.ts não sabem que React existe, então dá pra testar estado, saúde e vencimento sem montar tela nenhuma.

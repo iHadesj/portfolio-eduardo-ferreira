@@ -1,7 +1,9 @@
 import { Reveal } from "@/components/ui/reveal";
 import { SectionHeading } from "@/components/ui/section-heading";
+import { CodeSnippet } from "@/components/ui/code-snippet";
 import type { Decision } from "@/lib/projects";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
+import { fill } from "@/lib/i18n/format";
 
 /**
  * The structured half of a case study.
@@ -11,7 +13,8 @@ import type { Dictionary } from "@/lib/i18n/dictionaries";
  * price the winner carried. Rendering it as a ledger rather than a paragraph
  * makes it scannable in the ten seconds a reviewer actually spends here, and
  * makes a decision with no stated trade-off visibly thinner than its
- * neighbours.
+ * neighbours. A decision that quotes its code shows it under the ledger;
+ * the home cards link here (`#decisoes`).
  */
 export function DecisionLog({
   decisions,
@@ -25,7 +28,7 @@ export function DecisionLog({
   const t = dict.projectPage;
 
   return (
-    <section className="mt-16">
+    <section id="decisoes" className="mt-16 scroll-mt-24">
       <SectionHeading
         as="h3"
         eyebrow={t.decisionsEyebrow}
@@ -68,6 +71,17 @@ export function DecisionLog({
                   </div>
                 ) : null}
               </dl>
+
+              {decision.snippet ? (
+                <div className="decision__code">
+                  <CodeSnippet
+                    snippet={decision.snippet}
+                    label={fill(t.snippetAria, {
+                      file: decision.snippet.file,
+                    })}
+                  />
+                </div>
+              ) : null}
             </Reveal>
           </li>
         ))}

@@ -2,6 +2,7 @@ import Image from "next/image";
 import { ArrowUpRight, Braces, Code, Coffee } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { TransitionLink } from "@/components/ui/transition-link";
+import { DecisionFlip } from "@/components/sections/decision-flip";
 import { GitHubIcon } from "@/components/icons";
 import type { LocalizedProject } from "@/lib/projects";
 import type { Locale } from "@/lib/i18n/config";
@@ -23,7 +24,13 @@ function coverGlyph(stack: string[]) {
 
 /**
  * Wide card with the "card link" pattern: the title link stretches over the
- * whole card (::after inset-0); the secondary links sit above via relative z-10.
+ * whole card (::after inset-0); the secondary links and the decision sit
+ * above via relative z-10.
+ *
+ * It leads with the case study's first decision rather than a feature list:
+ * stacks and features read the same in every portfolio, what was given up
+ * for them does not. The cover stays monochrome until hovered where there is
+ * hover; on touch screens, which never hover, it is in colour from the start.
  *
  * The cover and the title carry `view-transition-name`s that the case study
  * header repeats, so navigating morphs this card into that page instead of
@@ -44,6 +51,7 @@ export function ProjectCard({
   const href = projectPath(locale, project.slug);
   const coverAlt =
     project.coverAlt ?? fill(dict.projects.coverAlt, { title: project.title });
+  const lead = project.decisions[0];
 
   return (
     <article
@@ -67,7 +75,7 @@ export function ProjectCard({
             alt={coverAlt}
             fill
             sizes="(min-width: 768px) 20rem, 100vw"
-            className="object-cover object-top grayscale transition duration-300 group-hover:scale-[1.03] group-hover:grayscale-0"
+            className="object-cover object-top transition duration-300 group-hover:scale-[1.03] group-hover:grayscale-0 [@media(hover:hover)]:grayscale"
           />
         ) : (
           <div
@@ -112,16 +120,15 @@ export function ProjectCard({
 
         <p className="text-smoke text-sm">{project.problem}</p>
 
-        <ul className="text-smoke flex flex-col gap-1.5 text-sm">
-          {project.highlights.map((highlight) => (
-            <li key={highlight} className="flex gap-2">
-              <span aria-hidden className="text-signal">
-                →
-              </span>
-              <span>{highlight}</span>
-            </li>
-          ))}
-        </ul>
+        {lead ? (
+          <DecisionFlip
+            slug={project.slug}
+            decision={lead}
+            total={project.decisions.length}
+            locale={locale}
+            dict={dict}
+          />
+        ) : null}
 
         <div className="mt-1 flex flex-wrap gap-2">
           {project.stack.map((tech) => (

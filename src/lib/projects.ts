@@ -4,6 +4,7 @@ import { defaultLocale, type Locale } from "@/lib/i18n/config";
 export type { Project };
 
 export type Decision = Project["decisions"][number];
+export type Snippet = NonNullable<Decision["snippet"]>;
 export type Metric = Project["metrics"][number];
 export type ProjectStatus = Project["status"];
 
@@ -67,7 +68,14 @@ export function localizeProject(
     status: project.status,
     highlights: t?.highlights?.length ? t.highlights : project.highlights,
     metrics: t?.metrics?.length ? t.metrics : project.metrics,
-    decisions: t?.decisions?.length ? t.decisions : project.decisions,
+    // Code reads the same in every language, so only the PT entry carries
+    // the snippet: a translated decision borrows it by position.
+    decisions: t?.decisions?.length
+      ? t.decisions.map((decision, index) => {
+          const snippet = decision.snippet ?? project.decisions[index]?.snippet;
+          return snippet ? { ...decision, snippet } : decision;
+        })
+      : project.decisions,
     content: project.content,
     bodyMatchesLocale: locale === defaultLocale,
   };

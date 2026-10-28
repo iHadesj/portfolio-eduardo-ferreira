@@ -125,13 +125,18 @@ export const en = {
     eyebrow: "projects",
     title: "Things I've built.",
     description:
-      "For each one I walk through what I set out to solve, how I solved it, and what I'd do differently today.",
+      "{decisions} decisions across {projects} projects, each with the alternative it beat and the price it charged.",
     moreOnGithub: "There's more on my GitHub ↓",
     indexLabel: "more",
     caseStudy: "Case study →",
     repoAria: "Repository for {title}",
     demoAria: "Live demo of {title}",
     coverAlt: "Screenshot of {title}",
+    decision: {
+      legend: "decision 1 of {total}",
+      sides: { chose: "chose", dropped: "dropped", code: "code" },
+      all: "see all {total} decisions →",
+    },
     statuses: {
       shipped: "shipped",
       "in-progress": "in progress",
@@ -342,6 +347,7 @@ export const en = {
     instead: "instead of",
     because: "because",
     cost: "cost",
+    snippetAria: "Code from {file}",
     translationNotice:
       "The decision log and summary above are in English. The long-form write-up below is still in Portuguese.",
   },

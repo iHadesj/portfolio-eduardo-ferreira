@@ -28,6 +28,17 @@ decisions:
     instead: Gateway de pagamento no site
     because: A loja já atende e cobra pela conversa. O site entrega o pedido inteiro numa mensagem padronizada, com itens, opções, entrega, bilhete do cartão e contato, e o pagamento é combinado ali. Dá pra vender sem abrir conta em gateway antes.
     cost: O site não sabe se o pedido foi pago. A confirmação depende de alguém responder a mensagem.
+    snippet:
+      file: src/lib/whatsapp.ts
+      url: https://github.com/iHadesj/um-abraco-bernardo/blob/HEAD/src/lib/whatsapp.ts#L10-L14
+      lang: ts
+      mark: [4]
+      code: |
+        export const WA_NUMBER = normalize(import.meta.env.VITE_WHATSAPP_NUMBER ?? '') || STORE_NUMBER
+
+        export function waLink(message: string) {
+          return `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`
+        }
   - choice: Mensagem só com a formatação do WhatsApp
     instead: Texto livre com emoji
     because: O WhatsApp Web e o desktop trocam alguns emojis por "?" quando a mensagem vem de um link wa.me. Negrito, itálico e um separador de texto chegam iguais em qualquer aparelho.

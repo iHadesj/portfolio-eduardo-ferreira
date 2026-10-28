@@ -8,6 +8,7 @@ import { ScrollSection } from "@/components/layout/scroll-flow";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { projectPath } from "@/lib/i18n/routes";
+import { fill } from "@/lib/i18n/format";
 
 /**
  * How many case studies get a full card. The rest are listed one per line:
@@ -26,6 +27,10 @@ export function Projects({
   const projects = localizedProjects(locale);
   const featured = projects.slice(0, FULL_CARDS);
   const rest = projects.slice(FULL_CARDS);
+  const decisions = projects.reduce(
+    (sum, project) => sum + project.decisions.length,
+    0,
+  );
 
   return (
     <ScrollSection
@@ -36,7 +41,10 @@ export function Projects({
       <SectionHeading
         eyebrow={dict.projects.eyebrow}
         title={dict.projects.title}
-        description={dict.projects.description}
+        description={fill(dict.projects.description, {
+          decisions,
+          projects: projects.length,
+        })}
       />
 
       {/* A zigzag instead of a column: on large screens each card leans to
@@ -76,6 +84,11 @@ export function Projects({
                   <span className="project-index__summary">
                     {project.summary}
                   </span>
+                  {project.decisions[0] ? (
+                    <span className="project-index__decision">
+                      {project.decisions[0].choice}
+                    </span>
+                  ) : null}
                   <span className="project-index__status">
                     {dict.projects.statuses[project.status]}
                   </span>

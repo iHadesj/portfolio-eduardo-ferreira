@@ -9,11 +9,26 @@ import { defineConfig, defineCollection, s } from "velite";
  * decisions genuinely have no rival or no downside — but leaving them empty is
  * a visible gap in the rendered log, which is the point.
  */
+/**
+ * The lines a decision comes down to, quoted verbatim from the project's own
+ * repository: the proof under the claim. `mark` holds the 1-based lines that
+ * carry the decision; `url` points at them on GitHub. Code reads the same in
+ * every language, so only the PT entry carries it (see `lib/projects.ts`).
+ */
+const snippet = s.object({
+  file: s.string(),
+  url: s.string().url(),
+  lang: s.string(),
+  mark: s.array(s.number()).default([]),
+  code: s.string(),
+});
+
 const decision = s.object({
   choice: s.string(),
   instead: s.string().optional(),
   because: s.string(),
   cost: s.string().optional(),
+  snippet: snippet.optional(),
 });
 
 const metric = s.object({ label: s.string(), value: s.string() });
