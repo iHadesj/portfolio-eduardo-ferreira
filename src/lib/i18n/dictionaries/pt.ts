@@ -257,6 +257,8 @@ export const pt = {
 
   contact: {
     eyebrow: "contato",
+    // The closing marquee (sections/contact.tsx): a few words, huge.
+    marquee: "vamos conversar",
     title: "Quer entrar em contato?",
     description:
       "Vaga, freela, uma dúvida — pode chamar. Back-end, front-end ou os dois.",

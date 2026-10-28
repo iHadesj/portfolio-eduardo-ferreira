@@ -30,8 +30,10 @@ export function parseRgb(value: string): Rgba {
 
 /**
  * True once the page is idle and the reader has stopped scrolling — so a
- * shader compile never lands on the first paint or a scroll. Stays false on
- * reduced motion and Save-Data / 2G.
+ * shader compile never lands on the first paint or a scroll — and the hero's
+ * opening has played (`html[data-intro]` past "go", layout/boot-sequence):
+ * the compile blocks the main thread, and the opening's letters would stall
+ * on it. Stays false on reduced motion and Save-Data / 2G.
  */
 export function useIdleStart(reduced: boolean): boolean {
   const [enabled, setEnabled] = useState(false);
@@ -53,13 +55,27 @@ export function useIdleStart(reduced: boolean): boolean {
         timer = window.setTimeout(start, 1200);
       }
     };
+    const root = document.documentElement;
+    const opening = () =>
+      root.dataset.intro === "wait" || root.dataset.intro === "go";
     const onScroll = () => {
+      if (opening()) return;
       window.clearTimeout(timer);
       timer = window.setTimeout(schedule, 260);
     };
+    const mo = new MutationObserver(() => {
+      if (opening()) return;
+      mo.disconnect();
+      schedule();
+    });
     window.addEventListener("scroll", onScroll, { passive: true });
-    schedule();
+    if (opening()) {
+      mo.observe(root, { attributes: true, attributeFilter: ["data-intro"] });
+    } else {
+      schedule();
+    }
     return () => {
+      mo.disconnect();
       window.removeEventListener("scroll", onScroll);
       if (win.cancelIdleCallback && idle) win.cancelIdleCallback(idle);
       window.clearTimeout(timer);

@@ -1,5 +1,7 @@
+import type { CSSProperties } from "react";
 import { cn } from "@/lib/utils";
 import { Reveal } from "@/components/ui/reveal";
+import { Kinetic } from "@/components/motion/kinetic";
 
 interface SectionHeadingProps {
   /** Eyebrow label WITHOUT the `~/` prefix — the component renders it as a
@@ -13,6 +15,11 @@ interface SectionHeadingProps {
   as?: "h2" | "h3";
 }
 
+/**
+ * Every section opens the same way, as one short sequence: the ring pops,
+ * the path is typed out, the title's words come up from under the line and
+ * a rule draws beneath them, then the description settles.
+ */
 export function SectionHeading({
   eyebrow,
   title,
@@ -21,8 +28,11 @@ export function SectionHeading({
   className,
   as: Heading = "h2",
 }: SectionHeadingProps) {
+  const path = `~/${eyebrow}`;
+
   return (
     <Reveal
+      variant="heading"
       className={cn(
         "flex flex-col gap-3",
         align === "center" && "items-center text-center",
@@ -31,18 +41,28 @@ export function SectionHeading({
     >
       <p className="text-label text-smoke font-mono lowercase">
         <span aria-hidden className="section-mark" />
-        {`~/${eyebrow}`}
+        <span
+          className="type-in"
+          style={{ "--n": path.length } as CSSProperties}
+        >
+          {path}
+        </span>
       </p>
       <Heading
         className={cn(
-          "print-in font-display text-bone",
+          "font-display text-bone",
           Heading === "h2" ? "text-h2" : "text-h3",
         )}
       >
-        {title}
+        {typeof title === "string" ? <Kinetic text={title} /> : title}
       </Heading>
+      <span aria-hidden className="heading-rule" />
       {description ? (
-        <p className="prose-measure font-body text-lead text-smoke">
+        <p
+          data-part
+          className="prose-measure font-body text-lead text-smoke"
+          style={{ "--at": "0.5s" } as CSSProperties}
+        >
           {description}
         </p>
       ) : null}

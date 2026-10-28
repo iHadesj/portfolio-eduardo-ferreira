@@ -134,8 +134,9 @@ function RowGraph({
  * single vertical timeline hides — and every case study is a commit on the
  * lane it grew on, linking to it. Each lane tells its story (role, bullets,
  * stack) at its newest row, open by default and collapsible. Server-rendered
- * SVG and CSS: the lines draw themselves along a scroll timeline, and
- * reduced motion simply shows them drawn.
+ * SVG and CSS: a read head drawn down it by the scroll lights each row it
+ * passes (`data-lit`), and without it — reduced motion, no JavaScript — the
+ * graph simply shows drawn.
  */
 export function Experience({
   locale,
@@ -166,85 +167,92 @@ export function Experience({
         <span className="text-term-green">$</span> {g.command}
       </p>
 
-      <ol className="graph">
-        {rows.map((row, index) => {
-          const storyLane = row.kind === "merge" ? row.from : row.lane;
-          const story =
-            STORY_AT[storyLane] === row.kind
-              ? t.items.find((item) => item.id === storyLane)
-              : undefined;
-          const lane = g.lanes[storyLane];
-          const ref =
-            row.kind === "head"
-              ? fill(g.head, { lane })
-              : row.kind === "merge"
-                ? fill(g.merge, { lane })
-                : row.kind === "branch"
-                  ? fill(row.parent ? g.branch : g.init, { lane })
-                  : null;
-          const date = row.date ? monthYear(row.date, intl) : g.now;
-          const hash = shortHash(
-            `${row.kind}:${storyLane}:${row.kind === "commit" ? row.slug : (row.date ?? "")}`,
-          );
+      {/* The read head runs down the graph with the scroll and draws each
+          commit as it passes (motion/scrub-scenes.ts). */}
+      <div className="graph-wrap">
+        <span aria-hidden className="graph-playhead" />
+        <ol className="graph">
+          {rows.map((row, index) => {
+            const storyLane = row.kind === "merge" ? row.from : row.lane;
+            const story =
+              STORY_AT[storyLane] === row.kind
+                ? t.items.find((item) => item.id === storyLane)
+                : undefined;
+            const lane = g.lanes[storyLane];
+            const ref =
+              row.kind === "head"
+                ? fill(g.head, { lane })
+                : row.kind === "merge"
+                  ? fill(g.merge, { lane })
+                  : row.kind === "branch"
+                    ? fill(row.parent ? g.branch : g.init, { lane })
+                    : null;
+            const date = row.date ? monthYear(row.date, intl) : g.now;
+            const hash = shortHash(
+              `${row.kind}:${storyLane}:${row.kind === "commit" ? row.slug : (row.date ?? "")}`,
+            );
 
-          const head = (
-            <span className="graph-head">
-              <span aria-hidden className="graph-hash" data-lane={storyLane}>
-                {hash}
-              </span>
-              {ref ? (
-                <span className="graph-ref" data-lane={storyLane}>
-                  {`(${ref})`}
+            const head = (
+              <span className="graph-head">
+                <span aria-hidden className="graph-hash" data-lane={storyLane}>
+                  {hash}
                 </span>
-              ) : null}
-              {row.kind === "commit" ? (
-                <TransitionLink href={projectPath(locale, row.slug)}>
-                  {fill(g.commit, { title: titles.get(row.slug) ?? row.slug })}
-                </TransitionLink>
-              ) : null}
-            </span>
-          );
+                {ref ? (
+                  <span className="graph-ref" data-lane={storyLane}>
+                    {`(${ref})`}
+                  </span>
+                ) : null}
+                {row.kind === "commit" ? (
+                  <TransitionLink href={projectPath(locale, row.slug)}>
+                    {fill(g.commit, {
+                      title: titles.get(row.slug) ?? row.slug,
+                    })}
+                  </TransitionLink>
+                ) : null}
+              </span>
+            );
 
-          return (
-            <li key={hash} className="graph-row">
-              <RowGraph row={row} index={index} spans={spans} />
-              <div className="graph-text">
-                {story ? (
-                  <details open className="graph-story" data-lane={storyLane}>
-                    <summary>
-                      {head}
-                      <h3 className="graph-role">
-                        {story.role}
-                        {story.org ? (
-                          <span className="text-smoke"> · {story.org}</span>
-                        ) : null}
-                      </h3>
-                      <span className="graph-date">{story.period}</span>
-                    </summary>
-                    <div className="graph-story__body">
-                      <ul className="graph-story__bullets">
-                        {story.bullets.map((bullet, i) => (
-                          <li key={i}>{bullet}</li>
-                        ))}
-                      </ul>
-                      <div className="flex flex-wrap gap-2">
-                        {story.stack.map((tech) => (
-                          <Badge key={tech}>{tech}</Badge>
-                        ))}
+            return (
+              <li key={hash} className="graph-row">
+                <RowGraph row={row} index={index} spans={spans} />
+                <div className="graph-text">
+                  {story ? (
+                    <details open className="graph-story" data-lane={storyLane}>
+                      <summary>
+                        {head}
+                        <h3 className="graph-role">
+                          {story.role}
+                          {story.org ? (
+                            <span className="text-smoke"> · {story.org}</span>
+                          ) : null}
+                        </h3>
+                        <span className="graph-date">{story.period}</span>
+                      </summary>
+                      <div className="graph-story__body">
+                        <ul className="graph-story__bullets">
+                          {story.bullets.map((bullet, i) => (
+                            <li key={i}>{bullet}</li>
+                          ))}
+                        </ul>
+                        <div className="flex flex-wrap gap-2">
+                          {story.stack.map((tech) => (
+                            <Badge key={tech}>{tech}</Badge>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  </details>
-                ) : (
-                  <>
-                    {head}
-                    <span className="graph-date">{date}</span>
-                  </>
-                )}
-              </div>
-            </li>
-          );
-        })}
-      </ol>
+                    </details>
+                  ) : (
+                    <>
+                      {head}
+                      <span className="graph-date">{date}</span>
+                    </>
+                  )}
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+      </div>
     </ScrollSection>
   );
 }

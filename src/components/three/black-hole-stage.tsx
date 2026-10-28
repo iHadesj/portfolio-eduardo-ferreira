@@ -214,6 +214,8 @@ export function BlackHoleStage({
 
       let inView = true;
       let visible = !document.hidden;
+      // Under the project sheet: still "in view", but nothing shows.
+      let covered = false;
       let frame = 0;
       let last = performance.now();
       let lastDrawn = 0;
@@ -549,7 +551,7 @@ export function BlackHoleStage({
       };
 
       const sync = () => {
-        const run = inView && visible;
+        const run = inView && visible && !covered;
         if (run && !frame) {
           last = performance.now();
           frame = requestAnimationFrame(loop);
@@ -666,6 +668,12 @@ export function BlackHoleStage({
       // The shell's `collapse`: a hold nobody has to keep pressing — the
       // countdown runs to the end unless Esc on the trigger cancels it.
       const onCommand = () => beginHold();
+      // The page's curtain (motion/scrub-scenes.ts) says when the project
+      // sheet fully covers the hero.
+      const onCover = (event: Event) => {
+        covered = event instanceof CustomEvent && event.detail === true;
+        sync();
+      };
 
       const onKeyDown = (event: KeyboardEvent) => {
         if (phase === "rebooting") {
@@ -719,6 +727,7 @@ export function BlackHoleStage({
       trigger.addEventListener("pointercancel", onTriggerUp);
       trigger.addEventListener("contextmenu", onContextMenu);
       window.addEventListener("hole:collapse", onCommand);
+      window.addEventListener("hole:cover", onCover);
       if (fine) {
         window.addEventListener("pointermove", onHover, { passive: true });
         document.documentElement.addEventListener("pointerleave", onLeave);
@@ -749,6 +758,7 @@ export function BlackHoleStage({
         trigger.removeEventListener("pointercancel", onTriggerUp);
         trigger.removeEventListener("contextmenu", onContextMenu);
         window.removeEventListener("hole:collapse", onCommand);
+        window.removeEventListener("hole:cover", onCover);
         window.removeEventListener("pointermove", onHover);
         document.documentElement.removeEventListener("pointerleave", onLeave);
         renderer.dispose();
@@ -788,6 +798,9 @@ export function BlackHoleStage({
           )}
         >
           {children}
+          {/* The opening's iris (globals.css "Opening"): it opens over the
+              poster, which is painted from the first frame. */}
+          <span aria-hidden className="hole-iris" />
         </div>
         {showCanvas ? (
           <canvas

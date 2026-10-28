@@ -38,7 +38,13 @@ export function ContributionsHeatmap({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-end gap-3">
-        <span className="font-display text-bone text-3xl">{total}</span>
+        {/* Counts up from zero as it comes into view (motion/scrub-scenes). */}
+        <span
+          data-count={data.total}
+          className="font-display text-bone text-3xl tabular-nums"
+        >
+          {total}
+        </span>
         <span className="text-smoke text-sm">
           {dict.status.contributionsSuffix}
         </span>

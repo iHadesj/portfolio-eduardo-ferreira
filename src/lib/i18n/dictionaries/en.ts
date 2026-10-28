@@ -233,6 +233,7 @@ export const en = {
 
   contact: {
     eyebrow: "contact",
+    marquee: "let's talk",
     title: "Want to get in touch?",
     description:
       "A role, freelance work, a question — reach out. Back end, front end or both.",

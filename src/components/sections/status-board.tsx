@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Reveal } from "@/components/ui/reveal";
 import { TransitionLink } from "@/components/ui/transition-link";
@@ -92,7 +93,6 @@ export async function StatusBoard({
     <ScrollSection
       id="status"
       className="container-hades section-pad scroll-mt-24"
-      flowStrength={18}
     >
       <SectionHeading
         eyebrow={t.eyebrow}
@@ -103,16 +103,18 @@ export async function StatusBoard({
         {fill(t.checked, { time: checked })}
       </p>
 
-      <Reveal>
+      <Reveal variant="log">
         <ul className="status-board">
-          {localizedProjects(locale).map((project) => {
+          {localizedProjects(locale).map((project, i) => {
             const status = statuses[project.slug];
             if (!status) return null;
             return (
               <li
                 key={project.slug}
+                data-step
                 className="service"
                 data-state={status.state}
+                style={{ "--i": i } as CSSProperties}
               >
                 <TransitionLink
                   href={projectPath(locale, project.slug)}
@@ -155,9 +157,9 @@ export async function StatusBoard({
       </Reveal>
 
       {contributions ? (
-        <div className="mt-14">
+        <Reveal variant="scan" className="mt-14">
           <ContributionsHeatmap data={contributions} dict={dict} intl={intl} />
-        </div>
+        </Reveal>
       ) : null}
     </ScrollSection>
   );

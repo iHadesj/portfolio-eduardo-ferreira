@@ -14,14 +14,20 @@ import { getDictionary } from "@/lib/i18n/dictionaries";
  *
  * Order follows what proves the most first: the hero already answers who and
  * what stack, so the work comes next and the story comes last.
+ *
+ * The hero and the projects share a curtain: while the projects come up,
+ * the hero holds still under them (motion/scrub-scenes.ts) — the wrapper is
+ * what bounds that hold.
  */
 export function HomePage({ locale }: { locale: Locale }) {
   const dict = getDictionary(locale);
 
   return (
     <ScrollFlow id="conteudo">
-      <Hero locale={locale} dict={dict} />
-      <Projects locale={locale} dict={dict} />
+      <div className="hero-curtain">
+        <Hero locale={locale} dict={dict} />
+        <Projects locale={locale} dict={dict} />
+      </div>
       <Experience locale={locale} dict={dict} />
       <About dict={dict} />
       <StatusBoard locale={locale} dict={dict} />

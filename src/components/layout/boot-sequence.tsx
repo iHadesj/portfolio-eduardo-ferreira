@@ -2,21 +2,30 @@ import type { CSSProperties } from "react";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 
 /**
- * Runs before the overlay paints: only the first visit of a session boots,
- * and any key or tap skips it; once it has faded it is switched off, so a
- * late key cannot replay the fade. Storage blocked → no boot at all (it would
- * otherwise replay on every page).
+ * Runs before the first paint and sets the page's motion up:
+ *
+ * - `data-motion="on"` unless reduced motion is asked for: the scenes may
+ *   wait offscreen for their entrance (motion/motion-director.tsx). If the
+ *   director has not shown up a few seconds later, the attribute goes and
+ *   everything simply shows.
+ * - `data-intro`: the hero's opening sequence waits ("wait") while the boot
+ *   runs and plays ("go") as it fades, is skipped, or right away on visits
+ *   without a boot; "done" once it has played, so its rules let go of the
+ *   hero before the black hole's collapse animates the same pieces.
+ * - `data-boot`: only the first visit of a session boots, and any key or
+ *   tap skips it; once it has faded it is switched off, so a late key
+ *   cannot replay the fade. Storage blocked → no boot at all (it would
+ *   otherwise replay on every page).
  */
-const GATE = `(function(){var d=document.documentElement;try{if(sessionStorage.getItem("hades:booted")){d.dataset.boot="off";return}sessionStorage.setItem("hades:booted","1")}catch(e){d.dataset.boot="off";return}function e(v){d.dataset.boot=v;removeEventListener("keydown",s,true);removeEventListener("pointerdown",s,true)}function s(){e("skip")}addEventListener("keydown",s,true);addEventListener("pointerdown",s,true);setTimeout(function(){e("off")},2600)})();`;
+const GATE = `(function(){var d=document.documentElement,m=!matchMedia("(prefers-reduced-motion: reduce)").matches,o;if(m){d.dataset.motion="on";setTimeout(function(){if(!("director" in d.dataset))delete d.dataset.motion},6000)}function g(){if(!m||o)return;o=1;d.dataset.intro="go";setTimeout(function(){d.dataset.intro="done"},2400)}try{if(sessionStorage.getItem("hades:booted")){d.dataset.boot="off";g();return}sessionStorage.setItem("hades:booted","1")}catch(e){d.dataset.boot="off";g();return}if(m)d.dataset.intro="wait";function e(v){d.dataset.boot=v;removeEventListener("keydown",s,true);removeEventListener("pointerdown",s,true)}function s(){e("skip");g()}addEventListener("keydown",s,true);addEventListener("pointerdown",s,true);setTimeout(g,820);setTimeout(function(){e("off")},1500)})();`;
 
 /**
  * The first visit opens on a terminal boot: a few `[ ok ]` lines over a
- * dim veil, ~1.5 s, then it fades and is gone. Server-rendered and animated
- * in CSS only (`.boot` in globals.css), so it costs no JavaScript beyond
- * the gate above. It never blocks anything: the page renders underneath
- * from the start, the veil lets it show through, and the overlay takes no
- * pointer events — a tap skips it and still lands on what is under it.
- * Hidden from assistive tech, and absent under reduced motion.
+ * dim veil, under a second, then it fades as the hero's opening plays.
+ * Server-rendered and animated in CSS only (`.boot` in globals.css), so it
+ * costs no JavaScript beyond the gate above. It never blocks anything: the
+ * overlay takes no pointer events — a tap skips it and still lands on what
+ * is under it. Hidden from assistive tech, and absent under reduced motion.
  */
 export function BootSequence({ copy }: { copy: Dictionary["boot"] }) {
   return (

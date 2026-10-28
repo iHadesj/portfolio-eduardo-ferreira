@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Reveal } from "@/components/ui/reveal";
 import { ProjectCard } from "@/components/sections/project-card";
@@ -10,7 +11,6 @@ import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { projectPath } from "@/lib/i18n/routes";
 import { fill } from "@/lib/i18n/format";
-import { cn } from "@/lib/utils";
 
 /**
  * How many case studies get a full card. The rest are listed one per line:
@@ -38,8 +38,7 @@ export async function Projects({
   return (
     <ScrollSection
       id="projetos"
-      className="container-hades section-pad scroll-mt-24"
-      flowStrength={18}
+      className="curtain-sheet container-hades section-pad scroll-mt-24"
     >
       <SectionHeading
         eyebrow={dict.projects.eyebrow}
@@ -50,30 +49,27 @@ export async function Projects({
         })}
       />
 
-      {/* A zigzag instead of a column: on large screens each card leans to
-          one side and swaps its cover to the outer edge, so the eye travels
-          left-right down the list like the thread does. */}
-      <div className="mt-10 flex flex-col gap-6 lg:gap-10">
-        {featured.map((project, index) => {
-          const flip = index % 2 === 1;
-          return (
-            <Reveal
-              key={project.slug}
-              className={cn(
-                "reveal--card",
-                flip ? "lg:ml-auto lg:w-[88%]" : "lg:mr-auto lg:w-[88%]",
-              )}
-            >
-              <ProjectCard
-                project={project}
-                locale={locale}
-                dict={dict}
-                flip={flip}
-                status={statuses[project.slug]}
-              />
-            </Reveal>
-          );
-        })}
+      {/* A deck: each card is dealt onto the table as it arrives, then
+          holds (sticky) while the next one slides over it and pushes it
+          back (motion/scrub-scenes.ts). Covers still alternate sides. */}
+      <div className="project-stack mt-10 flex flex-col gap-6 lg:gap-10">
+        {featured.map((project, index) => (
+          <Reveal
+            key={project.slug}
+            variant="card"
+            data-stack
+            data-measure
+            style={{ "--stack": index } as CSSProperties}
+          >
+            <ProjectCard
+              project={project}
+              locale={locale}
+              dict={dict}
+              flip={index % 2 === 1}
+              status={statuses[project.slug]}
+            />
+          </Reveal>
+        ))}
       </div>
 
       {rest.length > 0 ? (

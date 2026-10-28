@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import Image from "next/image";
 import { ArrowUpRight, Braces, Code, Coffee } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -5,6 +6,7 @@ import { TransitionLink } from "@/components/ui/transition-link";
 import { DecisionFlip } from "@/components/sections/decision-flip";
 import { ServiceLine } from "@/components/sections/status-board";
 import { GitHubIcon } from "@/components/icons";
+import { Kinetic } from "@/components/motion/kinetic";
 import type { LocalizedProject } from "@/lib/projects";
 import type { ServiceStatus } from "@/lib/status";
 import type { Locale } from "@/lib/i18n/config";
@@ -37,6 +39,11 @@ function coverGlyph(stack: string[]) {
  * The cover and the title carry `view-transition-name`s that the case study
  * header repeats, so navigating morphs this card into that page instead of
  * cutting to it. Names are per-slug, which keeps them unique in both documents.
+ *
+ * Dealt in as a scene (`variant="card"` on its wrapper): the cover opens,
+ * the title's words come up, then the rest in the order marked `data-part`
+ * / `--at`. In the stack, `.stack-shade` is what darkens it as the next
+ * card slides over.
  */
 export function ProjectCard({
   project,
@@ -57,6 +64,7 @@ export function ProjectCard({
   const coverAlt =
     project.coverAlt ?? fill(dict.projects.coverAlt, { title: project.title });
   const lead = project.decisions[0];
+  const at = (seconds: number) => ({ "--at": `${seconds}s` }) as CSSProperties;
 
   return (
     <article
@@ -69,7 +77,7 @@ export function ProjectCard({
     >
       <div
         className={cn(
-          "border-ash/70 relative aspect-[16/10] overflow-hidden rounded-md border",
+          "project-card__cover border-ash/70 relative aspect-[16/10] overflow-hidden rounded-md border",
           flip && "md:order-2",
         )}
         style={{ viewTransitionName: projectCoverName(project.slug) }}
@@ -101,7 +109,11 @@ export function ProjectCard({
       </div>
 
       <div className="flex flex-col gap-3">
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+        <div
+          data-part
+          className="flex flex-wrap items-center gap-x-3 gap-y-1.5"
+          style={at(0.2)}
+        >
           <Badge
             variant={
               project.status === "in-progress"
@@ -123,29 +135,37 @@ export function ProjectCard({
           style={{ viewTransitionName: projectTitleName(project.slug) }}
         >
           <TransitionLink href={href} className="after:absolute after:inset-0">
-            {project.title}
+            <Kinetic text={project.title} />
           </TransitionLink>
         </h3>
 
-        <p className="text-smoke text-sm">{project.problem}</p>
+        <p data-part className="text-smoke text-sm" style={at(0.38)}>
+          {project.problem}
+        </p>
 
         {lead ? (
-          <DecisionFlip
-            slug={project.slug}
-            decision={lead}
-            total={project.decisions.length}
-            locale={locale}
-            dict={dict}
-          />
+          <div data-part style={at(0.48)}>
+            <DecisionFlip
+              slug={project.slug}
+              decision={lead}
+              total={project.decisions.length}
+              locale={locale}
+              dict={dict}
+            />
+          </div>
         ) : null}
 
-        <div className="mt-1 flex flex-wrap gap-2">
+        <div data-part className="mt-1 flex flex-wrap gap-2" style={at(0.6)}>
           {project.stack.map((tech) => (
             <Badge key={tech}>{tech}</Badge>
           ))}
         </div>
 
-        <div className="relative z-10 mt-2 flex items-center gap-4 text-sm">
+        <div
+          data-part
+          className="relative z-10 mt-2 flex items-center gap-4 text-sm"
+          style={at(0.68)}
+        >
           <TransitionLink
             href={href}
             className="link-underline text-signal hover:bg-[length:100%_1px]"
@@ -180,6 +200,7 @@ export function ProjectCard({
           ) : null}
         </div>
       </div>
+      <span aria-hidden className="stack-shade" />
     </article>
   );
 }

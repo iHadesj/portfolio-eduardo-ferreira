@@ -120,8 +120,11 @@ function sampleRoute(cubics: Cubic[]): Sampled {
 const LOOP_AT = new Set(["projetos", "status"]);
 
 function buildRoute(host: HTMLElement): Route | null {
+  // The hero and the projects sit one level down, in their curtain.
   const sections = Array.from(
-    host.querySelectorAll<HTMLElement>(":scope > [data-scroll-section]"),
+    host.querySelectorAll<HTMLElement>(
+      ":scope > [data-scroll-section], :scope > .hero-curtain > [data-scroll-section]",
+    ),
   );
   if (sections.length < 2) return null;
 
@@ -141,8 +144,9 @@ function buildRoute(host: HTMLElement): Route | null {
   const sideX = (side: number) => (side < 0 ? gutter : width - gutter);
   const middle = width / 2;
 
-  const hero = sections[0]!;
-  const heroBottom = hero.offsetTop + hero.offsetHeight;
+  // The hero ends where the next section starts — read from that one: held
+  // in its curtain, the hero's own offset can include how far it is stuck.
+  const heroBottom = sections[1]!.offsetTop;
   const points: Point[] = [
     [middle, heroBottom - 92],
     [middle, heroBottom - 30],
