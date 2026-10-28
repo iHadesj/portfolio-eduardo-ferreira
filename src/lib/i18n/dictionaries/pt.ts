@@ -346,6 +346,72 @@ export const pt = {
     skip: "qualquer tecla para pular",
   },
 
+  // The shell (components/shell): the status line at the foot of the screen
+  // and the prompt it opens. Commands are code, the same in every locale;
+  // `dirs` names each section's directory (keys are section ids).
+  shell: {
+    open: "abrir o shell",
+    close: "Fechar o shell",
+    label: "Shell",
+    inputLabel: "Comando",
+    hintTouch: "toque para comandos",
+    hintKey: ": abre o shell",
+    placeholder: "digite help",
+    suggestions: "Sugestões de comando",
+    welcome: "hades-shell · digite help, ou toque numa sugestão.",
+    notFound: "comando não encontrado: {cmd} · tente help",
+    noDir: "cd: não existe: {dir}",
+    noFile: "cat: não existe: {file}",
+    noProject: "open: nenhum projeto com “{name}” · tente ls {dir}",
+    help: [
+      ["help", "esta lista"],
+      ["ls [projetos]", "o que tem aqui"],
+      ["cd <dir>", "ir até uma seção"],
+      ["open <projeto>", "abrir um case study"],
+      ["cat why.txt", "por que eu escrevo código"],
+      ["whoami", "quem é o edu"],
+      ["cv", "baixar o currículo"],
+      ["email", "copiar o e-mail"],
+      ["theme [dark|light]", "trocar o tema"],
+      ["lang", "read it in english"],
+      ["collapse", "colapsar o topo da página"],
+      ["anomalias", "o que você já encontrou"],
+      ["curl", "este site num terminal de verdade"],
+      ["clear · exit", "limpar · fechar"],
+    ],
+    whoami: [
+      "edu ferreira · dev full stack",
+      "react, next.js e typescript no front, java no back",
+      "grajaú, zona sul de sp · {availability}",
+    ],
+    availability: {
+      open: "aberto a oportunidades",
+      closed: "sem disponibilidade no momento",
+    },
+    lsHint: "open <projeto> abre um case study",
+    cv: "baixando o currículo…",
+    email: "copiado: {email}",
+    theme: "tema: {theme}",
+    lang: "trocando para o inglês…",
+    collapse: "segure firme…",
+    collapseOff:
+      "a singularidade está desligada aqui (fora da home, movimento reduzido ou sem WebGL).",
+    anomalies: "anomalias: {count}/{total}",
+    sudoTarget: "contratar-edu",
+    sudoPrompt: "[sudo] senha para recrutador: ********",
+    sudoOk: "acesso concedido. abrindo ~/contato…",
+    sudoDenied:
+      "visitante não está no arquivo sudoers. este incidente será reportado.",
+    curl: "no seu terminal:",
+    dirs: {
+      projetos: "projetos",
+      trajetoria: "xp",
+      sobre: "sobre",
+      status: "status",
+      contato: "contato",
+    },
+  },
+
   // Hidden interactions to find (lib/anomalies.ts).
   anomalies: {
     found: "// anomalia {count}/{total} — {name}",

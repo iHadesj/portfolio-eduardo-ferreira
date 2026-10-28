@@ -102,6 +102,10 @@
   --z-toast: 80;
   --z-boot: 90;
   --z-debris: 45;
+  --z-status: 40;
+  /* The status line's height (components/shell); toasts and the page's
+     last pixels clear it. */
+  --status-line-h: 2.25rem;
 
   /* Ambient backdrop — the fixed texture field painted behind every page.
      Themes override these values rather than the rules that consume them. */
@@ -226,20 +230,6 @@
       }
     }
   }
-
-  @supports (animation-timeline: scroll()) {
-    .scroll-flow-progress {
-      position: fixed;
-      inset-inline: 0;
-      top: 4rem;
-      z-index: 49;
-      height: 1px;
-      background: var(--color-signal);
-      transform-origin: left;
-      animation: scroll-progress linear both;
-      animation-timeline: scroll(root block);
-    }
-  }
 }
 
 @keyframes section-flow {
@@ -310,6 +300,286 @@
       translate3d(calc(var(--lean) * -22px), calc(var(--flow) * -1), 0)
       rotateX(-3deg);
     opacity: 0.76;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Status line + shell (components/shell). The line sits at the foot of
+   every page under the collapse's veil; its top edge is the reading
+   progress. The shell is a modal <dialog> docked to the same edge.
+   ────────────────────────────────────────────────────────────────────────── */
+body {
+  padding-bottom: calc(var(--status-line-h) + env(safe-area-inset-bottom));
+}
+
+.status-line {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: var(--z-status);
+  padding-bottom: env(safe-area-inset-bottom);
+  border-top: 1px solid var(--color-ash);
+  background: color-mix(in oklab, var(--color-abyss) 92%, transparent);
+}
+
+.status-line__progress {
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--color-signal);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+@supports (animation-timeline: scroll()) {
+  .status-line__progress {
+    animation: scroll-progress linear both;
+    animation-timeline: scroll(root block);
+  }
+}
+
+.status-line__bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  height: var(--status-line-h);
+  padding-inline: max(1rem, env(safe-area-inset-left))
+    max(1rem, env(safe-area-inset-right));
+  color: var(--color-smoke);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.status-line__bar:focus-visible {
+  outline: 2px solid var(--color-term-green);
+  outline-offset: -2px;
+}
+
+.status-line__prompt {
+  flex: none;
+  max-width: 62%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status-line__echo {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--color-bone);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status-line__index,
+.status-line__hint {
+  flex: none;
+  white-space: nowrap;
+}
+
+.status-line__hint {
+  color: color-mix(in oklab, var(--color-smoke) 80%, transparent);
+}
+
+.status-line__bar:hover .status-line__hint {
+  color: var(--color-bone);
+}
+
+/* While a command is echoed it gets the room: the hint steps aside. */
+.status-line__bar[data-echo] .status-line__hint {
+  display: none;
+}
+
+@media (max-width: 30rem) {
+  .status-line__index {
+    display: none;
+  }
+}
+
+.shell {
+  width: min(100%, 46rem);
+  max-width: 100%;
+  max-height: min(78dvh, 36rem);
+  margin: auto auto 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-ash);
+  border-bottom: 0;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  background: var(--color-void);
+  color: var(--color-bone);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+}
+
+.shell::backdrop {
+  background: color-mix(in oklab, var(--color-void) 55%, transparent);
+}
+
+.shell[open] {
+  animation: shell-in 240ms var(--ease-out-expo);
+}
+
+@keyframes shell-in {
+  from {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+}
+
+.shell__frame {
+  display: flex;
+  flex-direction: column;
+  max-height: min(78dvh, 36rem);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.shell__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.9rem;
+  border-bottom: 1px solid var(--color-ash);
+  color: var(--color-smoke);
+  font-size: 0.6875rem;
+}
+
+.shell__bar button {
+  padding: 0.25rem 0.4rem;
+  color: var(--color-smoke);
+  cursor: pointer;
+}
+
+.shell__bar button:hover,
+.shell__bar button:focus-visible {
+  color: var(--color-bone);
+}
+
+.shell__output {
+  display: grid;
+  flex: 1;
+  align-content: start;
+  gap: 0.6rem;
+  min-height: 7rem;
+  padding: 0.85rem 0.9rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.shell__entry {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.shell__echo {
+  color: var(--color-bone);
+}
+
+.shell__line {
+  color: var(--color-smoke);
+  line-height: 1.6;
+  text-align: left;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+button.shell__line {
+  justify-self: start;
+  cursor: pointer;
+}
+
+button.shell__line:hover,
+button.shell__line:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+.shell__line[data-tone="ok"] {
+  color: var(--color-term-green);
+}
+
+.shell__line[data-tone="err"] {
+  color: var(--color-term-red);
+}
+
+.shell__line[data-tone="path"] {
+  color: var(--color-term-blue);
+}
+
+.shell__line[data-tone="dim"] {
+  color: color-mix(in oklab, var(--color-smoke) 75%, transparent);
+}
+
+.shell__chips {
+  display: flex;
+  gap: 0.4rem;
+  padding: 0.55rem 0.9rem;
+  overflow-x: auto;
+  border-top: 1px solid var(--color-ash);
+  scrollbar-width: none;
+}
+
+.shell__chips button {
+  flex: none;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--color-ash);
+  border-radius: var(--radius-sm);
+  color: var(--color-smoke);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition:
+    color 160ms var(--ease-out-soft),
+    border-color 160ms var(--ease-out-soft);
+}
+
+.shell__chips button:hover,
+.shell__chips button:focus-visible {
+  border-color: var(--color-term-green);
+  color: var(--color-bone);
+}
+
+.shell__input {
+  display: flex;
+  align-items: center;
+  gap: 0.6ch;
+  padding: 0.7rem 0.9rem 0.8rem;
+  border-top: 1px solid var(--color-ash);
+}
+
+.shell__prompt {
+  flex: none;
+  color: var(--color-smoke);
+}
+
+.shell__input input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-bone);
+  caret-color: var(--color-term-green);
+  font: inherit;
+  outline: none;
+}
+
+.shell__input input::placeholder {
+  color: color-mix(in oklab, var(--color-smoke) 60%, transparent);
+}
+
+.shell__input:focus-within {
+  box-shadow: inset 0 1px 0 var(--color-term-green);
+}
+
+/* iOS zooms into any field under 16px on focus. */
+@media (pointer: coarse) {
+  .shell__input input {
+    font-size: 1rem;
   }
 }
 

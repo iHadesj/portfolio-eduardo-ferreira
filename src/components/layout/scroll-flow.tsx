@@ -10,9 +10,9 @@ interface ScrollFlowProps {
 
 /**
  * Gives the home page one continuous, scroll-linked visual rhythm. The content
- * remains regular document flow; the thread that doubles as the progress
- * indicator is absolutely positioned behind the sections, so anchors,
- * keyboard navigation and native layout keep working.
+ * remains regular document flow; the thread is absolutely positioned behind
+ * the sections, so anchors, keyboard navigation and native layout keep
+ * working. (Reading progress lives on the status line's top edge.)
  *
  * Everything here is CSS driven by scroll timelines (see `.scroll-flow-*` in
  * globals.css): it runs on the compositor, ships no JavaScript and needs no
@@ -25,10 +25,6 @@ export function ScrollFlow({ children, id, className }: ScrollFlowProps) {
       data-scroll-flow
       className={cn("relative isolate overflow-clip", className)}
     >
-      {/* Phones keep a hairline progress bar; from md up the thread itself
-          shows how far down the page the reader is. */}
-      <div aria-hidden className="scroll-flow-progress md:hidden" />
-
       <div className="relative z-[2]">
         <ScrollThread />
         {children}

@@ -5,6 +5,7 @@ import { htmlLang, type Locale } from "@/lib/i18n/config";
 import { BootSequence } from "@/components/layout/boot-sequence";
 import { getClientDictionary, getDictionary } from "@/lib/i18n/dictionaries";
 import { LocaleProvider } from "@/lib/i18n/locale-provider";
+import { localizedProjects } from "@/lib/projects";
 
 /**
  * The shared body of both root layouts.
@@ -31,7 +32,14 @@ export function RootDocument({
         <BootSequence copy={getDictionary(locale).boot} />
         <LocaleProvider locale={locale} dict={getClientDictionary(locale)}>
           <Providers>
-            <SiteChrome>{children}</SiteChrome>
+            <SiteChrome
+              projects={localizedProjects(locale).map(({ slug, title }) => ({
+                slug,
+                title,
+              }))}
+            >
+              {children}
+            </SiteChrome>
           </Providers>
         </LocaleProvider>
       </body>

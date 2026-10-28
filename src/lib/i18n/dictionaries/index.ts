@@ -30,6 +30,7 @@ export function getClientDictionary(locale: Locale) {
     contactForm: dict.contact.form,
     easterEggs: dict.easterEggs,
     anomalies: dict.anomalies,
+    shell: dict.shell,
     // The footer is rendered from inside `SiteChrome`, which is a client
     // module — so its copy has to travel with the client slice.
     footer: dict.footer,

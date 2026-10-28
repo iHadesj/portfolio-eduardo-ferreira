@@ -644,6 +644,10 @@ export function BlackHoleStage({
       // The keyboard way in: hold Space or Enter on the countdown button.
       const isHoldKey = (event: KeyboardEvent) =>
         event.key === " " || event.key === "Enter";
+      // The shell's `collapse`: a hold nobody has to keep pressing — the
+      // countdown runs to the end unless Esc on the trigger cancels it.
+      const onCommand = () => beginHold();
+
       const onKeyDown = (event: KeyboardEvent) => {
         if (phase === "rebooting") {
           gravity?.skip();
@@ -695,6 +699,7 @@ export function BlackHoleStage({
       trigger.addEventListener("pointerup", onTriggerUp);
       trigger.addEventListener("pointercancel", onTriggerUp);
       trigger.addEventListener("contextmenu", onContextMenu);
+      window.addEventListener("hole:collapse", onCommand);
       if (fine) {
         window.addEventListener("pointermove", onHover, { passive: true });
         document.documentElement.addEventListener("pointerleave", onLeave);
@@ -724,6 +729,7 @@ export function BlackHoleStage({
         trigger.removeEventListener("pointerup", onTriggerUp);
         trigger.removeEventListener("pointercancel", onTriggerUp);
         trigger.removeEventListener("contextmenu", onContextMenu);
+        window.removeEventListener("hole:collapse", onCommand);
         window.removeEventListener("pointermove", onHover);
         document.documentElement.removeEventListener("pointerleave", onLeave);
         renderer.dispose();

@@ -9,14 +9,24 @@ import { EasterEggs } from "@/components/easter-eggs";
 import { AnomalyLog } from "@/components/anomaly-log";
 import { UnderworldParticles } from "@/components/underworld-particles";
 import { AmbientBackdrop } from "@/components/layout/ambient-backdrop";
+import { StatusLine } from "@/components/shell/status-line";
+import type { ShellProject } from "@/components/shell/commands";
 
 /**
  * The persistent shell around every page: toasts, skip link, navbar (+ mobile
  * nav and ⌘K palette via CommandMenuProvider), footer, contour
- * backdrop, grain overlay, the easter-egg controller (Konami → Underworld)
- * and the log of anomalies found.
+ * backdrop, grain overlay, the easter-egg controller (Konami → Underworld),
+ * the log of anomalies found and the status line that opens the shell.
+ * `projects` is the compact list the shell can `ls` and `open`, handed down
+ * from the server so the case-study collection never ships to the client.
  */
-export function SiteChrome({ children }: { children: React.ReactNode }) {
+export function SiteChrome({
+  children,
+  projects,
+}: {
+  children: React.ReactNode;
+  projects: ShellProject[];
+}) {
   return (
     <ToastProvider>
       <CommandMenuProvider>
@@ -29,6 +39,7 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
         <div aria-hidden className="grain-overlay" />
         <EasterEggs />
         <AnomalyLog />
+        <StatusLine projects={projects} />
       </CommandMenuProvider>
     </ToastProvider>
   );

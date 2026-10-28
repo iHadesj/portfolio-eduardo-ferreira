@@ -45,7 +45,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       <div
         aria-live="polite"
         role="status"
-        className="pointer-events-none fixed inset-x-0 bottom-6 z-[var(--z-toast)] flex justify-center px-4"
+        className="pointer-events-none fixed inset-x-0 bottom-[calc(var(--status-line-h)+1rem)] z-[var(--z-toast)] flex justify-center px-4"
       >
         <AnimatePresence>
           {current ? (
