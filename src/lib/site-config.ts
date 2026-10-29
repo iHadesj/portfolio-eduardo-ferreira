@@ -30,7 +30,7 @@ export const siteConfig = {
   // Name the browser saves the download as.
   cvFileName: "Curriculo-Eduardo-Ferreira-2026.pdf",
   // Repository (for the footer "view source" link). TODO_EDU: confirm name.
-  sourceUrl: "https://github.com/iHadesj/EduardoFerreira",
+  sourceUrl: "https://github.com/iHadesj/portfolio-eduardo-ferreira",
   /** The core stack, in the hero and the text résumé. Proper nouns: the
    *  same in every locale. */
   stack: [
