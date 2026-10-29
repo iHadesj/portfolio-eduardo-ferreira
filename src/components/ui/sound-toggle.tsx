@@ -7,14 +7,13 @@ import { useI18n } from "@/lib/i18n/locale-provider";
 import { setSoundEnabled, soundEnabled, subscribeSound } from "@/lib/sound";
 
 /**
- * Turns the site's sound effects on and off (lib/sound). Off until the
- * reader asks; the click that turns it on is the gesture the browser needs
- * to let audio start. The server renders it off, and a stored "on" shows
- * once hydrated. Client: it reads and writes the reader's preference.
+ * Turns the site's sound effects on and off (lib/sound). On by default;
+ * the server renders it on, and a stored "off" shows once hydrated.
+ * Client: it reads and writes the reader's preference.
  */
 export function SoundToggle({ className }: { className?: string }) {
   const { dict } = useI18n();
-  const on = useSyncExternalStore(subscribeSound, soundEnabled, () => false);
+  const on = useSyncExternalStore(subscribeSound, soundEnabled, () => true);
 
   return (
     <button

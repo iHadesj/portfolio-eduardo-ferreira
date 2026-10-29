@@ -1,12 +1,13 @@
 import type { Cue, Engine, HoleState } from "./engine";
 
 /**
- * The site's sound, behind one switch. Off by default: nobody gets audio
- * they did not ask for (WCAG 1.4.2), and browsers refuse it before a
- * gesture anyway. The preference is a per-reader convenience in
- * localStorage; the synthesizer itself (engine.ts — every sound is made
- * live with Web Audio, no files) is only fetched once sound is on, so a
- * reader who never turns it on downloads none of it.
+ * The site's sound, behind one switch. On by default — it is part of the
+ * show — but browsers hold audio back until the reader's first gesture
+ * (a click, a tap, a key), so nothing sounds on arrival; from that gesture
+ * on it plays. The switch stays in the navbar for anyone who wants quiet
+ * (WCAG 1.4.2), and a reader's "off" is kept in localStorage. The
+ * synthesizer itself (engine.ts — every sound is made live with Web Audio,
+ * no files) is fetched with that first gesture, never on load.
  *
  * Everything here is safe to call at any time, from anywhere: with sound
  * off, or before the engine has arrived, a call does nothing.
@@ -22,12 +23,12 @@ let loading: Promise<Engine | null> | null = null;
 
 export function soundEnabled(): boolean {
   if (enabled === null) {
-    enabled = false;
+    enabled = true;
     if (typeof window !== "undefined") {
       try {
-        enabled = localStorage.getItem(KEY) === "on";
+        enabled = localStorage.getItem(KEY) !== "off";
       } catch {
-        // Blocked storage: off, as for everyone else.
+        // Blocked storage: on, as for everyone else.
       }
     }
   }
