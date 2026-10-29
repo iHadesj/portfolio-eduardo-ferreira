@@ -34,6 +34,7 @@ export const pt = {
     themeToggle: "Alternar tema",
     themeToDark: "Ativar tema escuro",
     themeToLight: "Ativar tema claro",
+    sound: "Efeitos sonoros",
   },
 
   nav: {
@@ -386,6 +387,7 @@ export const pt = {
       ["cv", "baixar o currículo"],
       ["email", "copiar o e-mail"],
       ["theme [dark|light]", "trocar o tema"],
+      ["sound [on|off]", "ligar ou desligar o som"],
       ["lang", "read it in english"],
       ["collapse", "colapsar o topo da página"],
       ["anomalias", "o que você já encontrou"],
@@ -405,6 +407,7 @@ export const pt = {
     cv: "baixando o currículo…",
     email: "copiado: {email}",
     theme: "tema: {theme}",
+    sound: "som: {state}",
     lang: "trocando para o inglês…",
     collapse: "segure firme…",
     collapseOff:

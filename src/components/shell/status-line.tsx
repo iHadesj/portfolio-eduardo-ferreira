@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useScrollSpy } from "@/hooks/use-scroll-spy";
 import { useI18n } from "@/lib/i18n/locale-provider";
+import { cue } from "@/lib/sound";
 import { commandForLink, type ShellProject } from "./commands";
 
 /* The prompt itself only loads the first time someone opens it. */
@@ -33,6 +34,7 @@ export function StatusLine({ projects }: { projects: ShellProject[] }) {
   const active = useScrollSpy(SECTIONS);
   const [open, setOpen] = useState(false);
   const [echo, setEcho] = useState<string | null>(null);
+  const section = useRef(active);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const timer = useRef(0);
 
@@ -50,6 +52,13 @@ export function StatusLine({ projects }: { projects: ShellProject[] }) {
     window.clearTimeout(timer.current);
     timer.current = window.setTimeout(() => setEcho(null), ECHO_MS);
   }, []);
+
+  // `cd` into each section as the scroll gets there: a short blip.
+  useEffect(() => {
+    if (active === section.current) return;
+    section.current = active;
+    if (active) cue("section");
+  }, [active]);
 
   useEffect(() => {
     const onClick = (event: MouseEvent) => {

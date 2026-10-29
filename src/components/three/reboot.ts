@@ -57,6 +57,10 @@ export interface RebootItem {
   command: boolean;
 }
 
+/** What a print sounds like (lib/sound cues): a kernel-log line, a key of
+    the typed command, a letter of the name, console output, `[ ok ]`. */
+export type RebootTick = "log" | "type" | "letter" | "print" | "ok";
+
 export interface Reboot {
   /** Advance; false once everything is back. */
   step(dt: number): boolean;
@@ -95,6 +99,9 @@ interface Print {
   shown: boolean;
   done: boolean;
   noisy: boolean;
+  /** How it sounds as it prints, and how many characters it has so far. */
+  tick: RebootTick;
+  printed: number;
 }
 
 const clamp = (x: number) => (x < 0 ? 0 : x > 1 ? 1 : x);
@@ -162,6 +169,8 @@ function measure(item: RebootItem): Print {
     shown: false,
     done: false,
     noisy: false,
+    tick: item.command ? "type" : item.letter ? "letter" : "print",
+    printed: 0,
   };
 }
 
@@ -189,6 +198,8 @@ export function createReboot(
   /** How many pieces were swallowed, and how long ago it began (s). */
   absorbed: number,
   since: number,
+  /** Called as things print, at most once a frame per kind. */
+  tick: (kind: RebootTick) => void = () => {},
 ): Reboot {
   for (const { el } of items) {
     el.style.transform = "";
@@ -290,6 +301,7 @@ export function createReboot(
   let printed = 0;
   let logDone = !log;
   let finished = false;
+  let dots = 0;
 
   const clip = (print: Print, x: number, line: number) => {
     const top = line === 0 ? 0 : (print.lines[line]?.top ?? 0);
@@ -365,6 +377,7 @@ export function createReboot(
           const entry = logLines[printed];
           if (entry) log.append(entry.build());
           printed += 1;
+          tick("log");
         }
         if (progress.dots) {
           const from = LOG_LINES[2] ?? 0;
@@ -372,8 +385,13 @@ export function createReboot(
             clamp((clock - from) / (DOTS_UNTIL - from)) * DOTS,
           );
           progress.dots.textContent = ".".repeat(n);
+          if (n > dots) tick("print");
+          dots = n;
         }
-        if (progress.ok && clock >= LOG_OK) progress.ok.textContent = "[ ok ]";
+        if (progress.ok && clock >= LOG_OK && !progress.ok.textContent) {
+          progress.ok.textContent = "[ ok ]";
+          tick("ok");
+        }
         if (clock >= LOG_CLEAR) {
           log.remove();
           logDone = true;
@@ -400,6 +418,12 @@ export function createReboot(
         while (n < print.chars.length && (print.chars[n]?.at ?? 0) <= clock)
           n += 1;
         if (!n) continue;
+        // Characters already there when it started (the prompt) are silent.
+        if (n > print.printed) {
+          if (print.chars[n - 1]?.quiet === false || print.printed)
+            tick(print.tick);
+          print.printed = n;
+        }
         if (!print.shown) {
           print.shown = true;
           print.el.style.visibility = "";

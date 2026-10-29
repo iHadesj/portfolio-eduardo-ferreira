@@ -4,6 +4,7 @@ import { useActionState, useEffect, useRef } from "react";
 import { submitContact, type ContactState } from "@/lib/actions/contact";
 import { useToast } from "@/components/ui/toast";
 import { buttonVariants } from "@/components/ui/button";
+import { cue } from "@/lib/sound";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/lib/i18n/locale-provider";
 import type { Locale } from "@/lib/i18n/config";
@@ -50,6 +51,8 @@ export function ContactForm({ locale }: { locale: Locale }) {
     if (state.status === "success") {
       toast(state.message ?? t.fallbackSuccess);
       formRef.current?.reset();
+    } else if (state.status === "error") {
+      cue("error");
     }
   }, [state, toast, t.fallbackSuccess]);
 

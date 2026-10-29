@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useReducedMotionSafe } from "@/hooks/use-reduced-motion-safe";
 import { cn } from "@/lib/utils";
 import { discover } from "@/lib/anomalies";
+import { cue, holeSilence, holeSound } from "@/lib/sound";
 import {
   HEAT_INKS,
   HOLE_LAYOUTS,
@@ -95,6 +96,12 @@ const MASS_FLARE = 0.2;
 /** The disk sends out a ring of light now and then on its own. */
 const AUTO_PULSE_FROM = 5;
 const AUTO_PULSE_EVERY = 9;
+/** Sound: the countdown's heartbeat in its last second (s between beats),
+    the pieces heard crossing the horizon (per s), and the camera speed
+    (rad/s) that counts as a full spin. */
+const HEARTBEAT = 0.3;
+const GRAINS = 55;
+const FULL_SPIN = 4;
 
 type Press = "none" | "pending" | "drag" | "hold";
 type Phase = "idle" | "holding" | "collapsing" | "rebooting";
@@ -257,6 +264,13 @@ export function BlackHoleStage({
       let notice = "";
       let noticeUntil = 0;
       const shown = { phase: "", label: "", time: "", horizon: "" };
+      // Sound: the countdown's last whole second, the next heartbeat, the
+      // debris still owed, the previous auto ring, and the dark beat.
+      let lastSecond = 0;
+      let nextBeat = 0;
+      let grains = 0;
+      let lastAuto = 0;
+      let hushed = false;
 
       // Rows follow the box's real shape, so the scene can never be drawn
       // stretched — even if the CSS and this layout ever disagree.
@@ -309,6 +323,8 @@ export function BlackHoleStage({
             {
               onSwallowed: () => {
                 // The last of the hero just crossed the horizon.
+                cue("impact");
+                hushed = true;
                 flash();
                 pulse();
                 screen.shock();
@@ -317,13 +333,16 @@ export function BlackHoleStage({
               },
               onReboot: () => {
                 phase = "rebooting";
+                hushed = false;
               },
               onRestored: () => {
                 phase = "idle";
                 notice = copyRef.current.restored;
                 noticeUntil = clock + NOTICE;
                 announce(copyRef.current.statusRestored);
+                cue("restored");
               },
+              onTick: (kind) => cue(kind),
             },
             () => copyRef.current.console,
             minFrame,
@@ -337,6 +356,8 @@ export function BlackHoleStage({
         phase = "holding";
         holdFrom = clock;
         notice = "";
+        lastSecond = HOLD_FULL;
+        cue("arm");
       };
 
       const endHold = () => {
@@ -344,6 +365,7 @@ export function BlackHoleStage({
         phase = "idle";
         gravity?.release();
         pulse();
+        cue("cancel");
         notice = copyRef.current.cancelled;
         noticeUntil = clock + NOTICE;
       };
@@ -437,6 +459,18 @@ export function BlackHoleStage({
 
         if (phase === "holding") {
           pull = Math.min(1, (clock - holdFrom) / HOLD_FULL);
+          // Each second of the countdown beeps, higher as it runs out; the
+          // last one is a heartbeat.
+          const left = HOLD_FULL * (1 - pull);
+          const second = Math.ceil(left);
+          if (second < lastSecond && second > 0) {
+            lastSecond = second;
+            cue("count", 1 - second / HOLD_FULL);
+          }
+          if (left < CRITICAL && clock >= nextBeat) {
+            nextBeat = clock + HEARTBEAT;
+            cue("critical");
+          }
           // Front-loaded, so the page starts to give the moment you hold.
           gravity?.attract(Math.pow(pull, 0.8));
           // Should the machinery still be on its way, zero waits for it.
@@ -450,6 +484,13 @@ export function BlackHoleStage({
           pull = Math.max(0, pull - step * 1.4);
         }
         const { absorbed } = gravity?.step(step) ?? { absorbed: 0 };
+        // The hero heard going in, piece by piece, thinning as it goes.
+        if (phase === "collapsing" && !hushed) {
+          grains += step * GRAINS * (1 - 0.6 * absorbed);
+          for (; grains >= 1; grains -= 1) cue("grain", absorbed);
+        } else {
+          grains = 0;
+        }
         // The hole burns brighter the more it has eaten.
         surge =
           phase === "collapsing"
@@ -491,6 +532,10 @@ export function BlackHoleStage({
           clock < AUTO_PULSE_FROM
             ? NO_PULSE
             : (clock - AUTO_PULSE_FROM) % AUTO_PULSE_EVERY;
+        const azimuth = idle.azimuth + orbit + leanOrbit;
+        // The disk's own ring of light, heard from where the disk is.
+        if (auto < lastAuto) cue("ring", Math.sin(azimuth) * 0.5);
+        lastAuto = auto;
         // Gravity rising, without bending anything: the hole grows heavier
         // as the hold builds and as it eats — a wider shadow, light bent
         // harder, the inner disk swallowed and the rest spun faster — then
@@ -504,7 +549,7 @@ export function BlackHoleStage({
         renderer.render(
           {
             ...idle,
-            azimuth: idle.azimuth + orbit + leanOrbit,
+            azimuth,
             inclination:
               idle.inclination + elastic(tilt + leanTilt, TILT_LIMIT),
             diskTime,
@@ -523,6 +568,16 @@ export function BlackHoleStage({
             }),
           },
         );
+        holeSound({
+          near,
+          pull,
+          surge,
+          flare,
+          mass,
+          spin: Math.min(1, Math.abs(orbitVelocity) / FULL_SPIN),
+          pan: Math.sin(azimuth),
+          hush: hushed ? 0.9 : 0,
+        });
         if (first) {
           first = false;
           setLive(true);
@@ -540,8 +595,10 @@ export function BlackHoleStage({
         quake = 0;
         dim = 0;
         notice = "";
+        hushed = false;
         gravity?.reset();
         fx?.dispose();
+        holeSilence();
         paint();
       };
 
@@ -619,7 +676,10 @@ export function BlackHoleStage({
         if (event.pointerType !== "touch") tilt += dy * 0.006;
       };
       const onUp = () => {
-        if (press === "pending") pulse();
+        if (press === "pending") {
+          pulse();
+          cue("ping");
+        }
         if (press === "hold") endHold();
         if (press === "drag" && performance.now() - lastMoveAt > 120) {
           orbitVelocity = 0;
@@ -734,6 +794,7 @@ export function BlackHoleStage({
         cancelAnimationFrame(frame);
         gravity?.reset();
         fx?.dispose();
+        holeSilence();
         name?.style.removeProperty("--pull");
         io.disconnect();
         ro.disconnect();
@@ -816,6 +877,8 @@ export function BlackHoleStage({
         ref={triggerRef}
         type="button"
         aria-label={copy.keyLabel}
+        // Its sounds are the hold's own (arm, countdown, cancel).
+        data-sound="off"
         className={cn("hole-trigger", live && "hole-trigger--live")}
       >
         <span aria-hidden className="hole-trigger__text">

@@ -8,6 +8,7 @@ import {
   useState,
 } from "react";
 import { AnimatePresence, motion } from "motion/react";
+import { cue } from "@/lib/sound";
 
 interface ToastData {
   id: number;
@@ -33,6 +34,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   const timerRef = useRef<number | undefined>(undefined);
 
   const toast = useCallback((message: string) => {
+    cue("notify");
     idRef.current += 1;
     setCurrent({ id: idRef.current, message });
     if (timerRef.current) clearTimeout(timerRef.current);

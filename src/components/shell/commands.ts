@@ -20,6 +20,7 @@ export const COMMANDS = [
   "cv",
   "email",
   "theme",
+  "sound",
   "lang",
   "collapse",
   "anomalias",
@@ -52,6 +53,7 @@ export function candidates(input: string, ctx: CompletionContext): string[] {
     open: ctx.slugs,
     cat: ["why.txt", "cv.pdf"],
     theme: ["dark", "light"],
+    sound: ["on", "off"],
     sudo: [ctx.sudoTarget],
     git: ["log"],
   };

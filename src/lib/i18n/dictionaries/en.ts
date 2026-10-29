@@ -20,6 +20,7 @@ export const en = {
     themeToggle: "Toggle theme",
     themeToDark: "Switch to dark theme",
     themeToLight: "Switch to light theme",
+    sound: "Sound effects",
   },
 
   nav: {
@@ -352,6 +353,7 @@ export const en = {
       ["cv", "download the résumé"],
       ["email", "copy the e-mail"],
       ["theme [dark|light]", "switch the theme"],
+      ["sound [on|off]", "turn the sound on or off"],
       ["lang", "ler em português"],
       ["collapse", "collapse the top of the page"],
       ["anomalies", "what you've found so far"],
@@ -371,6 +373,7 @@ export const en = {
     cv: "downloading the résumé…",
     email: "copied: {email}",
     theme: "theme: {theme}",
+    sound: "sound: {state}",
     lang: "switching to portuguese…",
     collapse: "hold on tight…",
     collapseOff:

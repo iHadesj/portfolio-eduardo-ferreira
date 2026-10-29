@@ -31,6 +31,7 @@ export function ThemeToggle({ className }: { className?: string }) {
           : dict.common.themeToggle
       }
       onClick={() => setTheme(isLight ? "dark" : "light")}
+      data-sound="switch"
       className={cn(
         "rounded-sm border-ash text-smoke hover:border-signal hover:text-bone inline-flex h-9 w-9 items-center justify-center border transition-colors duration-200",
         className,

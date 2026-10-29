@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { motion, useMotionValueEvent, useScroll } from "motion/react";
 import { navItems } from "@/lib/site-config";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { SoundToggle } from "@/components/ui/sound-toggle";
 import { LocaleToggle } from "@/components/ui/locale-toggle";
 import { Kbd } from "@/components/ui/kbd";
 import { useScrollSpy } from "@/hooks/use-scroll-spy";
@@ -97,6 +98,7 @@ export function Navbar() {
 
         <div className="flex items-center gap-2">
           <LocaleToggle />
+          <SoundToggle />
           <ThemeToggle />
           <button
             type="button"

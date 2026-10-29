@@ -25,6 +25,8 @@
  * included. Loaded on demand by the director, never under reduced motion.
  */
 
+import { cue } from "@/lib/sound";
+
 interface Scene {
   /** Where its `data-scrub` goes: the switch for its CSS (sticky holds,
       waiting states). Switched on one scene per frame. */
@@ -122,6 +124,8 @@ function projectStack(): Scene | null {
   );
   const progress = items.map(() => 0);
   const written = items.map(() => -1);
+  /** The next card has fully covered this one (and it was heard). */
+  const covered = items.map(() => false);
   // Where each card sticks: its offset's resolved value.
   const sticks = items.map(() => 0);
 
@@ -144,6 +148,14 @@ function projectStack(): Scene | null {
         const p = progress[i]!;
         if (p === written[i]) continue;
         written[i] = p;
+        // Heard as the next card lands on it; reset once it is pulled
+        // well back off, so a scroll up and down again lands again.
+        if (p >= 0.98 && !covered[i]) {
+          covered[i] = true;
+          cue("stack");
+        } else if (p < 0.85) {
+          covered[i] = false;
+        }
         const card = cards[i];
         const shade = shades[i];
         if (card) {

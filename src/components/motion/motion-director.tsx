@@ -2,13 +2,15 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { cue } from "@/lib/sound";
 
 /**
  * `"use client"`: it watches the page scroll by. Runs the page's motion,
  * once per route:
  *
  * - every scene (`[data-scene]`, see ui/reveal.tsx) is marked `data-in` the
- *   first time it comes into view, which starts its timed entrance;
+ *   first time it comes into view, which starts its timed entrance (a
+ *   project card's has a sound: it is dealt onto the table);
  * - the scroll-driven scenes (the hero's curtain, the project stack, the
  *   manifesto, the graph's read head, the closing marquee) load as their
  *   own chunk with the reader's first move and follow the scroll from
@@ -34,6 +36,7 @@ export function MotionDirector() {
         for (const entry of entries) {
           if (!entry.isIntersecting) continue;
           entry.target.setAttribute("data-in", "");
+          if (entry.target.getAttribute("data-scene") === "card") cue("deal");
           io.unobserve(entry.target);
         }
       },

@@ -1,5 +1,10 @@
 import { createDebris, type Debris, type DebrisTiming } from "./debris";
-import { createReboot, type Reboot, type RebootCopy } from "./reboot";
+import {
+  createReboot,
+  type Reboot,
+  type RebootCopy,
+  type RebootTick,
+} from "./reboot";
 
 /**
  * The black hole's pull on the page, in four acts.
@@ -115,6 +120,8 @@ export interface GravityEvents {
   onReboot(): void;
   /** Everything is back where it was. */
   onRestored(): void;
+  /** Something printed during the reboot (for its sound). */
+  onTick?(kind: RebootTick): void;
 }
 
 export interface GravityFrame {
@@ -370,6 +377,7 @@ export function createGravity(
       consoleCopy(),
       items.length,
       clock,
+      (kind) => events.onTick?.(kind),
     );
     events.onReboot();
   };

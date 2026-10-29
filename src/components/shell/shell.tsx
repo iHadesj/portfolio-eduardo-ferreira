@@ -17,6 +17,7 @@ import {
   sectionPath,
   switchLocalePath,
 } from "@/lib/i18n/routes";
+import { cue, setSoundEnabled, soundEnabled } from "@/lib/sound";
 import { downloadFile } from "@/lib/utils";
 import { candidates, complete, type ShellProject } from "./commands";
 
@@ -89,7 +90,11 @@ export function Shell({
     if (!dialog.open) dialog.showModal();
     inputRef.current?.focus();
     discover("terminal");
-    return () => dialog.close();
+    cue("open");
+    return () => {
+      dialog.close();
+      cue("close");
+    };
   }, []);
 
   useEffect(() => {
@@ -120,11 +125,13 @@ export function Shell({
     const arg = args.join(" ");
     const lines: Line[] = [];
     const say = (...more: Line[]) => lines.push(...more);
-    const print = () =>
+    const print = () => {
       setEntries((previous) => [
         ...previous,
         { id: nextId.current++, input, lines },
       ]);
+      if (lines.some(({ tone }) => tone === "err")) cue("error");
+    };
 
     switch (name.toLowerCase()) {
       case "help":
@@ -248,6 +255,14 @@ export function Shell({
               : "light";
         setTheme(theme);
         say({ text: fill(t.theme, { theme }), tone: "ok" });
+        break;
+      }
+
+      case "sound": {
+        const on =
+          arg === "on" ? true : arg === "off" ? false : !soundEnabled();
+        setSoundEnabled(on);
+        say({ text: fill(t.sound, { state: on ? "on" : "off" }), tone: "ok" });
         break;
       }
 
