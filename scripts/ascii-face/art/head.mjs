@@ -25,6 +25,8 @@ const ORIGIN = v3(0, 11.5, 0); // eye line
 
 const EYE = v3(3.15, 11.4, 7.3); // right/left pupils mirror on x
 const EYE_RADIUS = 1.25;
+/** The hollow round each eye, shaded darker than the rest of the face. */
+const ORBIT = { c: v3(3.4, 11.45, 7.9), r: v3(2.4, 1.3, 2.0) };
 
 /**
  * The nose in side view (z, y): the reference's ridge from the bridge to the
@@ -73,6 +75,8 @@ export const MATERIALS = {
   disc: { albedo: 1, gloss: 0.6 },
   ring: { albedo: 1, gloss: 0.8 },
   socket: { albedo: 0.12, gloss: 0.2 },
+  // the shaded hollow round the eye, so the lit eye stands out of the face
+  orbit: { albedo: 0.32, gloss: 0.1, floor: 0.2 },
   bolt: { albedo: 1, gloss: 1 },
   column: { albedo: 0.35, gloss: 0.4 },
   tube: { albedo: 0.75, gloss: 1 },
@@ -254,7 +258,8 @@ export function surfaceAt(pLocal) {
   if (ear.d === nearest) return MATERIALS[ear.part];
   if (neckPart.d === nearest) return MATERIALS[neckPart.part];
   const lined = skinPart.seam < SEAM_WIDTH * 1.8 || inkDistance(p, s) < 0;
-  return lined ? MATERIALS.seam : MATERIALS.skin;
+  if (lined) return MATERIALS.seam;
+  return sdEllipsoid(s, ORBIT.c, ORBIT.r) < 0 ? MATERIALS.orbit : MATERIALS.skin;
 }
 
 /** True where a head-local point is on the visible (glowing) part of an eye. */
@@ -271,7 +276,7 @@ function eyeDistance(pLocal) {
 function insideEyeOpening(pLocal) {
   const p = toCm(pLocal);
   const x = (Math.abs(p[0]) - EYE[0]) / 1.8;
-  const y = (p[1] - EYE[1] + 0.05) / 0.8;
+  const y = (p[1] - EYE[1] + 0.05) / 0.65;
   return Math.abs(x) < 1 && y * y < (1 - x * x) * (1 - x * x);
 }
 

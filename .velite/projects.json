@@ -17,7 +17,7 @@
     ],
     "repo": "https://github.com/iHadesj/JPA_PostgreSQL",
     "featured": true,
-    "order": 7,
+    "order": 3,
     "highlights": [
       "Mapeamento JPA com entidades e relações explícitas",
       "Camadas separadas no padrão MVC (controller → service → repository)",
@@ -226,7 +226,7 @@
         }
       ]
     },
-    "content": "const{Fragment:e,jsx:a,jsxs:o}=arguments[0];function _createMdxContent(r){const n={code:\"code\",em:\"em\",h2:\"h2\",li:\"li\",p:\"p\",strong:\"strong\",ul:\"ul\",...r.components};return o(e,{children:[a(n.h2,{children:\"O problema\"}),\"\\n\",o(n.p,{children:['Este é o projeto sem cliente e sem métrica — o que eu queria era ver até onde\\ndá para levar uma interface quando o conteúdo é uma faixa só. \"Change (In The\\nHouse Of Flies)\", do ',a(n.em,{children:\"White Pony\"}),\", é uma música de colapso lento: começa\\ncontida e desaba no refrão. A pergunta era se a página conseguia fazer a mesma\\ncurva.\"]}),\"\\n\",o(n.p,{children:[\"Duas restrições apareceram de imediato. A primeira é legal: \",a(n.strong,{children:\"não hospedar o\\náudio.\"}),\" O repositório não contém MP3 nem letra — material protegido não entra.\\nA segunda é de acessibilidade: uma página construída sobre pulsação e movimento\\nprecisa continuar utilizável para quem pediu para reduzir animação.\"]}),\"\\n\",a(n.h2,{children:\"Decisões técnicas\"}),\"\\n\",o(n.ul,{children:[\"\\n\",o(n.li,{children:[a(n.strong,{children:\"O áudio é do usuário, não do site.\"}),\" O player lê um arquivo local — colocado\\nem \",a(n.code,{children:\"public/music/change.mp3\"}),\" ou arrastado direto para a página. Isso resolve\\na questão de direitos sem meio-termo e, de quebra, faz o site inteiro\\nfuncionar offline: nada é transmitido, nada depende de rede.\"]}),\"\\n\",o(n.li,{children:[a(n.strong,{children:\"Espectro real, não decorativo.\"}),\" A visualização sai da Web Audio API\\nanalisando o áudio que está tocando de verdade. Em iOS/iPadOS, onde a\\nanálise em segundo plano é restrita, o site cai para um espectro simulado em\\nvez de simplesmente congelar.\"]}),\"\\n\",o(n.li,{children:[a(n.strong,{children:\"Intensidade atrelada ao refrão.\"}),\" Quando a música entra no refrão, a\\ninterface responde em conjunto — halo violeta pulsando, brilho no título,\\nzoom no fundo, tremor no player, espectro expandido, ticker acelerado e as\\nmoscas atravessando a tela mais rápido. A pulsação segue os 92 BPM da faixa.\"]}),\"\\n\",o(n.li,{children:[o(n.strong,{children:[a(n.code,{children:\"prefers-reduced-motion\"}),\" como caminho de primeira classe.\"]}),\" Quem pede menos\\nmovimento recebe a experiência sem tremor, zoom ou moscas animadas — e ainda\\ncom player, letra e espectro funcionando. Efeito é tempero, não estrutura.\"]}),\"\\n\",o(n.li,{children:[a(n.strong,{children:\"Letra como dado, com ferramenta junto.\"}),\" O site aceita \",a(n.code,{children:\".txt\"}),\" e \",a(n.code,{children:\".lrc\"}),\" em\\n\",a(n.code,{children:\"public/lyrics/\"}),\" e traz um sincronizador embutido: marcar a linha com Enter,\\najustar em passos de ±0,25 s e exportar o \",a(n.code,{children:\".lrc\"}),\" pronto. Sincronizar letra na\\nmão é tedioso o bastante para valer construir a ferramenta.\"]}),\"\\n\"]}),\"\\n\",a(n.h2,{children:\"Arquitetura\"}),\"\\n\",o(n.p,{children:[\"Front estático servido pela Vercel, com build Node/Vite. \",a(n.code,{children:\"public/music/\"}),\" e\\n\",a(n.code,{children:\"public/lyrics/\"}),\" são pontos de extensão vazios no repositório — o deploy\\npúblico sobe sem áudio, e quem clona coloca o próprio arquivo. Todo o\\nprocessamento (decodificação, análise de espectro, sincronia de letra) acontece\\nno navegador; não existe backend nem estado de servidor.\"]}),\"\\n\",o(n.p,{children:[\"A identidade visual vem do próprio disco: paleta \",a(n.em,{children:\"White Pony\"}),\" — osso, violeta\\ndessaturado e um preto puxado para o azul — com tipografia serifada em corpo\\ngrande e um fundo procedural de moscas atravessando a tela. Os atalhos de\\nteclado seguem a convenção de player (espaço para tocar e pausar, \",a(n.code,{children:\"M\"}),\" para\\nmudo, \",a(n.code,{children:\"Enter\"}),\" para marcar a linha no modo SYNC), e a Media Session API entrega\\no controle para a tela de bloqueio e a central de notificações, como qualquer\\napp de música nativo.\"]}),\"\\n\",a(n.h2,{children:\"Resultados\"}),\"\\n\",o(n.ul,{children:[\"\\n\",a(n.li,{children:\"Experiência de faixa única no ar, com player, espectro reativo, letra\\nsincronizada e a curva de intensidade acompanhando o refrão.\"}),\"\\n\",a(n.li,{children:\"Zero material protegido no repositório — o áudio é sempre do usuário.\"}),\"\\n\",a(n.li,{children:\"Utilizável com movimento reduzido e controlável pela tela de bloqueio.\"}),\"\\n\"]}),\"\\n\",a(n.h2,{children:\"O que eu faria diferente\"}),\"\\n\",a(n.p,{children:'A detecção de refrão hoje é marcada à mão, casada com esta faixa específica.\\nExtrairia isso para um arquivo de configuração por música — seções, BPM e\\nintensidade como dados — o que transformaria o projeto de \"um microsite para\\numa faixa\" em \"um formato para qualquer faixa\" sem reescrever a interface.'}),\"\\n\",a(n.p,{children:\"Também guardaria a letra sincronizada e a última posição no armazenamento local\\npara a página retomar de onde parou, e trocaria o fallback de espectro do iOS\\npor algo derivado da forma de onda decodificada, em vez de simulado — mais\\nhonesto com o que está tocando.\"})]})}return{default:function(e={}){const{wrapper:o}=e.components||{};return o?a(o,{...e,children:a(_createMdxContent,{...e})}):_createMdxContent(e)}};",
+    "content": "const{Fragment:e,jsx:a,jsxs:o}=arguments[0];function _createMdxContent(r){const n={code:\"code\",em:\"em\",h2:\"h2\",li:\"li\",p:\"p\",strong:\"strong\",ul:\"ul\",...r.components};return o(e,{children:[a(n.h2,{children:\"O problema\"}),\"\\n\",o(n.p,{children:['Este é o projeto sem cliente e sem métrica — o que eu queria era ver até onde\\r\\ndá para levar uma interface quando o conteúdo é uma faixa só. \"Change (In The\\r\\nHouse Of Flies)\", do ',a(n.em,{children:\"White Pony\"}),\", é uma música de colapso lento: começa\\r\\ncontida e desaba no refrão. A pergunta era se a página conseguia fazer a mesma\\r\\ncurva.\"]}),\"\\n\",o(n.p,{children:[\"Duas restrições apareceram de imediato. A primeira é legal: \",a(n.strong,{children:\"não hospedar o\\r\\náudio.\"}),\" O repositório não contém MP3 nem letra — material protegido não entra.\\r\\nA segunda é de acessibilidade: uma página construída sobre pulsação e movimento\\r\\nprecisa continuar utilizável para quem pediu para reduzir animação.\"]}),\"\\n\",a(n.h2,{children:\"Decisões técnicas\"}),\"\\n\",o(n.ul,{children:[\"\\n\",o(n.li,{children:[a(n.strong,{children:\"O áudio é do usuário, não do site.\"}),\" O player lê um arquivo local — colocado\\r\\nem \",a(n.code,{children:\"public/music/change.mp3\"}),\" ou arrastado direto para a página. Isso resolve\\r\\na questão de direitos sem meio-termo e, de quebra, faz o site inteiro\\r\\nfuncionar offline: nada é transmitido, nada depende de rede.\"]}),\"\\n\",o(n.li,{children:[a(n.strong,{children:\"Espectro real, não decorativo.\"}),\" A visualização sai da Web Audio API\\r\\nanalisando o áudio que está tocando de verdade. Em iOS/iPadOS, onde a\\r\\nanálise em segundo plano é restrita, o site cai para um espectro simulado em\\r\\nvez de simplesmente congelar.\"]}),\"\\n\",o(n.li,{children:[a(n.strong,{children:\"Intensidade atrelada ao refrão.\"}),\" Quando a música entra no refrão, a\\r\\ninterface responde em conjunto — halo violeta pulsando, brilho no título,\\r\\nzoom no fundo, tremor no player, espectro expandido, ticker acelerado e as\\r\\nmoscas atravessando a tela mais rápido. A pulsação segue os 92 BPM da faixa.\"]}),\"\\n\",o(n.li,{children:[o(n.strong,{children:[a(n.code,{children:\"prefers-reduced-motion\"}),\" como caminho de primeira classe.\"]}),\" Quem pede menos\\r\\nmovimento recebe a experiência sem tremor, zoom ou moscas animadas — e ainda\\r\\ncom player, letra e espectro funcionando. Efeito é tempero, não estrutura.\"]}),\"\\n\",o(n.li,{children:[a(n.strong,{children:\"Letra como dado, com ferramenta junto.\"}),\" O site aceita \",a(n.code,{children:\".txt\"}),\" e \",a(n.code,{children:\".lrc\"}),\" em\\r\\n\",a(n.code,{children:\"public/lyrics/\"}),\" e traz um sincronizador embutido: marcar a linha com Enter,\\r\\najustar em passos de ±0,25 s e exportar o \",a(n.code,{children:\".lrc\"}),\" pronto. Sincronizar letra na\\r\\nmão é tedioso o bastante para valer construir a ferramenta.\"]}),\"\\n\"]}),\"\\n\",a(n.h2,{children:\"Arquitetura\"}),\"\\n\",o(n.p,{children:[\"Front estático servido pela Vercel, com build Node/Vite. \",a(n.code,{children:\"public/music/\"}),\" e\\r\\n\",a(n.code,{children:\"public/lyrics/\"}),\" são pontos de extensão vazios no repositório — o deploy\\r\\npúblico sobe sem áudio, e quem clona coloca o próprio arquivo. Todo o\\r\\nprocessamento (decodificação, análise de espectro, sincronia de letra) acontece\\r\\nno navegador; não existe backend nem estado de servidor.\"]}),\"\\n\",o(n.p,{children:[\"A identidade visual vem do próprio disco: paleta \",a(n.em,{children:\"White Pony\"}),\" — osso, violeta\\r\\ndessaturado e um preto puxado para o azul — com tipografia serifada em corpo\\r\\ngrande e um fundo procedural de moscas atravessando a tela. Os atalhos de\\r\\nteclado seguem a convenção de player (espaço para tocar e pausar, \",a(n.code,{children:\"M\"}),\" para\\r\\nmudo, \",a(n.code,{children:\"Enter\"}),\" para marcar a linha no modo SYNC), e a Media Session API entrega\\r\\no controle para a tela de bloqueio e a central de notificações, como qualquer\\r\\napp de música nativo.\"]}),\"\\n\",a(n.h2,{children:\"Resultados\"}),\"\\n\",o(n.ul,{children:[\"\\n\",a(n.li,{children:\"Experiência de faixa única no ar, com player, espectro reativo, letra\\r\\nsincronizada e a curva de intensidade acompanhando o refrão.\"}),\"\\n\",a(n.li,{children:\"Zero material protegido no repositório — o áudio é sempre do usuário.\"}),\"\\n\",a(n.li,{children:\"Utilizável com movimento reduzido e controlável pela tela de bloqueio.\"}),\"\\n\"]}),\"\\n\",a(n.h2,{children:\"O que eu faria diferente\"}),\"\\n\",a(n.p,{children:'A detecção de refrão hoje é marcada à mão, casada com esta faixa específica.\\r\\nExtrairia isso para um arquivo de configuração por música — seções, BPM e\\r\\nintensidade como dados — o que transformaria o projeto de \"um microsite para\\r\\numa faixa\" em \"um formato para qualquer faixa\" sem reescrever a interface.'}),\"\\n\",a(n.p,{children:\"Também guardaria a letra sincronizada e a última posição no armazenamento local\\r\\npara a página retomar de onde parou, e trocaria o fallback de espectro do iOS\\r\\npor algo derivado da forma de onda decodificada, em vez de simulado — mais\\r\\nhonesto com o que está tocando.\"})]})}return{default:function(e={}){const{wrapper:o}=e.components||{};return o?a(o,{...e,children:a(_createMdxContent,{...e})}):_createMdxContent(e)}};",
     "url": "/projetos/change-in-the-house-of-flies"
   },
   {
@@ -356,140 +356,8 @@
         }
       ]
     },
-    "content": "const{Fragment:e,jsx:a,jsxs:n}=arguments[0];function _createMdxContent(o){const r={code:\"code\",h2:\"h2\",li:\"li\",p:\"p\",pre:\"pre\",strong:\"strong\",ul:\"ul\",...o.components};return n(e,{children:[a(r.h2,{children:\"O problema\"}),\"\\n\",a(r.p,{children:\"Durante o estágio eu fazia faculdade, estudava por fora e ainda tentava lembrar\\no que tinha aprendido no trampo. Tudo isso ficava espalhado: tarefa no\\ncaderno, horas de estudo em lugar nenhum e o aprendizado do dia só na cabeça,\\naté eu esquecer.\"}),\"\\n\",a(r.p,{children:\"O DevTrack junta as três coisas numa tela só. Ele começou pra minha rotina,\\nmas eu montei a base pensando em quem está nessa mesma fase, entre estudar e\\nentrar no mercado.\"}),\"\\n\",a(r.h2,{children:\"Como funciona\"}),\"\\n\",n(r.ul,{children:[\"\\n\",n(r.li,{children:[a(r.strong,{children:\"Tarefas\"}),\" por área: faculdade, estágio ou pessoal.\"]}),\"\\n\",n(r.li,{children:[a(r.strong,{children:\"Estudos\"}),\": registro de minutos e o foco do dia.\"]}),\"\\n\",n(r.li,{children:[a(r.strong,{children:\"Estágio\"}),\": um diário com aprendizados e bloqueios.\"]}),\"\\n\"]}),\"\\n\",a(r.p,{children:\"Tudo é salvo no IndexedDB na hora, sem login e sem internet. Depois da primeira\\nvisita o service worker deixa o app abrir sem rede.\"}),\"\\n\",a(r.h2,{children:\"Arquitetura\"}),\"\\n\",a(r.pre,{children:a(r.code,{className:\"language-text\",children:\"clique no formulário\\n  → useDevTrack cria o objeto com UUID e data\\n  → offlineDatabase salva no IndexedDB\\n  → offlineDatabase enfileira uma SyncOperation\\n  → React atualiza a tela\\n  → (futuro) SyncService manda a fila pro Spring Boot quando tiver conexão\\n\"})}),\"\\n\",n(r.p,{children:[\"O ponto é a ordem: a pessoa nunca espera o servidor pra ver a mudança. E nenhum\\ncomponente acessa o banco direto, só o \",a(r.code,{children:\"offlineDatabase\"}),\".\"]}),\"\\n\",a(r.h2,{children:\"O que vem agora\"}),\"\\n\",n(r.p,{children:[\"O próximo passo é o \",a(r.code,{children:\"SyncService\"}),\": ler a fila, mandar cada operação pra uma API\\nem Spring Boot e apagar da fila \",a(r.strong,{children:\"só\"}),\" depois que o servidor responder que deu\\ncerto. Se apagar antes e a rede cair no meio, perde a alteração, que é\\nexatamente o erro que offline-first existe pra evitar.\"]}),\"\\n\",a(r.p,{children:\"Também é o projeto onde eu estou aprendendo React de verdade, escrevendo cada\\nparte e entendendo o porquê, em vez de só colar código que funciona.\"})]})}return{default:function(e={}){const{wrapper:n}=e.components||{};return n?a(n,{...e,children:a(_createMdxContent,{...e})}):_createMdxContent(e)}};",
+    "content": "const{Fragment:e,jsx:a,jsxs:n}=arguments[0];function _createMdxContent(r){const o={code:\"code\",h2:\"h2\",li:\"li\",p:\"p\",pre:\"pre\",strong:\"strong\",ul:\"ul\",...r.components};return n(e,{children:[a(o.h2,{children:\"O problema\"}),\"\\n\",a(o.p,{children:\"Durante o estágio eu fazia faculdade, estudava por fora e ainda tentava lembrar\\r\\no que tinha aprendido no trampo. Tudo isso ficava espalhado: tarefa no\\r\\ncaderno, horas de estudo em lugar nenhum e o aprendizado do dia só na cabeça,\\r\\naté eu esquecer.\"}),\"\\n\",a(o.p,{children:\"O DevTrack junta as três coisas numa tela só. Ele começou pra minha rotina,\\r\\nmas eu montei a base pensando em quem está nessa mesma fase, entre estudar e\\r\\nentrar no mercado.\"}),\"\\n\",a(o.h2,{children:\"Como funciona\"}),\"\\n\",n(o.ul,{children:[\"\\n\",n(o.li,{children:[a(o.strong,{children:\"Tarefas\"}),\" por área: faculdade, estágio ou pessoal.\"]}),\"\\n\",n(o.li,{children:[a(o.strong,{children:\"Estudos\"}),\": registro de minutos e o foco do dia.\"]}),\"\\n\",n(o.li,{children:[a(o.strong,{children:\"Estágio\"}),\": um diário com aprendizados e bloqueios.\"]}),\"\\n\"]}),\"\\n\",a(o.p,{children:\"Tudo é salvo no IndexedDB na hora, sem login e sem internet. Depois da primeira\\r\\nvisita o service worker deixa o app abrir sem rede.\"}),\"\\n\",a(o.h2,{children:\"Arquitetura\"}),\"\\n\",a(o.pre,{children:a(o.code,{className:\"language-text\",children:\"clique no formulário\\r\\n  → useDevTrack cria o objeto com UUID e data\\r\\n  → offlineDatabase salva no IndexedDB\\r\\n  → offlineDatabase enfileira uma SyncOperation\\r\\n  → React atualiza a tela\\r\\n  → (futuro) SyncService manda a fila pro Spring Boot quando tiver conexão\\n\"})}),\"\\n\",n(o.p,{children:[\"O ponto é a ordem: a pessoa nunca espera o servidor pra ver a mudança. E nenhum\\r\\ncomponente acessa o banco direto, só o \",a(o.code,{children:\"offlineDatabase\"}),\".\"]}),\"\\n\",a(o.h2,{children:\"O que vem agora\"}),\"\\n\",n(o.p,{children:[\"O próximo passo é o \",a(o.code,{children:\"SyncService\"}),\": ler a fila, mandar cada operação pra uma API\\r\\nem Spring Boot e apagar da fila \",a(o.strong,{children:\"só\"}),\" depois que o servidor responder que deu\\r\\ncerto. Se apagar antes e a rede cair no meio, perde a alteração, que é\\r\\nexatamente o erro que offline-first existe pra evitar.\"]}),\"\\n\",a(o.p,{children:\"Também é o projeto onde eu estou aprendendo React de verdade, escrevendo cada\\r\\nparte e entendendo o porquê, em vez de só colar código que funciona.\"})]})}return{default:function(e={}){const{wrapper:n}=e.components||{};return n?a(n,{...e,children:a(_createMdxContent,{...e})}):_createMdxContent(e)}};",
     "url": "/projetos/devtrack"
-  },
-  {
-    "title": "Friction Radar",
-    "slug": "friction-radar",
-    "summary": "Um radar pros atritos do dia a dia. Você registra o que te travou em segundos, e ele mostra quais se repetem e quanto tempo já te custaram.",
-    "problem": "O que mais rouba tempo quase nunca é um problemão, é a mesma coisinha chata repetida toda semana. Sem registro, ela nunca parece grande o bastante pra resolver.",
-    "date": "2026-10-07T00:00:00.000Z",
-    "cover": "/projects/friction-radar.webp",
-    "coverAlt": "Tela inicial do Friction Radar com o título Encontre o atrito e o núcleo do radar em 3D",
-    "stack": [
-      "React",
-      "TypeScript",
-      "Vite",
-      "Dexie/IndexedDB",
-      "Three.js",
-      "Framer Motion",
-      "PWA"
-    ],
-    "repo": "https://github.com/iHadesj/FrictionRadar",
-    "featured": false,
-    "order": 4,
-    "highlights": [
-      "Captura em poucos toques direto do núcleo do radar (toca ou segura)",
-      "Atritos parecidos se juntam mesmo escritos diferente (acento, caixa, pontuação)",
-      "Carga = minutos × intensidade, pra separar o chato do caro",
-      "Feito pro iPhone 11 instalado como app, funcionando offline"
-    ],
-    "metrics": [
-      {
-        "label": "Carga",
-        "value": "min × intensidade"
-      },
-      {
-        "label": "Dados",
-        "value": "no aparelho"
-      },
-      {
-        "label": "3D",
-        "value": "sob demanda"
-      }
-    ],
-    "decisions": [
-      {
-        "choice": "Um campo de radar que nunca desmonta",
-        "instead": "Páginas separadas com bottom navigation",
-        "because": "Cada seção é um estado do mesmo campo. O núcleo muda de pose por aba e a navegação percorre um trilho curvo, então trocar de tela parece mover o instrumento e não carregar outro site.",
-        "cost": "Tudo depende do mesmo componente persistente, e um bug nele aparece em todas as telas."
-      },
-      {
-        "choice": "Agrupar atritos por assinatura normalizada",
-        "instead": "Comparar o título exato",
-        "because": "Quem escreve \"Wi-Fi caiu\" numa semana e \"wifi caiu!!\" na outra está falando do mesmo problema. Tirar acento, caixa e pontuação antes de comparar faz o padrão aparecer sem a pessoa ter que escolher de uma lista.",
-        "cost": "Frases bem diferentes pro mesmo problema ainda contam como atritos separados."
-      },
-      {
-        "choice": "Peso = minutos × intensidade",
-        "instead": "Contar só quantas vezes aconteceu",
-        "because": "Uma coisa que acontece duas vezes e custa uma hora pesa mais que uma irritação de dez segundos todo dia. O ranking e as sugestões usam essa carga."
-      },
-      {
-        "choice": "Three.js carregado sob demanda e com freio",
-        "instead": "Cena 3D sempre ligada",
-        "because": "No iPhone 11 a tela limita o devicePixelRatio, corta FPS, pausa quando a página some e pode ser desligada nos ajustes. Com reduced motion o app continua inteiro.",
-        "cost": "Dois caminhos de renderização pra manter."
-      },
-      {
-        "choice": "Tudo local, com backup em JSON",
-        "instead": "Conta e servidor desde o começo",
-        "because": "Registro de atrito é pessoal e precisa ser instantâneo. Sem login o app abre e já está pronto pra capturar.",
-        "cost": "Notificação push com o app fechado ainda precisa de um servidor Web Push. Por enquanto o app só mostra notificação local."
-      }
-    ],
-    "status": "in-progress",
-    "en": {
-      "title": "Friction Radar",
-      "summary": "A radar for everyday friction. Log what slowed you down in seconds, and it shows which ones keep coming back and how much time they have cost.",
-      "problem": "What steals the most time is rarely a big problem, it is the same small annoyance every week. Without a record it never looks big enough to fix.",
-      "coverAlt": "Friction Radar home screen with the headline Find the friction and the 3D radar core",
-      "highlights": [
-        "Capture in a few taps straight from the radar core (tap or hold)",
-        "Similar frictions group together even when typed differently",
-        "Load = minutes × intensity, to tell the annoying from the expensive",
-        "Built for an iPhone 11 installed as an app, working offline"
-      ],
-      "metrics": [
-        {
-          "label": "Load",
-          "value": "min × intensity"
-        },
-        {
-          "label": "Data",
-          "value": "on device"
-        },
-        {
-          "label": "3D",
-          "value": "on demand"
-        }
-      ],
-      "decisions": [
-        {
-          "choice": "One radar field that never unmounts",
-          "instead": "Separate pages with a bottom navigation bar",
-          "because": "Every section is a state of the same field. The core changes pose per tab and the navigation runs along a curved track, so switching screens feels like moving the instrument rather than loading another site.",
-          "cost": "Everything hangs on one persistent component, and a bug there shows up on every screen."
-        },
-        {
-          "choice": "Group frictions by a normalised signature",
-          "instead": "Matching the exact title",
-          "because": "Stripping accents, case and punctuation before comparing lets the pattern surface without making the user pick from a list.",
-          "cost": "Very different phrasings of the same problem still count separately."
-        },
-        {
-          "choice": "Weight = minutes × intensity",
-          "instead": "Counting occurrences only",
-          "because": "Something that happens twice and costs an hour weighs more than a ten-second irritation every day. The ranking and the suggestions use that load."
-        },
-        {
-          "choice": "Three.js loaded on demand, with brakes",
-          "instead": "An always-on 3D scene",
-          "because": "On an iPhone 11 the scene caps devicePixelRatio, limits FPS, pauses when the page is hidden and can be turned off in settings. With reduced motion the app is still complete.",
-          "cost": "Two rendering paths to maintain."
-        },
-        {
-          "choice": "Everything local, with JSON backup",
-          "instead": "Accounts and a server from day one",
-          "because": "Logging friction is personal and has to be instant. With no login the app opens ready to capture.",
-          "cost": "Push notifications with the app closed still need a Web Push server. For now it only shows local notifications."
-        }
-      ]
-    },
-    "content": "const{Fragment:e,jsx:a,jsxs:o}=arguments[0];function _createMdxContent(n){const r={code:\"code\",h2:\"h2\",li:\"li\",p:\"p\",strong:\"strong\",ul:\"ul\",...n.components};return o(e,{children:[a(r.h2,{children:\"O problema\"}),\"\\n\",a(r.p,{children:\"O que mais rouba tempo no dia quase nunca é um problemão. É o login que expira,\\no arquivo que some sempre no mesmo lugar, a configuração que precisa ser refeita\\ntoda vez. Cada uma parece pequena demais pra merecer solução, então a gente só\\naguenta e segue.\"}),\"\\n\",a(r.p,{children:\"Fiz o Friction Radar pra ser o caderninho dessas coisas, só que fazendo a conta.\\nDepois de algumas semanas fica claro qual atrito aparece toda hora e quanto\\ntempo já foi embora com ele.\"}),\"\\n\",a(r.h2,{children:\"Como funciona\"}),\"\\n\",a(r.p,{children:\"Registrar é rápido de propósito: tocar no núcleo do radar abre a captura,\\ncom título, categoria, contexto, intensidade de 1 a 5 e quantos minutos\\ncustou. Tudo vai pro IndexedDB do próprio aparelho.\"}),\"\\n\",a(r.p,{children:\"Com os registros, o app monta três leituras:\"}),\"\\n\",o(r.ul,{children:[\"\\n\",o(r.li,{children:[a(r.strong,{children:\"Zonas de pressão\"}),\" na tela inicial, por categoria, pesadas pela carga\\n(minutos × intensidade).\"]}),\"\\n\",o(r.li,{children:[a(r.strong,{children:\"Sinais\"}),\", o histórico do que foi capturado.\"]}),\"\\n\",o(r.li,{children:[a(r.strong,{children:\"Padrões\"}),\", onde atritos com a mesma assinatura viram um ponto quente,\\ncom sugestões diretas: se repetiu três vezes, documenta ou automatiza; se já\\ncustou mais de meia hora, vale bloquear um tempo pra eliminar.\"]}),\"\\n\"]}),\"\\n\",a(r.h2,{children:\"Arquitetura\"}),\"\\n\",o(r.p,{children:[\"React 19, TypeScript e Vite, com Dexie por cima do IndexedDB. A interface é um\\núnico \",a(r.code,{children:\"RadarField\"}),\" que nunca é desmontado: as seções são estados dele. O\\nnúcleo em Three.js carrega sob demanda, e o resto do movimento é Framer Motion.\"]}),\"\\n\",o(r.p,{children:[\"O service worker é escrito na mão. Ele guarda o app e os assets pra abrir sem\\nrede e já trata eventos de \",a(r.code,{children:\"push\"}),\" e \",a(r.code,{children:\"notificationclick\"}),\", pra quando existir\\num servidor mandando notificação.\"]}),\"\\n\",a(r.h2,{children:\"O que eu faria diferente\"}),\"\\n\",a(r.p,{children:'Agrupar por texto normalizado foi o jeito mais simples de começar, mas tem\\nlimite: \"wifi caiu\" e \"internet parou\" ainda são dois atritos diferentes. Queria testar\\num agrupamento por similaridade, sem mandar os dados pra lugar nenhum.'})]})}return{default:function(e={}){const{wrapper:o}=e.components||{};return o?a(o,{...e,children:a(_createMdxContent,{...e})}):_createMdxContent(e)}};",
-    "url": "/projetos/friction-radar"
   },
   {
     "title": "Levva — Loja & Sorte",
@@ -533,7 +401,17 @@
         "choice": "Dinheiro sempre em centavos inteiros",
         "instead": "Ponto flutuante para valores em reais",
         "because": "Toda entrada e saída passa por uma única operação de carteira que valida o valor, impede saldo negativo e registra o extrato — sem herdar erro de arredondamento binário.",
-        "cost": "Toda exibição precisa atravessar uma camada de formatação."
+        "cost": "Toda exibição precisa atravessar uma camada de formatação.",
+        "snippet": {
+          "file": "src/shared/lib/money.ts",
+          "url": "https://github.com/iHadesj/Levva-loja-e-sorte/blob/HEAD/src/shared/lib/money.ts#L1-L10",
+          "lang": "ts",
+          "mark": [
+            2,
+            9
+          ],
+          "code": "export function formatBRL(centavos: number): string {\n  if (!Number.isInteger(centavos)) {\n    throw new Error('Valores monetários devem ser inteiros em centavos.');\n  }\n\n  return new Intl.NumberFormat('pt-BR', {\n    style: 'currency',\n    currency: 'BRL'\n  }).format(centavos / 100);\n}\n"
+        }
       },
       {
         "choice": "Checkout transacional com estorno automático",
@@ -616,7 +494,7 @@
         }
       ]
     },
-    "content": "const{Fragment:e,jsx:a,jsxs:o}=arguments[0];function _createMdxContent(n){const r={code:\"code\",h2:\"h2\",li:\"li\",p:\"p\",pre:\"pre\",strong:\"strong\",ul:\"ul\",...n.components};return o(e,{children:[a(r.h2,{children:\"O problema\"}),\"\\n\",a(r.p,{children:\"Uma vitrine de portfólio costuma parar na tela: catálogo bonito, carrinho que\\nsoma e nada atrás. Eu queria o contrário — uma jornada de compra inteira, do\\ndesejo à entrega, com as regras que realmente machucam em ecommerce: saldo,\\nestoque, transação, falha no meio do caminho. E queria fazer isso sem backend,\\npara o projeto continuar de pé anos depois sem servidor para pagar.\"}),\"\\n\",o(r.p,{children:[\"A pergunta de produto por trás veio junto: \",a(r.strong,{children:\"como desejo, escassez e risco\\ninfluenciam uma decisão de compra?\"}),\" Por isso cassino e gacha não entraram como\\nfuncionalidade solta. Eles são o contraponto deliberado da loja — o usuário vê\\nalgo que quer, compara com o saldo e escolhe entre esperar a renda diária,\\ncomprar algo mais barato ou aceitar uma expectativa matemática negativa.\"]}),\"\\n\",a(r.h2,{children:\"Decisões técnicas\"}),\"\\n\",o(r.ul,{children:[\"\\n\",o(r.li,{children:[a(r.strong,{children:\"Dinheiro é inteiro, sempre.\"}),\" Todo valor vive em centavos\\n(\",a(r.code,{children:\"saldoCentavos: 5_000\"}),\" = R$ 50,00). Nenhuma regra financeira toca ponto\\nflutuante, e entradas e saídas passam por uma única operação de carteira que\\nvalida o valor, impede saldo negativo e registra o extrato.\"]}),\"\\n\",o(r.li,{children:[a(r.strong,{children:\"Checkout defensivo.\"}),\" O saldo é debitado, estoque e pedido são gravados na\\nmesma transação do IndexedDB e qualquer falha dispara estorno automático na\\ncarteira. O carrinho só é limpo depois da confirmação. É o mesmo desenho que\\nem produção viraria idempotência, reserva de estoque e conciliação.\"]}),\"\\n\",o(r.li,{children:[a(r.strong,{children:\"Catálogo determinístico.\"}),\" \",a(r.code,{children:\"faker.seed(42)\"}),\", datas-base fixas e IDs\\nestáveis geram exatamente os mesmos 400 produtos a cada execução. Isso torna\\nos testes previsíveis e mantém favoritos, carrinho e pedidos válidos entre\\nrecargas — sem nenhuma chamada externa durante a demonstração.\"]}),\"\\n\",o(r.li,{children:[o(r.strong,{children:[\"Sorteio com \",a(r.code,{children:\"crypto.getRandomValues\"}),\".\"]}),\" A mecânica principal não usa\\n\",a(r.code,{children:\"Math.random()\"}),\". E o RTP teórico aparece na interface: 92,13% no caça-níquel,\\n91,67% na roleta. A vantagem da casa é informada, não escondida.\"]}),\"\\n\",o(r.li,{children:[a(r.strong,{children:\"Local de verdade.\"}),\" IndexedDB (Dexie) para catálogo e pedidos; Zustand\\nPersist para carteira, carrinho, favoritos e coleção. Nada sai do navegador.\"]}),\"\\n\"]}),\"\\n\",a(r.h2,{children:\"Arquitetura\"}),\"\\n\",a(r.p,{children:\"Organização por domínio, não por tipo de arquivo:\"}),\"\\n\",a(r.pre,{children:a(r.code,{className:\"language-text\",children:\"src/\\n├── app/                 # shell, rotas, providers e transições\\n├── features/\\n│   ├── cart/            # carrinho e checkout\\n│   ├── casino/          # caça-níquel, roleta, áudio e celebrações\\n│   ├── catalog/         # home, busca, grade virtual e produto\\n│   ├── gacha/           # Máquina de Desejos, coleção e economia\\n│   ├── orders/          # pedidos e evolução da entrega\\n│   └── wallet/          # saldo, extrato, bônus e transações\\n└── shared/\\n    ├── db/              # Dexie, seed e geração do catálogo\\n    ├── lib/             # dinheiro, hash, RNG e utilitários\\n    ├── types/           # contratos compartilhados\\n    └── ui/              # componentes reutilizáveis e visuais\\n\"})}),\"\\n\",o(r.p,{children:[\"Regras específicas ficam perto das telas que as consomem; só o que é\\ngenuinamente genérico sobe para \",a(r.code,{children:\"shared/ui\"}),\". A busca é fuzzy com Fuse.js, a\\ngrade do catálogo é virtualizada com TanStack Virtual e as rotas secundárias\\ncarregam sob demanda. O \",a(r.code,{children:\"vite-plugin-pwa\"}),\" mantém aplicação, fontes, ícones e\\nimagens disponíveis offline, com precache em torno de 4 MB.\"]}),\"\\n\",o(r.p,{children:[\"O visual é Bauhaus — formas primárias, cores chapadas, tipografia pesada, em\\nCSS Modules sem framework. O componente \",a(r.code,{children:\"ProductVisual\"}),\" usa fotografia quando\\nexiste asset para o produto e cai para uma ilustração procedural determinística\\nquando não existe, o que permitiu melhorar o catálogo aos poucos sem quebrar\\nnada.\"]}),\"\\n\",a(r.h2,{children:\"Resultados\"}),\"\\n\",o(r.ul,{children:[\"\\n\",a(r.li,{children:\"Jornada completa no ar: catálogo, busca, carrinho, checkout, pedidos com\\nlinha do tempo de entrega e coleção pós-compra.\"}),\"\\n\",a(r.li,{children:\"29 testes automatizados cobrindo o que de fato quebra confiança — transações\\nda carteira, proteção contra saldo negativo, intervalo da renda diária, RTP\\ndo caça-níquel e da roleta, raridade e pity do gacha, e a sincronização\\nidempotente que garante que um pedido entregue entra na coleção uma vez só.\"}),\"\\n\",a(r.li,{children:\"Funciona offline e é instalável, com todo o progresso vivendo no navegador.\"}),\"\\n\"]}),\"\\n\",a(r.h2,{children:\"O que eu faria diferente\"}),\"\\n\",a(r.p,{children:\"O projeto é intencionalmente local e não deve ser confundido com algo pronto\\npara vender. Em produção, a lista é longa e conhecida: backend autenticado com\\nbanco transacional, catálogo administrável, busca e recomendação no servidor,\\ngateway com tokenização e webhooks, reserva concorrente de estoque, frete e\\nimpostos reais, observabilidade e testes de ponta a ponta.\"}),\"\\n\",a(r.p,{children:\"E há uma decisão que eu manteria com ainda mais cuidado: o cassino fictício\\nnunca seria ligado a dinheiro real. Técnicas de retenção precisam respeitar\\nautonomia, transparência e a legislação aplicável — o objetivo aqui foi tornar\\nessas escolhas observáveis e questionáveis, não normalizá-las.\"})]})}return{default:function(e={}){const{wrapper:o}=e.components||{};return o?a(o,{...e,children:a(_createMdxContent,{...e})}):_createMdxContent(e)}};",
+    "content": "const{Fragment:e,jsx:a,jsxs:o}=arguments[0];function _createMdxContent(r){const n={code:\"code\",h2:\"h2\",li:\"li\",p:\"p\",pre:\"pre\",strong:\"strong\",ul:\"ul\",...r.components};return o(e,{children:[a(n.h2,{children:\"O problema\"}),\"\\n\",a(n.p,{children:\"Uma vitrine de portfólio costuma parar na tela: catálogo bonito, carrinho que\\r\\nsoma e nada atrás. Eu queria o contrário — uma jornada de compra inteira, do\\r\\ndesejo à entrega, com as regras que realmente machucam em ecommerce: saldo,\\r\\nestoque, transação, falha no meio do caminho. E queria fazer isso sem backend,\\r\\npara o projeto continuar de pé anos depois sem servidor para pagar.\"}),\"\\n\",o(n.p,{children:[\"A pergunta de produto por trás veio junto: \",a(n.strong,{children:\"como desejo, escassez e risco\\r\\ninfluenciam uma decisão de compra?\"}),\" Por isso cassino e gacha não entraram como\\r\\nfuncionalidade solta. Eles são o contraponto deliberado da loja — o usuário vê\\r\\nalgo que quer, compara com o saldo e escolhe entre esperar a renda diária,\\r\\ncomprar algo mais barato ou aceitar uma expectativa matemática negativa.\"]}),\"\\n\",a(n.h2,{children:\"Decisões técnicas\"}),\"\\n\",o(n.ul,{children:[\"\\n\",o(n.li,{children:[a(n.strong,{children:\"Dinheiro é inteiro, sempre.\"}),\" Todo valor vive em centavos\\r\\n(\",a(n.code,{children:\"saldoCentavos: 5_000\"}),\" = R$ 50,00). Nenhuma regra financeira toca ponto\\r\\nflutuante, e entradas e saídas passam por uma única operação de carteira que\\r\\nvalida o valor, impede saldo negativo e registra o extrato.\"]}),\"\\n\",o(n.li,{children:[a(n.strong,{children:\"Checkout defensivo.\"}),\" O saldo é debitado, estoque e pedido são gravados na\\r\\nmesma transação do IndexedDB e qualquer falha dispara estorno automático na\\r\\ncarteira. O carrinho só é limpo depois da confirmação. É o mesmo desenho que\\r\\nem produção viraria idempotência, reserva de estoque e conciliação.\"]}),\"\\n\",o(n.li,{children:[a(n.strong,{children:\"Catálogo determinístico.\"}),\" \",a(n.code,{children:\"faker.seed(42)\"}),\", datas-base fixas e IDs\\r\\nestáveis geram exatamente os mesmos 400 produtos a cada execução. Isso torna\\r\\nos testes previsíveis e mantém favoritos, carrinho e pedidos válidos entre\\r\\nrecargas — sem nenhuma chamada externa durante a demonstração.\"]}),\"\\n\",o(n.li,{children:[o(n.strong,{children:[\"Sorteio com \",a(n.code,{children:\"crypto.getRandomValues\"}),\".\"]}),\" A mecânica principal não usa\\r\\n\",a(n.code,{children:\"Math.random()\"}),\". E o RTP teórico aparece na interface: 92,13% no caça-níquel,\\r\\n91,67% na roleta. A vantagem da casa é informada, não escondida.\"]}),\"\\n\",o(n.li,{children:[a(n.strong,{children:\"Local de verdade.\"}),\" IndexedDB (Dexie) para catálogo e pedidos; Zustand\\r\\nPersist para carteira, carrinho, favoritos e coleção. Nada sai do navegador.\"]}),\"\\n\"]}),\"\\n\",a(n.h2,{children:\"Arquitetura\"}),\"\\n\",a(n.p,{children:\"Organização por domínio, não por tipo de arquivo:\"}),\"\\n\",a(n.pre,{children:a(n.code,{className:\"language-text\",children:\"src/\\r\\n├── app/                 # shell, rotas, providers e transições\\r\\n├── features/\\r\\n│   ├── cart/            # carrinho e checkout\\r\\n│   ├── casino/          # caça-níquel, roleta, áudio e celebrações\\r\\n│   ├── catalog/         # home, busca, grade virtual e produto\\r\\n│   ├── gacha/           # Máquina de Desejos, coleção e economia\\r\\n│   ├── orders/          # pedidos e evolução da entrega\\r\\n│   └── wallet/          # saldo, extrato, bônus e transações\\r\\n└── shared/\\r\\n    ├── db/              # Dexie, seed e geração do catálogo\\r\\n    ├── lib/             # dinheiro, hash, RNG e utilitários\\r\\n    ├── types/           # contratos compartilhados\\r\\n    └── ui/              # componentes reutilizáveis e visuais\\n\"})}),\"\\n\",o(n.p,{children:[\"Regras específicas ficam perto das telas que as consomem; só o que é\\r\\ngenuinamente genérico sobe para \",a(n.code,{children:\"shared/ui\"}),\". A busca é fuzzy com Fuse.js, a\\r\\ngrade do catálogo é virtualizada com TanStack Virtual e as rotas secundárias\\r\\ncarregam sob demanda. O \",a(n.code,{children:\"vite-plugin-pwa\"}),\" mantém aplicação, fontes, ícones e\\r\\nimagens disponíveis offline, com precache em torno de 4 MB.\"]}),\"\\n\",o(n.p,{children:[\"O visual é Bauhaus — formas primárias, cores chapadas, tipografia pesada, em\\r\\nCSS Modules sem framework. O componente \",a(n.code,{children:\"ProductVisual\"}),\" usa fotografia quando\\r\\nexiste asset para o produto e cai para uma ilustração procedural determinística\\r\\nquando não existe, o que permitiu melhorar o catálogo aos poucos sem quebrar\\r\\nnada.\"]}),\"\\n\",a(n.h2,{children:\"Resultados\"}),\"\\n\",o(n.ul,{children:[\"\\n\",a(n.li,{children:\"Jornada completa no ar: catálogo, busca, carrinho, checkout, pedidos com\\r\\nlinha do tempo de entrega e coleção pós-compra.\"}),\"\\n\",a(n.li,{children:\"29 testes automatizados cobrindo o que de fato quebra confiança — transações\\r\\nda carteira, proteção contra saldo negativo, intervalo da renda diária, RTP\\r\\ndo caça-níquel e da roleta, raridade e pity do gacha, e a sincronização\\r\\nidempotente que garante que um pedido entregue entra na coleção uma vez só.\"}),\"\\n\",a(n.li,{children:\"Funciona offline e é instalável, com todo o progresso vivendo no navegador.\"}),\"\\n\"]}),\"\\n\",a(n.h2,{children:\"O que eu faria diferente\"}),\"\\n\",a(n.p,{children:\"O projeto é intencionalmente local e não deve ser confundido com algo pronto\\r\\npara vender. Em produção, a lista é longa e conhecida: backend autenticado com\\r\\nbanco transacional, catálogo administrável, busca e recomendação no servidor,\\r\\ngateway com tokenização e webhooks, reserva concorrente de estoque, frete e\\r\\nimpostos reais, observabilidade e testes de ponta a ponta.\"}),\"\\n\",a(n.p,{children:\"E há uma decisão que eu manteria com ainda mais cuidado: o cassino fictício\\r\\nnunca seria ligado a dinheiro real. Técnicas de retenção precisam respeitar\\r\\nautonomia, transparência e a legislação aplicável — o objetivo aqui foi tornar\\r\\nessas escolhas observáveis e questionáveis, não normalizá-las.\"})]})}return{default:function(e={}){const{wrapper:o}=e.components||{};return o?a(o,{...e,children:a(_createMdxContent,{...e})}):_createMdxContent(e)}};",
     "url": "/projetos/levva-loja-e-sorte"
   },
   {
@@ -639,7 +517,7 @@
     ],
     "repo": "https://github.com/iHadesj/life-maintenance",
     "featured": false,
-    "order": 3,
+    "order": 5,
     "highlights": [
       "Seis estados de ciclo calculados por regra pura e testada, de STABLE a CRITICAL",
       "Estado mostrado por forma, não só por cor (o anel vai se rompendo)",
@@ -665,7 +543,17 @@
         "choice": "Cada item é um sistema com ciclo",
         "instead": "Tarefa com data de vencimento",
         "because": "Desgaste é contínuo. O app calcula o quanto do ciclo já passou e avisa antes de vencer, em vez de só gritar no dia.",
-        "cost": "Cadastrar algo pede um intervalo, não só uma data, e isso é mais um campo pra pessoa entender."
+        "cost": "Cadastrar algo pede um intervalo, não só uma data, e isso é mais um campo pra pessoa entender.",
+        "snippet": {
+          "file": "src/services/cycle.ts",
+          "url": "https://github.com/iHadesj/life-maintenance/blob/HEAD/src/services/cycle.ts#L77-L86",
+          "lang": "ts",
+          "mark": [
+            7,
+            8
+          ],
+          "code": "/**\n * Health stays high for most of the cycle, reaches 60% on the due day and then\n * decays exponentially — degraded, never instantly \"dead\".\n */\nexport function healthFromProgress(progress: number): number {\n  const p = Math.max(0, progress);\n  if (p <= 1) return 100 * (1 - 0.4 * p * p);\n  const wear = 0.4 + 0.6 * (1 - Math.exp(-1.5 * (p - 1)));\n  return 100 * (1 - wear);\n}\n"
+        }
       },
       {
         "choice": "Regras do ciclo em funções puras",
@@ -872,7 +760,7 @@
         }
       ]
     },
-    "content": "const{Fragment:e,jsx:o,jsxs:n}=arguments[0];function _createMdxContent(r){const a={code:\"code\",em:\"em\",h2:\"h2\",li:\"li\",p:\"p\",strong:\"strong\",ul:\"ul\",...r.components};return n(e,{children:[o(a.h2,{children:\"O problema\"}),\"\\n\",n(a.p,{children:['Um portfolio que diz \"sou bom de frontend\" precisa ',o(a.em,{children:\"provar\"}),\" isso ao carregar.\\nA meta foi explícita desde o início: carregar como texto puro e surpreender como\\num jogo. Os dois objetivos brigam — 3D vende, mas pesa. O trabalho é fazer o\\npeso desaparecer.\"]}),\"\\n\",o(a.h2,{children:\"Decisões técnicas\"}),\"\\n\",n(a.ul,{children:[\"\\n\",n(a.li,{children:[o(a.strong,{children:\"O 3D nunca é o LCP.\"}),\" O hero renderiza no servidor texto + um pôster SVG da\\nfita de Möbius; a cena WebGL carrega depois (pós-idle, \",o(a.code,{children:\"next/dynamic\"}),\" com\\n\",o(a.code,{children:\"ssr:false\"}),\") e faz crossfade por cima. Em mobile, reduced-motion ou GPU fraca,\\no pôster fica — e nenhum byte de three.js é baixado.\"]}),\"\\n\",n(a.li,{children:[o(a.strong,{children:\"Orçamento de bundle como gate, não meta.\"}),\" O chunk 3D ficou em 230 KB gz\\n(limite de 300). Para chegar lá, troquei o bloom de pós-processamento por um\\nglow em CSS — o ganho visual não pagava os ~85 KB.\"]}),\"\\n\",n(a.li,{children:[o(a.strong,{children:\"Tokens de design na interface.\"}),\" A paleta estrutural vem do \",o(a.code,{children:\"@theme\"}),' do\\nTailwind v4; a escultura procedural reaproveita os mesmos tons frios, âmbar e\\nobsidiana. Trocar tema (escuro → claro → \"underworld\") continua concentrado\\nnas custom properties da interface.']}),\"\\n\",n(a.li,{children:[n(a.strong,{children:[\"Acessibilidade e \",o(a.code,{children:\"prefers-reduced-motion\"}),\" como cidadãos de primeira\\nclasse\"]}),\", não um checklist no fim.\"]}),\"\\n\"]}),\"\\n\",o(a.h2,{children:\"Arquitetura\"}),\"\\n\",n(a.p,{children:[\"App Router (Next 16, Turbopack), React 19, Server Components por padrão —\\n\",o(a.code,{children:'\"use client\"'}),\" só onde há interação, 3D ou motion. Conteúdo dos case studies em\\nMDX tipado por zod (velite): frontmatter inválido quebra o build. Os dados do\\nGitHub vêm de route handlers que escondem o token e cacheiam a resposta.\"]}),\"\\n\",o(a.h2,{children:\"Segunda volta da fita\"}),\"\\n\",o(a.p,{children:\"Na última rodada a fita deixou de ser um anel: agora ela percorre um oito em 3D\\ncujo cruzamento nunca se toca, porque os dois trechos passam em profundidades\\ndiferentes. Dependendo do ângulo parece um laço torcido, em outros lembra o\\ninfinito. A meia-torção do Möbius continua lá, distribuída por um frame que não\\ngira de repente.\"}),\"\\n\",o(a.p,{children:\"O fundo trocou a grade quadriculada por curvas de Cassini, o lugar geométrico\\ndos pontos cujo produto das distâncias a dois focos é constante. Uma dessas\\ncurvas é a lemniscata de Bernoulli, e é a única que recebe luz. E as seções\\ndeixaram de subir em fila: um fio sai do hero e costura a página de um lado pro\\noutro, sendo desenhado conforme a leitura.\"}),\"\\n\",o(a.h2,{children:\"Resultados\"}),\"\\n\",n(a.ul,{children:[\"\\n\",o(a.li,{children:\"3D isolado e preguiçoso: 230 KB gz, zero no caminho crítico.\"}),\"\\n\",n(a.li,{children:[\"Build verde a cada fase: \",o(a.code,{children:\"lint\"}),\", \",o(a.code,{children:\"typecheck\"}),\" e \",o(a.code,{children:\"build\"}),\" como portão.\"]}),\"\\n\",n(a.li,{children:[o(a.strong,{children:\"A medir (Fase 11):\"}),\" relatório Lighthouse de produção e CI verde — os\\nnúmeros reais entram aqui quando o deploy estiver no ar.\"]}),\"\\n\"]}),\"\\n\",o(a.h2,{children:\"O que eu faria diferente\"}),\"\\n\",o(a.p,{children:\"Mediria o orçamento de performance desde o primeiro commit (com o analyzer no\\nCI), em vez de verificar ao fim de cada fase. E escreveria os testes de\\nacessibilidade junto das features, não numa fase dedicada.\"})]})}return{default:function(e={}){const{wrapper:n}=e.components||{};return n?o(n,{...e,children:o(_createMdxContent,{...e})}):_createMdxContent(e)}};",
+    "content": "const{Fragment:e,jsx:o,jsxs:r}=arguments[0];function _createMdxContent(n){const a={code:\"code\",em:\"em\",h2:\"h2\",li:\"li\",p:\"p\",strong:\"strong\",ul:\"ul\",...n.components};return r(e,{children:[o(a.h2,{children:\"O problema\"}),\"\\n\",r(a.p,{children:['Um portfolio que diz \"sou bom de frontend\" precisa ',o(a.em,{children:\"provar\"}),\" isso ao carregar.\\r\\nA meta foi explícita desde o início: carregar como texto puro e surpreender como\\r\\num jogo. Os dois objetivos brigam — 3D vende, mas pesa. O trabalho é fazer o\\r\\npeso desaparecer.\"]}),\"\\n\",o(a.h2,{children:\"Decisões técnicas\"}),\"\\n\",r(a.ul,{children:[\"\\n\",r(a.li,{children:[o(a.strong,{children:\"O 3D nunca é o LCP.\"}),\" O hero renderiza no servidor texto + um pôster SVG da\\r\\nfita de Möbius; a cena WebGL carrega depois (pós-idle, \",o(a.code,{children:\"next/dynamic\"}),\" com\\r\\n\",o(a.code,{children:\"ssr:false\"}),\") e faz crossfade por cima. Em mobile, reduced-motion ou GPU fraca,\\r\\no pôster fica — e nenhum byte de three.js é baixado.\"]}),\"\\n\",r(a.li,{children:[o(a.strong,{children:\"Orçamento de bundle como gate, não meta.\"}),\" O chunk 3D ficou em 230 KB gz\\r\\n(limite de 300). Para chegar lá, troquei o bloom de pós-processamento por um\\r\\nglow em CSS — o ganho visual não pagava os ~85 KB.\"]}),\"\\n\",r(a.li,{children:[o(a.strong,{children:\"Tokens de design na interface.\"}),\" A paleta estrutural vem do \",o(a.code,{children:\"@theme\"}),' do\\r\\nTailwind v4; a escultura procedural reaproveita os mesmos tons frios, âmbar e\\r\\nobsidiana. Trocar tema (escuro → claro → \"underworld\") continua concentrado\\r\\nnas custom properties da interface.']}),\"\\n\",r(a.li,{children:[r(a.strong,{children:[\"Acessibilidade e \",o(a.code,{children:\"prefers-reduced-motion\"}),\" como cidadãos de primeira\\r\\nclasse\"]}),\", não um checklist no fim.\"]}),\"\\n\"]}),\"\\n\",o(a.h2,{children:\"Arquitetura\"}),\"\\n\",r(a.p,{children:[\"App Router (Next 16, Turbopack), React 19, Server Components por padrão —\\r\\n\",o(a.code,{children:'\"use client\"'}),\" só onde há interação, 3D ou motion. Conteúdo dos case studies em\\r\\nMDX tipado por zod (velite): frontmatter inválido quebra o build. Os dados do\\r\\nGitHub vêm de route handlers que escondem o token e cacheiam a resposta.\"]}),\"\\n\",o(a.h2,{children:\"Segunda volta da fita\"}),\"\\n\",o(a.p,{children:\"Na última rodada a fita deixou de ser um anel: agora ela percorre um oito em 3D\\r\\ncujo cruzamento nunca se toca, porque os dois trechos passam em profundidades\\r\\ndiferentes. Dependendo do ângulo parece um laço torcido, em outros lembra o\\r\\ninfinito. A meia-torção do Möbius continua lá, distribuída por um frame que não\\r\\ngira de repente.\"}),\"\\n\",o(a.p,{children:\"O fundo trocou a grade quadriculada por curvas de Cassini, o lugar geométrico\\r\\ndos pontos cujo produto das distâncias a dois focos é constante. Uma dessas\\r\\ncurvas é a lemniscata de Bernoulli, e é a única que recebe luz. E as seções\\r\\ndeixaram de subir em fila: um fio sai do hero e costura a página de um lado pro\\r\\noutro, sendo desenhado conforme a leitura.\"}),\"\\n\",o(a.h2,{children:\"Resultados\"}),\"\\n\",r(a.ul,{children:[\"\\n\",o(a.li,{children:\"3D isolado e preguiçoso: 230 KB gz, zero no caminho crítico.\"}),\"\\n\",r(a.li,{children:[\"Build verde a cada fase: \",o(a.code,{children:\"lint\"}),\", \",o(a.code,{children:\"typecheck\"}),\" e \",o(a.code,{children:\"build\"}),\" como portão.\"]}),\"\\n\",r(a.li,{children:[o(a.strong,{children:\"A medir (Fase 11):\"}),\" relatório Lighthouse de produção e CI verde — os\\r\\nnúmeros reais entram aqui quando o deploy estiver no ar.\"]}),\"\\n\"]}),\"\\n\",o(a.h2,{children:\"O que eu faria diferente\"}),\"\\n\",o(a.p,{children:\"Mediria o orçamento de performance desde o primeiro commit (com o analyzer no\\r\\nCI), em vez de verificar ao fim de cada fase. E escreveria os testes de\\r\\nacessibilidade junto das features, não numa fase dedicada.\"})]})}return{default:function(e={}){const{wrapper:r}=e.components||{};return r?o(r,{...e,children:o(_createMdxContent,{...e})}):_createMdxContent(e)}};",
     "url": "/projetos/portfolio-pessoal"
   },
   {
@@ -891,7 +779,7 @@
     "repo": "https://github.com/iHadesj/RaizPilates",
     "demo": "https://raiz-pilates.vercel.app",
     "featured": true,
-    "order": 5,
+    "order": 6,
     "highlights": [
       "Seis seções com um único objetivo — levar ao WhatsApp",
       "Aula experimental gratuita como porta de entrada (CTA repetido)",
@@ -1001,7 +889,7 @@
     "repo": "https://github.com/iHadesj/RotaDev",
     "demo": "https://rota-dev.vercel.app",
     "featured": true,
-    "order": 6,
+    "order": 7,
     "highlights": [
       "Duas linhas de estudo — Web + React e Fullstack React + Java",
       "Editor com bateria de testes e lint que explica o erro em bom português",
@@ -1142,7 +1030,7 @@
     "repo": "https://github.com/iHadesj/studyquest-monorepo",
     "demo": "https://go-studyquest.vercel.app",
     "featured": true,
-    "order": 2,
+    "order": 4,
     "highlights": [
       "Conteúdo e exercícios organizados em 11 matérias com progressão por nível",
       "XP, conquistas, ranking e perfil sincronizados com o Firebase",
@@ -1238,5 +1126,157 @@
     },
     "content": "const{Fragment:e,jsx:a,jsxs:n}=arguments[0];function _createMdxContent(o){const r={code:\"code\",h2:\"h2\",li:\"li\",p:\"p\",strong:\"strong\",ul:\"ul\",...o.components};return n(e,{children:[a(r.h2,{children:\"O problema\"}),\"\\n\",a(r.p,{children:\"Estudar com constância é menos um problema de acesso ao conteúdo e mais um\\nproblema de motivação: a recompensa costuma ser distante e o progresso,\\ninvisível. O StudyQuest aproxima esse retorno ao transformar cada sessão em\\numa sequência curta de conteúdo, exercícios e recompensas visíveis.\"}),\"\\n\",a(r.h2,{children:\"Decisões técnicas\"}),\"\\n\",n(r.ul,{children:[\"\\n\",n(r.li,{children:[a(r.strong,{children:\"React, Vite e TypeScript no frontend.\"}),\" A interface é dividida em telas de\\nmatéria, nível, conteúdo, exercícios, ranking, conquistas e multiplayer. O\\nZustand concentra o estado de progresso já sincronizado com o usuário.\"]}),\"\\n\",n(r.li,{children:[a(r.strong,{children:\"Firebase para identidade e progresso.\"}),\" O Firebase Authentication cuida da\\nsessão, enquanto o Firestore mantém XP, estrelas, tentativas, níveis\\nconcluídos, perfil, amizades e conquistas. Um listener em tempo real hidrata\\na aplicação quando esses dados mudam.\"]}),\"\\n\",n(r.li,{children:[a(r.strong,{children:\"Express e TypeScript no backend.\"}),\" Rotas e controllers expõem matérias,\\nexercícios e usuários. O conteúdo fica separado em arquivos JSON por\\ndisciplina, e o \",a(r.code,{children:\"GameManager\"}),\" reúne esse banco para sortear perguntas sem\\nduplicar identificadores.\"]}),\"\\n\",n(r.li,{children:[a(r.strong,{children:\"Socket.IO no multiplayer.\"}),\" Convites, salas, estado de prontidão, respostas\\ne placar trafegam por eventos. As partidas trabalham com tempo limitado e\\npontuação proporcional à velocidade da resposta.\"]}),\"\\n\"]}),\"\\n\",a(r.h2,{children:\"Arquitetura\"}),\"\\n\",n(r.p,{children:[\"O repositório mantém duas aplicações no mesmo lugar: \",a(r.code,{children:\"frontend/\"}),\" e \",a(r.code,{children:\"backend/\"}),\".\\nNo cliente, as telas consomem a API REST por um serviço Axios e os eventos de\\njogo pelo cliente Socket.IO; autenticação e atualizações do perfil vêm\\ndiretamente do Firebase. No servidor, o Express encaminha as requisições para\\ncontrollers, enquanto o Socket.IO mantém o estado das salas e usa o Firebase\\nAdmin para persistir as recompensas de XP.\"]}),\"\\n\",a(r.h2,{children:\"Resultados\"}),\"\\n\",n(r.ul,{children:[\"\\n\",a(r.li,{children:\"Jornada completa de autenticação, perfil, seleção de matéria, níveis,\\nconteúdo e exercícios.\"}),\"\\n\",a(r.li,{children:\"Banco de perguntas cobrindo 11 matérias, de matemática e programação a\\nhistória, inglês e música.\"}),\"\\n\",a(r.li,{children:\"Camada de gamificação com XP, estrelas, conquistas, ranking e modo\\nBrainstorm.\"}),\"\\n\",a(r.li,{children:\"Experiência social com amizades, chat, convites e duelos multiplayer em tempo\\nreal.\"}),\"\\n\"]}),\"\\n\",a(r.h2,{children:\"O que eu faria diferente\"}),\"\\n\",a(r.p,{children:\"Formalizaria o repositório como um workspace para compartilhar tipos e schemas\\nde validação entre frontend e backend e centralizar os scripts de qualidade.\\nTambém moveria o estado das salas para uma camada própria, com Redis para\\npermitir múltiplas instâncias, e ampliaria a cobertura automatizada dos fluxos\\nde progresso e multiplayer. Credenciais administrativas ficariam somente no\\ngerenciador de secrets do ambiente de deploy, nunca em arquivos versionáveis.\"})]})}return{default:function(e={}){const{wrapper:n}=e.components||{};return n?a(n,{...e,children:a(_createMdxContent,{...e})}):_createMdxContent(e)}};",
     "url": "/projetos/studyquest"
+  },
+  {
+    "title": "Um abraço, Bernardo",
+    "slug": "um-abraco-bernardo",
+    "summary": "Loja mobile-first de ursos, balões e flores de um ateliê no Grajaú. Tem urso de pelúcia em 3D que reage ao toque, e o pedido chega pronto no WhatsApp da loja.",
+    "problem": "Loja pequena de presente vende pela conversa no WhatsApp, e o pedido costuma chegar aos pedaços. Faltava um lugar pra pessoa montar o presente sozinha e mandar tudo certo de uma vez.",
+    "date": "2026-10-08T00:00:00.000Z",
+    "cover": "/projects/um-abraco-bernardo.webp",
+    "coverAlt": "Página inicial do Um abraço, Bernardo com o urso de pelúcia em 3D na frente da palavra abraço",
+    "stack": [
+      "React",
+      "TypeScript",
+      "Vite",
+      "Three.js",
+      "Framer Motion",
+      "Zustand",
+      "Firebase"
+    ],
+    "repo": "https://github.com/iHadesj/UmAbracoBernardo",
+    "demo": "https://umabracobernardo.vercel.app",
+    "featured": false,
+    "order": 2,
+    "highlights": [
+      "Urso de pelúcia em 3D com pelos que balançam no giro e deitam onde o dedo passa",
+      "Frete calculado pelo CEP, com entrega no mesmo dia no Grajaú",
+      "Checkout em 3 etapas que abre o WhatsApp da loja com o pedido já formatado",
+      "Roda sem backend configurado, com login e pedidos em modo demonstração"
+    ],
+    "metrics": [
+      {
+        "label": "Checkout",
+        "value": "3 etapas"
+      },
+      {
+        "label": "Pelagem",
+        "value": "até 32 camadas"
+      },
+      {
+        "label": "3D",
+        "value": "sob demanda"
+      }
+    ],
+    "decisions": [
+      {
+        "choice": "Fechar o pedido no WhatsApp",
+        "instead": "Gateway de pagamento no site",
+        "because": "A loja já atende e cobra pela conversa. O site entrega o pedido inteiro numa mensagem padronizada, com itens, opções, entrega, bilhete do cartão e contato, e o pagamento é combinado ali. Dá pra vender sem abrir conta em gateway antes.",
+        "cost": "O site não sabe se o pedido foi pago. A confirmação depende de alguém responder a mensagem.",
+        "snippet": {
+          "file": "src/lib/whatsapp.ts",
+          "url": "https://github.com/iHadesj/um-abraco-bernardo/blob/HEAD/src/lib/whatsapp.ts#L10-L14",
+          "lang": "ts",
+          "mark": [
+            4
+          ],
+          "code": "export const WA_NUMBER = normalize(import.meta.env.VITE_WHATSAPP_NUMBER ?? '') || STORE_NUMBER\n\nexport function waLink(message: string) {\n  return `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`\n}\n"
+        }
+      },
+      {
+        "choice": "Mensagem só com a formatação do WhatsApp",
+        "instead": "Texto livre com emoji",
+        "because": "O WhatsApp Web e o desktop trocam alguns emojis por \"?\" quando a mensagem vem de um link wa.me. Negrito, itálico e um separador de texto chegam iguais em qualquer aparelho."
+      },
+      {
+        "choice": "Pelagem por shell texturing, modelada no código",
+        "instead": "Um modelo 3D pronto com textura de pelo",
+        "because": "O urso é montado com elipsoides a partir de uma pelúcia de referência, e o pelo é a mesma malha desenhada em camadas com um shader próprio. Assim os fios balançam com a inércia do giro, quicam no abraço e deitam onde o dedo passa, e a cor da pelúcia e do laço muda junto com as opções do produto.",
+        "cost": "Desenhar 32 camadas pesa na GPU do celular. Em aparelho fraco caem pra 22, o 3D vem num chunk separado, pausa fora da tela e baixa a resolução quando o FPS cai."
+      },
+      {
+        "choice": "Só arraste horizontal gira o modelo",
+        "instead": "Girar com qualquer arraste",
+        "because": "No celular o palco 3D ocupa boa parte da tela. Se todo toque girasse o urso, rolar a página entortava a cabeça dele. Com touch-action pan-y, um gesto que começa na vertical é rolagem e o modelo ignora."
+      },
+      {
+        "choice": "Firebase opcional, com modo demonstração",
+        "instead": "Exigir conta e backend configurados",
+        "because": "Sem as chaves, login e pedidos são simulados no navegador, então o site roda inteiro em qualquer preview ou clone. Com Firebase, o pedido também vai pro Firestore e aparece em Minha conta, com regras que só deixam cada cliente ler os próprios pedidos. O login é opcional até no checkout.",
+        "cost": "São dois caminhos, Firebase e local, que precisam continuar se comportando igual."
+      },
+      {
+        "choice": "Frete por tabela de região em cima do ViaCEP",
+        "instead": "API de transportadora",
+        "because": "A entrega é da própria loja e é local. O CEP vira endereço pelo ViaCEP e cai numa faixa, do Grajaú (mesmo dia, grátis acima de R$ 199) até a Grande São Paulo.",
+        "cost": "Os valores ainda são de exemplo, esperando a loja fechar a tabela de verdade."
+      }
+    ],
+    "status": "in-progress",
+    "en": {
+      "title": "Um abraço, Bernardo",
+      "summary": "A mobile-first shop for bears, balloons and flowers from a gift atelier in São Paulo. A 3D plush bear reacts to touch, and orders land ready-made in the shop's WhatsApp.",
+      "problem": "A small gift shop sells through WhatsApp chats, and orders tend to arrive in pieces. It needed a place where people could put the gift together on their own and send everything right in one go.",
+      "coverAlt": "Um abraço, Bernardo home page with the 3D plush bear in front of the word abraço",
+      "highlights": [
+        "A 3D plush bear whose fur sways as it spins and flattens where your finger passes",
+        "Shipping quoted from the postcode, with same-day delivery in the shop's neighbourhood",
+        "A 3-step checkout that opens the shop's WhatsApp with the order already formatted",
+        "Runs without a configured backend, with login and orders in demo mode"
+      ],
+      "metrics": [
+        {
+          "label": "Checkout",
+          "value": "3 steps"
+        },
+        {
+          "label": "Fur",
+          "value": "up to 32 layers"
+        },
+        {
+          "label": "3D",
+          "value": "on demand"
+        }
+      ],
+      "decisions": [
+        {
+          "choice": "Close the order on WhatsApp",
+          "instead": "A payment gateway on the site",
+          "because": "The shop already serves and charges customers in the chat. The site hands over the whole order in one standard message, with items, options, delivery, the card note and contact details, and payment is agreed there. The shop can sell without opening a gateway account first.",
+          "cost": "The site does not know whether an order was paid. Confirmation depends on someone answering the message."
+        },
+        {
+          "choice": "Only WhatsApp's own formatting in the message",
+          "instead": "Free text with emoji",
+          "because": "WhatsApp Web and desktop swap some emoji for \"?\" when the message comes from a wa.me link. Bold, italics and a plain-text divider look the same on every device."
+        },
+        {
+          "choice": "Shell-textured fur, modelled in code",
+          "instead": "A ready-made 3D model with a fur texture",
+          "because": "The bear is built from ellipsoids after a reference plush, and the fur is the same mesh drawn in layers with a custom shader. That lets the strands sway with the spin's inertia, bounce on the hug and flatten where your finger passes, and the plush and ribbon colours follow the product options.",
+          "cost": "Drawing 32 layers is heavy on a phone GPU. Weak devices drop to 22, the 3D ships in its own chunk, pauses off screen and lowers its resolution when the frame rate falls."
+        },
+        {
+          "choice": "Only a horizontal drag spins the model",
+          "instead": "Spinning on any drag",
+          "because": "On a phone the 3D stage fills much of the screen. If every touch spun the bear, scrolling the page twisted its head. With touch-action pan-y, a gesture that starts vertically is a scroll and the model ignores it."
+        },
+        {
+          "choice": "Optional Firebase, with a demo mode",
+          "instead": "Requiring an account and a configured backend",
+          "because": "Without the keys, login and orders are simulated in the browser, so the site runs end to end in any preview or clone. With Firebase the order also goes to Firestore and shows up under My account, with rules that only let each customer read their own orders. Login is optional even at checkout.",
+          "cost": "Two paths, Firebase and local, that have to keep behaving the same."
+        },
+        {
+          "choice": "Region-based shipping table on top of ViaCEP",
+          "instead": "A courier API",
+          "because": "The shop delivers locally with its own people. The postcode becomes an address through ViaCEP and falls into a band, from the shop's neighbourhood (same day, free above R$ 199) out to Greater São Paulo.",
+          "cost": "The prices are still placeholders until the shop settles its real table."
+        }
+      ]
+    },
+    "content": "const{Fragment:e,jsx:a,jsxs:o}=arguments[0];function _createMdxContent(n){const r={code:\"code\",em:\"em\",h2:\"h2\",li:\"li\",p:\"p\",strong:\"strong\",ul:\"ul\",...n.components};return o(e,{children:[a(r.h2,{children:\"O problema\"}),\"\\n\",a(r.p,{children:\"Loja de presente feito à mão costuma vender pelo WhatsApp. O cliente chama e\\ncomeça o vai e volta: qual urso, que cor de laço, se dá pra entregar amanhã,\\nqual o endereço, o que escrever no cartão. No meio da conversa algum detalhe\\nsempre se perde.\"}),\"\\n\",a(r.p,{children:\"O Um abraço, Bernardo é a loja online de um ateliê de presentes no Grajaú, em\\nSão Paulo, pensada pra quem compra pelo celular. A ideia era deixar a pessoa\\nmontar o presente sozinha e mandar tudo de uma vez, sem a loja ter que mudar o\\njeito que já atende.\"}),\"\\n\",a(r.h2,{children:\"Como funciona\"}),\"\\n\",o(r.ul,{children:[\"\\n\",o(r.li,{children:[\"Cada produto tem opções (cor da pelúcia e do laço, frase, nome e idade no\\nbalão) e adicionais como cartão escrito à mão e caixa de bombons. O preço\\nrecalcula a cada escolha. Quem prefere ser guiado usa o \",a(r.strong,{children:\"Monte o seu\"}),\", em\\nquatro passos: presente, ocasião, personalização e fechamento.\"]}),\"\\n\",a(r.li,{children:\"Nos produtos com modelo 3D, o urso e o balão bubble mudam junto com as\\nopções. Arrastando de lado o urso gira, e um toque faz ele dar um abraço.\"}),\"\\n\",a(r.li,{children:\"O CEP é consultado no ViaCEP e cai numa tabela por região: Grajaú e\\nvizinhança no mesmo dia pra pedidos até 14h, depois Zona Sul, capital e\\nGrande SP.\"}),\"\\n\",a(r.li,{children:\"O checkout tem três etapas: entrega, dados e revisão. No fim o pedido é\\nsalvo e o WhatsApp da loja abre com uma mensagem pronta, com número do\\npedido, itens, valores, data e período de entrega, bilhete do cartão e\\ncontato.\"}),\"\\n\",a(r.li,{children:\"Pra pedido fora do catálogo, a página de orçamento junta tipo de evento,\\nfaixa de preço e a ideia da pessoa, e também manda tudo pro WhatsApp.\"}),\"\\n\"]}),\"\\n\",a(r.h2,{children:\"Arquitetura\"}),\"\\n\",a(r.p,{children:\"React 19, TypeScript e Vite, com React Router e Zustand cuidando da sacola, do\\nrascunho do checkout e das preferências da interface. As transições entre\\ntelas são Framer Motion.\"}),\"\\n\",o(r.p,{children:[\"O 3D é React Three Fiber, num chunk que só carrega quando o produto tem\\nmodelo. A pelagem é \",a(r.em,{children:\"shell texturing\"}),': a mesma malha desenhada como várias\\ninstâncias, cada uma um pouco mais pra fora, e um shader decide em quais\\npontos de cada camada existe fio. O palco pausa quando sai da tela, baixa a\\nresolução se o FPS cai e, com economia de dados ou 2G, o 3D só entra se a\\npessoa tocar em \"Ver em 3D\". Sem WebGL fica a ilustração em SVG.']}),\"\\n\",o(r.p,{children:[\"Firebase cuida do login (Google e e-mail/senha) e grava os pedidos no\\nFirestore. Sem as chaves, um \",a(r.code,{children:\"AuthProvider\"}),\" alternativo simula as duas coisas\\nno navegador.\"]}),\"\\n\",a(r.h2,{children:\"O que eu faria diferente\"}),\"\\n\",a(r.p,{children:\"O pagamento ficou de fora de propósito, mas o módulo já existe com a mesma\\nforma de um gateway de verdade (Pix e cartão), só que simulado e desligado.\\nQuando a loja quiser cobrar no site, o caminho é um backend que cria a\\ncobrança e só grava o pedido depois da confirmação por webhook, com o cartão\\ntokenizado no navegador pelo SDK do provedor.\"}),\"\\n\",a(r.p,{children:\"No urso, ainda faltam transições suaves entre os gestos, que hoje trocam sem\\nmistura, e cortar camadas de pelo quando o FPS cai em vez de só baixar a\\nresolução.\"})]})}return{default:function(e={}){const{wrapper:o}=e.components||{};return o?a(o,{...e,children:a(_createMdxContent,{...e})}):_createMdxContent(e)}};",
+    "url": "/projetos/um-abraco-bernardo"
   }
 ]

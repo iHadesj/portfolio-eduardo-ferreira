@@ -48,11 +48,12 @@ const VARIANTS = {
 
 /** Dot pitch as a share of the image width (≈ 3.6 CSS px on a 520 px box). */
 const PITCH = 0.0062;
-/** Where the skull lets go of its pixels: just behind the ear module, so
-    the back of the skull and the spine break up and feed the stream. */
-const DISSOLVE_AT = Number(process.env.FACE_DISSOLVE ?? -1.3);
+/** Where the skull lets go of its pixels: through the middle of the ear
+    module, so the back half of the skull and of the neck break up into
+    blocks and feed the stream. */
+const DISSOLVE_AT = Number(process.env.FACE_DISSOLVE ?? -0.8);
 /** A denser, chunkier stream than the README's. */
-const DEBRIS_BOOST = Number(process.env.FACE_DEBRIS ?? 0.5);
+const DEBRIS_BOOST = Number(process.env.FACE_DEBRIS ?? 0.8);
 
 /**
  * While iterating: FACE_CAMERA='{"yaw":0.8}' overrides the portrait camera,
@@ -221,33 +222,8 @@ function debrisGroups(debris) {
 
 const round = (value) => Math.round(value * 100) / 100;
 
-/**
- * The eye, drawn as a clean almond where the traced opening is (in profile
- * the trace is a blob): wider than tall, the upper lid more arched than the
- * lower. Layout units are 6 × 12 per cell, so the shape is built in units
- * and returned in cells.
- */
-const EYE_WIDTH = 1.3; // × the traced width
-const EYE_HEIGHT = 0.48; // × the traced height
-function almond(poly) {
-  const xs = poly.map(([x]) => x * 6);
-  const ys = poly.map(([, y]) => y * 12);
-  const cx = (Math.min(...xs) + Math.max(...xs)) / 2;
-  const cy = (Math.min(...ys) + Math.max(...ys)) / 2;
-  const w = (Math.max(...xs) - Math.min(...xs)) * EYE_WIDTH;
-  const h = (Math.max(...ys) - Math.min(...ys)) * EYE_HEIGHT;
-  const STEPS = 10;
-  const lid = (t, arch) => Math.pow(Math.sin(Math.PI * t), 0.8) * arch;
-  const upper = Array.from({ length: STEPS + 1 }, (_, i) => {
-    const t = i / STEPS;
-    return [cx - w / 2 + w * t, cy - lid(t, h * 0.58)];
-  });
-  const lower = Array.from({ length: STEPS - 1 }, (_, i) => {
-    const t = 1 - (i + 1) / STEPS;
-    return [cx - w / 2 + w * t, cy + lid(t, h * 0.42)];
-  });
-  return [...upper, ...lower].map(([x, y]) => [round(x / 6), round(y / 12)]);
-}
+/** The eye glows over the whole traced opening, filling the socket. */
+const eyeShape = (poly) => poly.map(([x, y]) => [round(x), round(y)]);
 
 // ── preview (development only) ─────────────────────────────────────────────
 
@@ -286,7 +262,7 @@ function compositePreview(face, art, cols, rows) {
       fill(x + (cw - size) / 2, y + (ch - size) / 2, size, size, 160);
     }
   }
-  for (const poly of art.eyes.map(almond)) {
+  for (const poly of art.eyes.map(eyeShape)) {
     const pts = poly.map(([px, py]) => [px * cw, py * ch]);
     const xs = pts.map(([px]) => px);
     const ys = pts.map(([, py]) => py);
@@ -405,7 +381,7 @@ for (const [name, v] of Object.entries(VARIANTS)) {
     rows: v.rows,
     width: v.width,
     height,
-    eyes: art.eyes.map(almond),
+    eyes: art.eyes.map(eyeShape),
     debris: debrisGroups(art.debris),
     log: art.log.map((line) => [line.right, line.r, line.epoch, line.text]),
     logScale: art.logScale,

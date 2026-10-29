@@ -168,7 +168,7 @@ export function portrait({
     const [, y, z] = cell.pos;
     // a ragged boundary down the back of the skull and the neck
     const front = dissolveAt + 0.06 * clamp(-y) + (edge(cell.r * 0.23) - 0.5) * 0.36;
-    const neck = smoothstep(-1.55, -2.1, y) * 0.45; // the bottom of the neck thins out too
+    const neck = smoothstep(-1.3, -2.1, y) * 0.6; // the bottom of the neck thins out too
     const p = Math.max(smoothstep(front + 0.16, front - 0.32, z), neck * (0.4 + 0.6 * smoothstep(1, 0, z)));
     const thin = cell.coverage < 0.15; // a sliver of the outline
     if (rand() < p) {
@@ -207,7 +207,7 @@ export function portrait({
 
   // 1) the skull breaking up: pixels near the boundary stay almost in place
   for (const d of dissolved) {
-    if (d.depth > 0.45 + debrisBoost || d.pos[1] < -1.15 || rand() > 0.75 + debrisBoost - d.depth) continue;
+    if (d.depth > 0.45 + debrisBoost || d.pos[1] < -2.2 || rand() > 0.75 + debrisBoost - d.depth) continue;
     put(d.c - Math.floor(rand() * rand() * 6 * (1 + d.depth * 4)), d.r, sizeOf(d.lum * 2.2 + 0.25));
   }
 
