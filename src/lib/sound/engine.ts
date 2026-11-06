@@ -92,7 +92,7 @@ export interface Engine {
   scroll(speed: number): void;
 }
 
-const MASTER = 0.7;
+const MASTER = 0.35;
 /** Cues that can come in floods: the least time between two (s). */
 const MIN_GAP: Partial<Record<Cue, number>> = {
   hover: 0.04,
