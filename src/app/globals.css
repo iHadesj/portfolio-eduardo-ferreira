@@ -2013,6 +2013,60 @@ html[data-theme="light"] .portrait {
   letter-spacing: -0.02em;
 }
 
+/* ──────────────────────────────────────────────────────────────────────────
+   Portrait dust (sections/portrait-dust.tsx, three/photo-dust.ts). The photo
+   above stays the first paint; once the dust is drawn (`data-live`) the photo
+   fades out under it. The canvas bleeds past the frame so stirred dust can
+   fly out, and sits under the facts card that overlaps the portrait.
+   ────────────────────────────────────────────────────────────────────────── */
+.portrait-dust {
+  --dust-bleed: 2.75rem;
+
+  position: relative;
+}
+
+.portrait-dust__canvas {
+  position: absolute;
+  inset: calc(var(--dust-bleed) * -1);
+  z-index: 0;
+  width: calc(100% + var(--dust-bleed) * 2);
+  height: calc(100% + var(--dust-bleed) * 2);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.9s var(--ease-out-expo);
+}
+
+.portrait-dust__ink {
+  display: none;
+}
+
+.portrait-dust__ink[data-ink="dot"] {
+  color: color-mix(in oklab, var(--color-signal) 70%, var(--color-bone));
+}
+
+.portrait-dust__ink[data-ink="heat"] {
+  color: var(--color-hole-flame);
+}
+
+.portrait-dust__ink[data-ink="core"] {
+  color: var(--color-hole-gold);
+}
+
+.portrait-dust[data-live] {
+  cursor: crosshair;
+}
+
+.portrait-dust[data-live] .portrait__img,
+.portrait-dust[data-live] .portrait__shadow,
+.portrait-dust[data-live] .portrait__highlight {
+  opacity: 0;
+  transition: opacity 0.9s var(--ease-out-expo);
+}
+
+.portrait-dust[data-live] .portrait-dust__canvas {
+  opacity: 1;
+}
+
 .portrait__pending {
   color: var(--color-smoke);
   font-family: var(--font-mono);

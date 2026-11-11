@@ -3,6 +3,7 @@ import { Reveal } from "@/components/ui/reveal";
 import { RichText } from "@/components/ui/rich-text";
 import { AvailabilityPill } from "@/components/ui/availability-pill";
 import { Portrait } from "@/components/sections/portrait";
+import { PortraitDust } from "@/components/sections/portrait-dust";
 import { ScrollSection } from "@/components/layout/scroll-flow";
 import { Kinetic } from "@/components/motion/kinetic";
 import { siteConfig } from "@/lib/site-config";
@@ -83,10 +84,12 @@ export function About({ dict }: { dict: Dictionary }) {
 
         <Reveal variant="wipe" className="about-identity">
           <div className="about-portrait-frame">
-            <Portrait
-              alt={dict.about.portraitAlt}
-              pendingLabel={dict.about.portraitPending}
-            />
+            <PortraitDust src={siteConfig.portrait}>
+              <Portrait
+                alt={dict.about.portraitAlt}
+                pendingLabel={dict.about.portraitPending}
+              />
+            </PortraitDust>
           </div>
 
           <dl className="about-facts">
