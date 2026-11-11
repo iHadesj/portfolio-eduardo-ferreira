@@ -14,7 +14,8 @@
     "format:check": "prettier --check .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "curriculo": "node scripts/curriculo/gerar.mjs"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.5",

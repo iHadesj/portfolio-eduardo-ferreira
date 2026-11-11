@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <title>Currículo — Eduardo Alexandre da Silva Ferreira</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Serif:wght@400&display=block"
+      rel="stylesheet"
+    />
+    <style>
+      @page {
+        size: A4;
+        margin: 0;
+      }
+
+      :root {
+        --texto: #1c1c1c;
+        --suave: #6b6b6b;
+        --linha: #c8ccd2;
+        --destaque: #96430f;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      body {
+        width: 210mm;
+        padding: 9mm 14mm 6mm;
+        color: var(--texto);
+        font:
+          400 12.2px/1.21 "IBM Plex Sans",
+          sans-serif;
+      }
+
+      .mono {
+        font-family: "IBM Plex Mono", monospace;
+      }
+
+      h1 {
+        font-size: 23.5px;
+        font-weight: 600;
+        line-height: 1.2;
+        letter-spacing: -0.01em;
+      }
+
+      .cargo {
+        margin-top: 4px;
+        color: var(--destaque);
+        font:
+          500 9.6px/1.4 "IBM Plex Mono",
+          monospace;
+        letter-spacing: 0.04em;
+      }
+
+      .contato {
+        margin-top: 6px;
+        color: var(--suave);
+        font:
+          400 9.6px/1.55 "IBM Plex Mono",
+          monospace;
+      }
+
+      section {
+        margin-top: 6px;
+      }
+
+      h2 {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 6px;
+        color: var(--suave);
+        font:
+          400 9.6px/1 "IBM Plex Mono",
+          monospace;
+        letter-spacing: 0.62em;
+        text-transform: uppercase;
+      }
+
+      h2::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--linha);
+      }
+
+      .resumo {
+        font:
+          400 12.8px/1.33 "IBM Plex Serif",
+          serif;
+      }
+
+      .resumo strong {
+        font-weight: 400;
+        color: #000;
+      }
+
+      .linha {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 16px;
+      }
+
+      .quando {
+        flex-shrink: 0;
+        color: var(--suave);
+        font:
+          400 9.6px/1.4 "IBM Plex Mono",
+          monospace;
+      }
+
+      .cargo-titulo {
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .subtitulo {
+        margin-top: 8px;
+        font-weight: 600;
+      }
+
+      ul {
+        list-style: none;
+      }
+
+      li {
+        position: relative;
+        padding-left: 14px;
+      }
+
+      li::before {
+        content: "–";
+        position: absolute;
+        left: 0;
+        color: var(--destaque);
+        font-weight: 600;
+      }
+
+      li strong,
+      .habilidades strong {
+        font-weight: 600;
+      }
+
+      .stack {
+        margin-top: 3px;
+        color: var(--suave);
+        font:
+          400 9.6px/1.4 "IBM Plex Mono",
+          monospace;
+      }
+
+      .habilidades {
+        display: grid;
+        grid-template-columns: 130px 1fr;
+        row-gap: 3px;
+      }
+
+      .habilidades dt {
+        padding-top: 2px;
+        color: var(--suave);
+        font:
+          400 9.6px/1.4 "IBM Plex Mono",
+          monospace;
+      }
+
+      .projeto + .projeto {
+        margin-top: 6px;
+      }
+
+      .projeto-nome {
+        font-weight: 600;
+      }
+
+      .projeto-link {
+        margin-left: 6px;
+        color: var(--suave);
+        font:
+          400 9.6px/1.4 "IBM Plex Mono",
+          monospace;
+      }
+
+      .formacao .linha + .linha {
+        margin-top: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Eduardo Alexandre da Silva Ferreira</h1>
+      <p class="cargo">
+        DESENVOLVEDOR FULL-STACK · JAVA &amp; REACT/TYPESCRIPT
+      </p>
+      <p class="contato">
+        São Paulo, SP · (11) 94990-7847 · edualexandre2017@outlook.com ·
+        linkedin.com/in/eduardo-alexandre-java<br />
+        github.com/iHadesj · edu-ferreira.vercel.app
+      </p>
+    </header>
+
+    <section>
+      <h2>Resumo</h2>
+      <p class="resumo">
+        Desenvolvedor full-stack com base sólida em <strong>Java</strong> e
+        prática consistente em <strong>React e TypeScript</strong>. Participei
+        da construção, do zero, do Portal VTT (painel de gestão de PDV,
+        ferramentas internas e jogos personalizáveis para totens de eventos),
+        com foco em front-end (React/TypeScript/Three.js) e apoio no back-end
+        Java (servlets e endpoints para dashboards e CRUD). Hoje desenvolvo,
+        como freelancer, um assistente de IA para lojas do Mercado Livre
+        (Python/FastAPI). Cursando Análise e Desenvolvimento de Sistemas na
+        Estácio. Construo projetos de ponta a ponta — modelagem de domínio,
+        persistência, testes automatizados e segurança — priorizando regras de
+        negócio explícitas e estado previsível.
+      </p>
+    </section>
+
+    <section>
+      <h2>Experiência</h2>
+      <div class="linha">
+        <span class="cargo-titulo">Estagiário de Desenvolvimento Web</span>
+        <span class="quando">fev 2025 — out 2026</span>
+      </div>
+      <div class="linha">
+        <span class="cargo-titulo">VTT</span>
+        <span class="quando">São Paulo, SP</span>
+      </div>
+      <p class="subtitulo">
+        Portal VTT — construído do zero; atuação principal no front-end e
+        integração com o back-end
+      </p>
+      <ul>
+        <li>
+          <strong>Gestão de PDV e cadastros:</strong> interfaces de cadastro,
+          edição e listagem de pontos de venda, usuários, terminais e
+          configurações.
+        </li>
+        <li>
+          <strong>Ferramentas internas:</strong> dashboards com dados reais,
+          gráficos e animações em Three.js para visualização de métricas.
+        </li>
+        <li>
+          <strong
+            >Jogos personalizáveis para totens de eventos (destaque):</strong
+          >
+          editor visual no navegador para Jogo da Memória, Quiz, Formulário
+          Cativo e Roleta; geração e download de pacote .zip com o projeto
+          personalizado, pronto para uso no totem; arquitetura modular que
+          permite adicionar novos tipos de jogo sem refatorar o core.
+        </li>
+        <li>
+          <strong>Gestão de chamados:</strong> módulo de tickets com abertura,
+          acompanhamento, SLA e relatórios.
+        </li>
+        <li>
+          <strong>Back-end (apoio):</strong> servlets e endpoints REST em Java
+          para alimentar dashboards, CRUDs e as animações Three.js.
+        </li>
+        <li>
+          <strong>Entregas:</strong> aplicação em produção, investigação,
+          reprodução e correção de defeitos, versionamento com SVN e code review
+          em equipe.
+        </li>
+      </ul>
+      <p class="stack">
+        React · TypeScript · JavaScript · Java (Servlets) · Three.js · SVN
+      </p>
+    </section>
+
+    <section>
+      <h2>Competências técnicas</h2>
+      <dl class="habilidades">
+        <dt>BACK-END</dt>
+        <dd>
+          <strong>Java,</strong> Servlets, Spring Boot, JPA / Hibernate,
+          PostgreSQL, Maven, Docker, Python (FastAPI)
+        </dd>
+        <dt>FRONT-END</dt>
+        <dd>
+          <strong>TypeScript, React,</strong> Next.js, JavaScript, Tailwind CSS,
+          CSS Modules, HTML semântico, Three.js, Angular (iniciando estudos)
+        </dd>
+        <dt>ESTADO &amp; DADOS</dt>
+        <dd>
+          Zustand, TanStack Query, Dexie / IndexedDB, Zod, React Router, SQL
+        </dd>
+        <dt>TESTES &amp; TOOLING</dt>
+        <dd>
+          JUnit, Vitest, Playwright, Pytest, ESLint, Prettier, Vite, Git,
+          IntelliJ IDEA
+        </dd>
+        <dt>FUNDAMENTOS</dt>
+        <dd>
+          POO, estruturas de dados, padrões de projeto, Generics, Collections,
+          tratamento de exceções, PWA / offline-first, acessibilidade,
+          performance web
+        </dd>
+        <dt>IDIOMAS</dt>
+        <dd>Português — nativo · Inglês — intermediário</dd>
+      </dl>
+    </section>
+
+    <section>
+      <h2>Projetos</h2>
+
+      <div class="projeto">
+        <p>
+          <span class="projeto-nome">Ordo — assistente de IA para lojas</span>
+          <span class="projeto-link"
+            >projeto para cliente · acesso restrito</span
+          >
+        </p>
+        <p>
+          Assistente de IA para vendedores do Mercado Livre com Olist ERP: lê
+          pedidos e estoque, rascunha respostas a clientes e prepara notas
+          fiscais, sempre com aprovação humana. Back-end multi-empresa com Row
+          Level Security no PostgreSQL, tokens cifrados (AES-GCM), 2FA e
+          webhooks com fila transacional; 36 testes com banco real.
+        </p>
+        <p class="stack">
+          Python · FastAPI · PostgreSQL · React · TypeScript · Three.js
+        </p>
+      </div>
+
+      <div class="projeto">
+        <p>
+          <span class="projeto-nome">Levva — Loja &amp; Sorte</span>
+          <span class="projeto-link"
+            >github.com/iHadesj/Levva-loja-e-sorte</span
+          >
+        </p>
+        <p>
+          PWA de e-commerce com catálogo determinístico de 400 produtos, busca
+          tolerante a erros (Fuse.js) e grade virtualizada. Checkout
+          transacional em IndexedDB com estorno compensatório e valores
+          financeiros como inteiros (centavos). 29 testes automatizados cobrindo
+          as regras críticas de checkout e financeiro.
+        </p>
+        <p class="stack">
+          React · TypeScript · Zustand · Dexie/IndexedDB · Fuse.js · Vitest ·
+          PWA
+        </p>
+      </div>
+
+      <div class="projeto">
+        <p>
+          <span class="projeto-nome">Portfólio pessoal</span>
+          <span class="projeto-link">edu-ferreira.vercel.app</span>
+        </p>
+        <p>
+          Site bilíngue com conteúdo validado em build (Velite), 3D em Three.js,
+          animações em Motion e testes unitários e end-to-end.
+        </p>
+        <p class="stack">
+          Next.js · React · TypeScript · Tailwind CSS · Three.js · Playwright
+        </p>
+      </div>
+
+      <div class="projeto">
+        <p>
+          <span class="projeto-nome">Rota Dev</span>
+          <span class="projeto-link">github.com/iHadesj/RotaDev</span>
+        </p>
+        <p>
+          Trilha de estudos gamificada com desafios em sandbox no navegador e
+          módulos liberados por critérios de aceite.
+        </p>
+        <p class="stack">
+          React · JavaScript · Framer Motion · arquitetura por domínio
+        </p>
+      </div>
+
+      <div class="projeto">
+        <p>
+          <span class="projeto-nome">CRUD Java MVC + JPA/PostgreSQL</span>
+          <span class="projeto-link">github.com/iHadesj/Projeto_CRUD</span>
+        </p>
+        <p>
+          Aplicação Java em Model-View-Controller: entidades, controladores com
+          rotas para cada operação do CRUD, interfaces de repositório,
+          mapeamento e persistência com JPA sobre PostgreSQL.
+        </p>
+        <p class="stack">Java · MVC · JPA / Hibernate · PostgreSQL</p>
+      </div>
+    </section>
+
+    <section class="formacao">
+      <h2>Formação</h2>
+      <div class="linha">
+        <span
+          ><strong>Análise e Desenvolvimento de Sistemas</strong> ·
+          Estácio</span
+        >
+        <span class="quando">fev 2025 — previsão jul 2027</span>
+      </div>
+      <div class="linha">
+        <span
+          ><strong>Curso Livre Profissionalizante, Back-End Java</strong> ·
+          EBAC</span
+        >
+        <span class="quando">set 2023 — out 2024</span>
+      </div>
+      <div class="linha">
+        <span><strong>Ensino Médio</strong> · E. E. Mariazinha Congílio</span>
+        <span class="quando">fev 2022 — dez 2024</span>
+      </div>
+    </section>
+  </body>
+</html>
