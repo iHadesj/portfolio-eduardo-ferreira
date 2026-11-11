@@ -8,7 +8,7 @@ export type Snippet = NonNullable<Decision["snippet"]>;
 export type Metric = Project["metrics"][number];
 export type ProjectStatus = Project["status"];
 
-/** Case studies sorted by `order` (Levva → Um abraço, Bernardo → API → StudyQuest → LIFE/MAINTENANCE → Raiz Pilates → Rota Dev → DevTrack → Portfolio → Change). */
+/** Case studies sorted by `order` (Ordo → Levva → Um abraço, Bernardo → API → StudyQuest → LIFE/MAINTENANCE → Raiz Pilates → Rota Dev → DevTrack → Portfolio → Change). */
 export const projects: Project[] = [...raw].sort((a, b) => a.order - b.order);
 
 export function getProject(slug: string): Project | undefined {

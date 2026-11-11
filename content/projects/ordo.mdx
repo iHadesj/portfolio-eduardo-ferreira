@@ -1,0 +1,199 @@
+---
+title: Ordo
+slug: ordo
+summary: Assistente de IA para quem vende no Mercado Livre com Olist ERP. Lê pedidos e estoque, rascunha respostas a clientes e prepara a nota fiscal, e nada sai da loja sem aprovação.
+problem: O lojista respondia pergunta por pergunta, conferia estoque em dois sistemas e emitia nota por nota à mão. Precisava de ajuda que fizesse o trabalho repetitivo sem tirar dele a decisão final.
+date: 2026-11-09
+cover: /projects/ordo.webp
+coverAlt: Painel do Ordo com as aprovações pendentes, os números do dia e os alertas da loja
+stack: [Python, FastAPI, PostgreSQL, React, TypeScript, Three.js]
+status: in-progress
+featured: true
+order: 0
+highlights:
+  - A IA prepara respostas, ajustes de estoque e notas fiscais, e tudo passa por um clique de aprovação
+  - Multi-empresa com Row Level Security no Postgres e tokens de terceiros cifrados com AES-GCM
+  - Webhooks do Mercado Livre e do Olist gravados e enfileirados na mesma transação, sem duplicar
+  - Assistente com orb em three.js que reage a cada estado da conversa
+metrics:
+  - label: Telas
+    value: "18"
+  - label: Testes no back-end
+    value: "36"
+  - label: Isolamento
+    value: RLS por empresa
+decisions:
+  - choice: A IA propõe, uma pessoa aprova, o código executa
+    instead: Um agente com ferramentas que escrevem direto na loja
+    because: Toda escrita fora do sistema (responder cliente, mexer em estoque, emitir nota) vira uma ação pendente. Aprovar é um clique autenticado no painel, fora do modelo, e quem executa é código comum que revalida tudo e usa chave de idempotência. O modelo nunca segura a caneta.
+    cost: O dono precisa aprovar. O piloto automático existe, mas só nas categorias que ele liberar e com limite por hora.
+  - choice: Pergunta de cliente é um fluxo fixo, sem ferramentas
+    instead: Um agente livre atendendo o cliente
+    because: Texto de cliente não é confiável. O código monta o contexto (anúncio, estoque ao vivo, trechos da base de conhecimento) e faz uma chamada com saída estruturada. Uma tentativa de prompt injection não tem nada para acionar, e cada resposta sai mais barata e previsível.
+    cost: Pergunta fora do roteiro vai para uma pessoa em vez de a IA improvisar.
+  - choice: Isolamento entre empresas com Row Level Security
+    instead: Filtrar por empresa só na aplicação
+    because: Um WHERE esquecido não vaza dado de outra loja, porque o banco recusa a linha. A aplicação conecta com um papel sem BYPASSRLS e se recusa a subir se estiver com outro papel. Recurso de outra empresa responde 404.
+    cost: Webhooks e tarefas sem usuário logado precisam abrir a transação já na empresa certa, e descobrir de quem é o evento exige uma função SECURITY DEFINER.
+  - choice: Fila de eventos no próprio Postgres
+    instead: Redis com um worker separado
+    because: O webhook grava o evento, deduplica e enfileira na mesma transação e responde 200 na hora. Os workers pegam o trabalho com FOR UPDATE SKIP LOCKED e prazo de reserva, então um worker que cai não prende o evento.
+    cost: O banco vira também a fila, e o volume precisa ser acompanhado.
+  - choice: Nota fiscal só com aprovação e código de verificação
+    instead: Emitir automaticamente quando o pedido é pago
+    because: Gerar a nota já consome o número da série, e emitir errado obriga cancelamento ou inutilização. O sistema confere CPF, endereço, NCM, CFOP, intermediador e valores contra o pedido, e uma pessoa autorizada confirma com o código do 2FA.
+    cost: A emissão depende de alguém disponível para aprovar.
+  - choice: Estoque, preço e prazo sempre ao vivo pela API
+    instead: Indexar tudo na base de conhecimento
+    because: Estoque muda a cada venda. A busca semântica cuida do que muda pouco (catálogo, políticas, respostas antigas) e os números vêm do Olist na hora, para a IA não prometer uma quantidade que já acabou.
+en:
+  title: Ordo
+  summary: An AI assistant for Mercado Livre sellers who run Olist ERP. It reads orders and stock, drafts replies to buyers and prepares the invoice, and nothing leaves the shop without approval.
+  problem: The seller answered buyers one by one, checked stock in two systems and issued every invoice by hand. He needed help with the repetitive work without giving up the final say.
+  coverAlt: Ordo dashboard with pending approvals, the day's numbers and the shop's alerts
+  highlights:
+    - The AI prepares replies, stock adjustments and invoices, and each one goes through an approval click
+    - Multi-tenant with Postgres Row Level Security and third-party tokens encrypted with AES-GCM
+    - Mercado Livre and Olist webhooks stored and queued in the same transaction, never twice
+    - An assistant with a three.js orb that reacts to every state of the conversation
+  metrics:
+    - label: Screens
+      value: "18"
+    - label: Back-end tests
+      value: "36"
+    - label: Isolation
+      value: RLS per company
+  decisions:
+    - choice: The AI proposes, a person approves, code executes
+      instead: An agent with tools that write straight into the shop
+      because: Every write outside the system (answering a buyer, changing stock, issuing an invoice) becomes a pending action. Approving is an authenticated click in the panel, outside the model, and plain code carries it out, revalidating everything with an idempotency key. The model never holds the pen.
+      cost: The owner has to approve. Autopilot exists, but only for the categories he enables and with an hourly cap.
+    - choice: Buyer questions run a fixed flow with no tools
+      instead: A free agent serving buyers
+      because: Buyer text is untrusted. Code builds the context (listing, live stock, knowledge snippets) and makes one call with structured output. A prompt injection attempt has nothing to trigger, and each reply is cheaper and more predictable.
+      cost: Off-script questions go to a person instead of the AI improvising.
+    - choice: Tenant isolation with Row Level Security
+      instead: Filtering by company only in the application
+      because: A forgotten WHERE cannot leak another shop's data, because the database refuses the row. The app connects with a role without BYPASSRLS and refuses to start under any other. Another company's resource answers 404.
+      cost: Webhooks and jobs with no logged-in user must open the transaction already scoped to the right company, and finding who owns an event takes a SECURITY DEFINER function.
+    - choice: An event queue inside Postgres
+      instead: Redis with a separate worker
+      because: The webhook stores the event, deduplicates and enqueues it in the same transaction and answers 200 right away. Workers claim jobs with FOR UPDATE SKIP LOCKED and a lease, so a crashed worker does not hold an event hostage.
+      cost: The database is also the queue, and its volume needs watching.
+    - choice: Invoices only with approval and a verification code
+      instead: Issuing automatically once the order is paid
+      because: Generating an invoice already consumes the series number, and a wrong one forces a cancellation or a voided number. The system checks tax ID, address, NCM, CFOP, the marketplace and the amounts against the order, and an authorised person confirms with a 2FA code.
+      cost: Issuing depends on someone being available to approve.
+    - choice: Stock, price and lead time always live from the API
+      instead: Indexing everything in the knowledge base
+      because: Stock changes with every sale. Semantic search covers what rarely changes (catalogue, policies, past answers) and the numbers come from Olist on the spot, so the AI never promises a quantity that has already sold out.
+---
+
+<Callout>
+  Projeto para cliente, com acesso restrito. As imagens mostram o painel com
+  dados fictícios.
+</Callout>
+
+## O problema
+
+Quem vende no Mercado Livre com o Olist ERP passa o dia entre duas telas. As
+perguntas dos compradores chegam a toda hora, o estoque precisa bater nos dois
+sistemas e cada pedido pago vira uma nota fiscal emitida à mão. É trabalho
+repetitivo, mas errar custa caro: uma resposta com prazo errado vira
+reclamação, e uma nota errada vira cancelamento na SEFAZ.
+
+O Ordo é um projeto freelance, feito em dupla, para um lojista que queria
+parar de fazer tudo isso manualmente. A regra desde o primeiro dia foi a IA
+fazer o trabalho pesado e a pessoa continuar com a palavra final.
+
+## Como funciona
+
+- **Aprovações.** Respostas a clientes, ajustes de estoque e notas fiscais
+  preparadas pela IA caem numa fila única. Cada item abre com o que a IA fez,
+  as fontes que usou e o quanto confia na resposta, e é aprovado, editado ou
+  recusado ali mesmo. Ao aprovar, o próximo abre sozinho.
+- **Assistente.** O dono conversa com a loja: o que está acabando, quais
+  pedidos travaram, quanto vendeu na semana. A resposta mostra os passos que a
+  IA seguiu e as fontes consultadas, e quando o pedido é para mudar algo, ela
+  monta uma proposta que vai para a fila de aprovação.
+- **Notas fiscais.** Antes de pedir aprovação, o sistema confere CPF,
+  endereço, NCM, CFOP, intermediador e valores contra o pedido do Mercado
+  Livre. A emissão pede o código de verificação de quem aprova.
+- **Estoque.** Uma barra de saúde mostra o que acabou, o que está abaixo do
+  mínimo e onde o Olist e o Mercado Livre não batem, com a compra sugerida
+  pela venda do último mês.
+- **Autonomia.** O dono decide, por tipo de pergunta, se a IA só sugere,
+  responde com aprovação ou responde sozinha, com limite por hora e horário de
+  funcionamento.
+
+<Figure
+  src="/projects/ordo/aprovacoes.webp"
+  alt="Fila de aprovações do Ordo com uma nota fiscal aberta e as respostas da IA em linhas"
+  caption="Fila de aprovações: uma linha por item, só um aberto por vez."
+  width={1600}
+  height={1000}
+/>
+
+<Figure
+  src="/projects/ordo/assistente-conversa.webp"
+  alt="Conversa no assistente do Ordo com a tabela de produtos abaixo do mínimo"
+  caption="Assistente: passos da IA, fontes consultadas e ações de copiar, avaliar e citar trecho."
+  width={1600}
+  height={1000}
+/>
+
+## Arquitetura
+
+O back-end é Python com FastAPI, SQLAlchemy assíncrono e Postgres. Cada tabela
+de dados tem `empresa_id` e política de Row Level Security, e o sistema nasceu
+multi-empresa para virar produto depois do primeiro cliente.
+
+Os webhooks do Mercado Livre e do Olist só gravam o evento, deduplicam e
+enfileiram, tudo na mesma transação, e respondem na hora. Workers buscam o
+recurso de novo com o token da loja (o corpo do webhook nunca é confiável),
+atualizam o espelho local e disparam o resto. Uma reconciliação periódica
+cobre notificação perdida.
+
+A IA segue dois níveis de confiança. O chat do dono é um agente com
+ferramentas tipadas de leitura e de proposta. O atendimento ao cliente é um
+fluxo fixo com saída estruturada, porque texto de comprador não pode acionar
+nada. Conhecimento (catálogo, políticas, respostas antigas) vem de busca
+híbrida; estoque, preço e prazo vêm sempre da API.
+
+O front-end é React 19 com Vite, Tailwind 4 e React Query, com animações em
+Motion e uma orb em three.js com shader próprio no assistente, que muda de
+ritmo quando a IA ouve, pensa e responde.
+
+<Figure
+  src="/projects/ordo/nota.webp"
+  alt="Prévia de nota fiscal no Ordo com a conferência automática ao lado"
+  caption="Prévia da nota com a conferência automática antes da aprovação."
+  width={1600}
+  height={1000}
+/>
+
+## Segurança
+
+- Tokens do Mercado Livre e do Olist cifrados com AES-GCM, com versão de chave
+  para permitir rotação, e nunca devolvidos pela API nem escritos em log.
+- Login com argon2, JWT curto, refresh rotativo com detecção de reuso e 2FA
+  por TOTP para quem pode aprovar nota fiscal.
+- Conexão com o Mercado Livre começa só leitura e passa por um período em que
+  a IA apenas rascunha, para comparar com o que o dono respondeu, antes de
+  qualquer escrita.
+- Auditoria imutável de cada ação, de pessoas e da IA.
+
+<Figure
+  src="/projects/ordo/celular.webp"
+  alt="Três telas do Ordo no celular: início, aprovações e estoque"
+  caption="O dono acessa mais pelo celular: tabelas viram listas e cada número tem um gráfico pequeno."
+  width={1600}
+  height={1000}
+/>
+
+## O que eu faria diferente
+
+Comecei o painel com cartões em todas as seções e, no celular, a tela virava
+uma pilha de caixas. Refiz o layout sem caixas, com seções separadas por
+espaço, gráficos pequenos ao lado dos números e listas no lugar das tabelas.
+Teria começado assim.
